@@ -106,41 +106,6 @@ let g:airline_theme = "solarized_flood"
 let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#branch#enabled = 0
 
-let g:startify_custom_header=[
-\'    8             8a           a8             8a     ',
-\'  d8              `8b         d8              `8b    ',
-\' d8                `8b       d8                `8b   ',
-\'d8                  `8b     d8                  `8b  ',
-\'88                   88     88                   88  ',
-\'88                   88     88                   88  ',
-\'Y8,                 ,8P     Y8,                 ,8P  ',
-\' Y8,      888      ,8P       Y8,      888      ,8P   ',
-\'  Y8,     888     ,8P         Y8,     888     ,8P    ',
-\'   "8             8"           "8             8"     ',
-\'                                                     ',
-\'       8a                                a8          ',
-\'       `8b                              d8           ',
-\'        `8b                            d8            ',
-\'         `8b                          d8             ',
-\'          88                          88             ',
-\'          88                          88             ',
-\'         ,8P                          Y8,            ',
-\'        ,8P                            Y8,           ',
-\'       ,8P                              Y8,          ',
-\'       8"                                "8          ',
-\'                                                     ',
-\'   a8                                     8a         ',
-\'  d8               8b        d8           `8b        ',
-\' d8                 Y8,    ,8P             `8b       ',
-\'d8                   Y8,  ,8P               `8b      ',
-\'88                    "8aa8"                 88      ',
-\'88                     `88                   88      ',
-\'Y8,                     88                  ,8P      ',
-\' Y8,                    88                 ,8P       ',
-\'  Y8,                   88                ,8P        ',
-\'   "8                                     8"         ',
-                                                          \ ]
-
 :imap jj <Esc>
 nmap <leader>w :w!<CR>
 nmap <C-p> :FZF<CR>
