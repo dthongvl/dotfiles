@@ -2,6 +2,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'sheerun/vim-polyglot'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
@@ -13,8 +14,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'majutsushi/tagbar'
 Plug 'ap/vim-css-color'
 Plug 'tpope/vim-commentary'
-Plug 'mileszs/ack.vim'
-Plug 'leafOfTree/vim-vue-plugin'
+" Plug 'leafOfTree/vim-vue-plugin'
 Plug 'morhetz/gruvbox'
 Plug 'Yggdroot/indentLine'
 Plug 'ryanoasis/vim-devicons'
@@ -22,10 +22,18 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'w0rp/ale'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'editorconfig/editorconfig-vim'
-if has('nvim') && has("python3")
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'fishbullet/deoplete-ruby'
-endif
+Plug 'rhysd/git-messenger.vim'
+Plug 'mattn/emmet-vim'
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+" yarn global add vue-language-server
+Plug 'neoclide/coc-vetur'
+Plug 'neoclide/coc-json'
+Plug 'neoclide/coc-html'
+Plug 'neoclide/coc-css'
+" Plug 'neoclide/coc-rls'
+Plug 'neoclide/coc-tsserver'
+" gem install solargraph
+Plug 'neoclide/coc-solargraph'
 
 call plug#end()
 
@@ -79,7 +87,7 @@ if has('nvim')
 """"""""""""""""
 "" ale
 " Error and warning signs.
-let g:ale_sign_error = '⤫'
+let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '⚠'
 let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
 let g:ale_linters = {'vue': ['eslint', 'vls']}
@@ -113,8 +121,8 @@ map <silent> <leader><CR> :noh<CR>
 map <silent> <leader>s :syntax sync fromstart<CR>
 nmap <leader>n :NERDTreeToggle<CR>
 nmap <leader>F :NERDTreeFind<CR>
+nmap <leader>a :Rg<CR>
 nmap <F8> :TagbarToggle<CR>
-noremap <Leader>a :Ack!
 
 " Move between windows
 map <C-j> <C-W>j
@@ -143,11 +151,6 @@ autocmd FileType vue let b:autoformat_autoindent=1
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-" sudo apt-get install silversearcher-ag
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
 
 syntax on
 colorscheme gruvbox
