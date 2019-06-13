@@ -1,7 +1,9 @@
 call plug#begin('~/.vim/plugged')
 
+" https://github.com/BurntSushi/ripgrep
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+" Syntax highlight
 Plug 'sheerun/vim-polyglot'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-fugitive'
@@ -14,11 +16,8 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'majutsushi/tagbar'
 Plug 'ap/vim-css-color'
 Plug 'tpope/vim-commentary'
-" Plug 'leafOfTree/vim-vue-plugin'
 Plug 'morhetz/gruvbox'
 Plug 'Yggdroot/indentLine'
-Plug 'ryanoasis/vim-devicons'
-Plug 'jiangmiao/auto-pairs'
 Plug 'w0rp/ale'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'editorconfig/editorconfig-vim'
@@ -30,7 +29,9 @@ Plug 'neoclide/coc-vetur'
 Plug 'neoclide/coc-json'
 Plug 'neoclide/coc-html'
 Plug 'neoclide/coc-css'
-" Plug 'neoclide/coc-rls'
+Plug 'neoclide/coc-pairs'
+" https://rustup.rs/
+Plug 'neoclide/coc-rls'
 Plug 'neoclide/coc-tsserver'
 " gem install solargraph
 Plug 'neoclide/coc-solargraph'
@@ -84,21 +85,21 @@ let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
 if has('nvim')
-""""""""""""""""
-"" ale
-" Error and warning signs.
-let g:ale_sign_error = '✘'
-let g:ale_sign_warning = '⚠'
-let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
-let g:ale_linters = {'vue': ['eslint', 'vls']}
-let g:ale_fixers = {
-\   'javascript': ['eslint'],
-\   'vue': ['eslint']
-\}
-" let g:ale_fix_on_save = 1
-let g:autoformat_autoindent = 0
-let g:autoformat_retab = 0
-let g:autoformat_remove_trailing_spaces = 0
+  """"""""""""""""
+  "" ale
+  " Error and warning signs.
+  let g:ale_sign_error = '✘'
+  let g:ale_sign_warning = '⚠'
+  let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
+  let g:ale_linters = {'vue': ['eslint', 'vls']}
+  let g:ale_fixers = {
+  \   'javascript': ['eslint'],
+  \   'vue': ['eslint']
+  \}
+  " let g:ale_fix_on_save = 1
+  let g:autoformat_autoindent = 0
+  let g:autoformat_retab = 0
+  let g:autoformat_remove_trailing_spaces = 0
 endif
 
 let mapleader = ","
