@@ -6,6 +6,7 @@ Plug 'junegunn/fzf.vim'
 " Syntax highlight
 Plug 'sheerun/vim-polyglot'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'ervandew/supertab'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-surround'
@@ -23,18 +24,17 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'rhysd/git-messenger.vim'
 Plug 'mattn/emmet-vim'
+Plug 'jiangmiao/auto-pairs'
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 " yarn global add vue-language-server
 Plug 'neoclide/coc-vetur'
 Plug 'neoclide/coc-json'
 Plug 'neoclide/coc-html'
 Plug 'neoclide/coc-css'
-Plug 'neoclide/coc-pairs'
-" https://rustup.rs/
-Plug 'neoclide/coc-rls'
 Plug 'neoclide/coc-tsserver'
 " gem install solargraph
 Plug 'neoclide/coc-solargraph'
+Plug 'rust-lang/rust.vim'
 
 call plug#end()
 
@@ -114,6 +114,13 @@ let g:airline_powerline_fonts = 1
 let g:airline_theme = "solarized_flood"
 let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#branch#enabled = 0
+let g:airline#extensions#tabline#enabled = 1
+
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_tabs = 1
+let g:airline#extensions#tabline#show_splits = 1
+let g:airline#extensions#tabline#tab_nr_type = 2
+let g:airline#extensions#tabline#buffer_idx_mode = 1
 
 :imap jj <Esc>
 nmap <leader>w :w!<CR>
