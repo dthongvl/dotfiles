@@ -1,30 +1,41 @@
 call plug#begin('~/.vim/plugged')
 
-" https://github.com/BurntSushi/ripgrep
+" Fuzzy search, Ack
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-" Syntax highlight
-Plug 'sheerun/vim-polyglot'
-Plug 'terryma/vim-multiple-cursors'
+" sudo apt-get install silversearcher-ag
+Plug 'mileszs/ack.vim'
+
+" Vue syntax highlight
+Plug 'leafOfTree/vim-vue-plugin'
+
+" Tab to complete
 Plug 'ervandew/supertab'
+
+" Git
 Plug 'tpope/vim-fugitive'
+Plug 'rhysd/git-messenger.vim'
 Plug 'airblade/vim-gitgutter'
+
+Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdtree'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 " sudo apt install ctags
 Plug 'majutsushi/tagbar'
 Plug 'ap/vim-css-color'
 Plug 'tpope/vim-commentary'
+Plug 'pangloss/vim-javascript'
+
+" Color scheme
 Plug 'morhetz/gruvbox'
+Plug 'itchyny/lightline.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'w0rp/ale'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'rhysd/git-messenger.vim'
 Plug 'mattn/emmet-vim'
 Plug 'jiangmiao/auto-pairs'
+
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 " yarn global add vue-language-server
 Plug 'neoclide/coc-vetur'
@@ -45,6 +56,7 @@ endif
 set termguicolors
 set splitright
 set splitbelow
+set noshowmode
 " Tab indent
 set expandtab
 set tabstop=2
@@ -76,6 +88,7 @@ set backupskip=/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*
 set directory=/tmp
 
 let g:gruvbox_contrast_dark = 'hard'
+let g:vim_vue_plugin_use_sass = 1
 
 "Remap key to split screen
 let NERDTreeMapOpenVSplit ='<C-v>'
@@ -102,25 +115,28 @@ if has('nvim')
   let g:autoformat_remove_trailing_spaces = 0
 endif
 
+let g:lightline = {
+  \ 'colorscheme': 'powerline',
+  \ 'active': {
+  \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'modified', 'filename' ] ],
+  \   'right': [ [ 'lineinfo' ], [ 'filetype', 'fileencoding' ] ],
+  \ },
+  \ 'component_function': {
+  \   'filetype': 'LightlineFiletype',
+  \   'fileencoding': 'LightlineFileencoding',
+  \ }
+  \ }
+
+function! LightlineFiletype()
+  return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
+endfunction
+
+function! LightlineFileencoding()
+  return winwidth(0) > 70 ? &fileencoding : ''
+endfunction
+
 let mapleader = ","
 let g:mapleader = ","
-
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#enable_smart_case = 1
-
-let g:vim_vue_plugin_use_sass = 1
-
-let g:airline_powerline_fonts = 1
-let g:airline_theme = "solarized_flood"
-let g:airline#extensions#ale#enabled = 1
-let g:airline#extensions#branch#enabled = 0
-let g:airline#extensions#tabline#enabled = 1
-
-let g:airline#extensions#tabline#show_buffers = 1
-let g:airline#extensions#tabline#show_tabs = 1
-let g:airline#extensions#tabline#show_splits = 1
-let g:airline#extensions#tabline#tab_nr_type = 2
-let g:airline#extensions#tabline#buffer_idx_mode = 1
 
 :imap jj <Esc>
 nmap <leader>w :w!<CR>
@@ -129,7 +145,8 @@ map <silent> <leader><CR> :noh<CR>
 map <silent> <leader>s :syntax sync fromstart<CR>
 nmap <leader>n :NERDTreeToggle<CR>
 nmap <leader>F :NERDTreeFind<CR>
-nmap <leader>a :Rg<CR>
+nnoremap <leader>a :Ack!<Space>
+nmap <leader>r :Rg<CR>
 nmap <F8> :TagbarToggle<CR>
 
 " Move between windows
@@ -152,13 +169,17 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 autocmd VimEnter * nnoremap <silent> <expr> <C-p> (expand('%') =~ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":FZF\<cr>"
 
 " Support Vue && ES6
-autocmd BufReadPost,BufNewFile *.es6 set syntax=javascript
-autocmd BufReadPost,BufNewFile *.vue setlocal filetype=vue
+autocmd BufReadPost,BufNewFile *.{es6,es6.js} set filetype=javascript
+autocmd BufReadPost,BufNewFile *.vue set filetype=vue
 autocmd FileType vue syntax sync fromstart
 autocmd FileType vue let b:autoformat_autoindent=1
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 
 syntax on
 colorscheme gruvbox
