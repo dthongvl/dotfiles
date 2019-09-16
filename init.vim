@@ -26,14 +26,16 @@ Plug 'ap/vim-css-color'
 Plug 'tpope/vim-commentary'
 Plug 'pangloss/vim-javascript'
 
+" Ruby
+Plug 'tpope/vim-endwise'
+Plug 'pearofducks/ansible-vim'
+
 " Color scheme
-Plug 'morhetz/gruvbox'
+Plug 'drewtempelmeyer/palenight.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'w0rp/ale'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'mattn/emmet-vim'
 Plug 'jiangmiao/auto-pairs'
 
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
@@ -47,12 +49,15 @@ Plug 'neoclide/coc-tsserver'
 Plug 'neoclide/coc-solargraph'
 Plug 'rust-lang/rust.vim'
 
+Plug 'AndrewRadev/splitjoin.vim'
+
 call plug#end()
 
 " Use mouse
 if has('mouse')
   set mouse=a
 endif
+
 set termguicolors
 set splitright
 set splitbelow
@@ -77,6 +82,10 @@ set autowrite
 " When search
 set ignorecase
 set smartcase
+set hlsearch
+
+" Makes search act like search in modern browsers
+set incsearch
 
 " Files backup
 set nobackup
@@ -87,7 +96,12 @@ set backupcopy=yes
 set backupskip=/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*
 set directory=/tmp
 
-let g:gruvbox_contrast_dark = 'hard'
+" Turn on WiLd menu
+set wildmenu
+
+" Ignore compiled files
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+
 let g:vim_vue_plugin_use_sass = 1
 
 "Remap key to split screen
@@ -126,6 +140,7 @@ let g:lightline = {
   \   'fileencoding': 'LightlineFileencoding',
   \ }
   \ }
+let g:lightline.colorscheme = 'palenight'
 
 function! LightlineFiletype()
   return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
@@ -135,8 +150,8 @@ function! LightlineFileencoding()
   return winwidth(0) > 70 ? &fileencoding : ''
 endfunction
 
-let mapleader = ","
-let g:mapleader = ","
+let mapleader = " "
+let g:mapleader = " "
 
 :imap jj <Esc>
 nmap <leader>w :w!<CR>
@@ -145,9 +160,14 @@ map <silent> <leader><CR> :noh<CR>
 map <silent> <leader>s :syntax sync fromstart<CR>
 nmap <leader>n :NERDTreeToggle<CR>
 nmap <leader>F :NERDTreeFind<CR>
+noremap <Leader>aa :Ack! <cword><cr>
 nnoremap <leader>a :Ack!<Space>
 nmap <leader>r :Rg<CR>
 nmap <F8> :TagbarToggle<CR>
+
+" Indent
+nnoremap <S-Tab> <<
+nnoremap <Tab> >>
 
 " Move between windows
 map <C-j> <C-W>j
@@ -161,6 +181,16 @@ map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove<cr>
 map <leader>t<leader> :tabnext
+
+" Next/Previous between buffers
+map <leader>l :bnext<cr>
+map <leader>h :bprevious<cr>
+
+" Git
+nmap <leader>j <Plug>(GitGutterNextHunk)
+nmap <leader>k <Plug>(GitGutterPrevHunk)
+nmap <leader>Gb :Gblame<cr>
+nmap <leader>Gd :Gdiff<cr>
 
 " Auto close NERDTree if it is the last and only buffer
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
@@ -177,9 +207,28 @@ autocmd FileType vue let b:autoformat_autoindent=1
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+" Fold
+au FileType ruby setlocal foldmethod=indent foldnestmax=4 foldlevelstart=1
+
+" Delete trailing white space on save, useful for Python and CoffeeScript ;)
+func! DeleteTrailingWS()
+  exe "normal mz"
+  %s/\s\+$//ge
+  exe "normal `z"
+endfunc
+autocmd BufWrite *.py :call DeleteTrailingWS()
+autocmd BufWrite *.coffee :call DeleteTrailingWS()
+autocmd BufWrite *.sql :call DeleteTrailingWS()
+autocmd BufWrite *.md :call DeleteTrailingWS()
+autocmd BufWrite *.vue :call DeleteTrailingWS()
+autocmd BufWrite *.rb :call DeleteTrailingWS()
+
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
 
 syntax on
-colorscheme gruvbox
+filetype plugin indent on
+set background=dark
+colorscheme palenight
+
