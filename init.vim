@@ -1,40 +1,42 @@
 call plug#begin('~/.vim/plugged')
 
 " Fuzzy search, Ack
+" remember to install ripgrep
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-" sudo apt-get install silversearcher-ag
-Plug 'mileszs/ack.vim'
 
 " Vue syntax highlight
 Plug 'leafOfTree/vim-vue-plugin'
-
-" Tab to complete
-Plug 'ervandew/supertab'
 
 " Git
 Plug 'tpope/vim-fugitive'
 Plug 'rhysd/git-messenger.vim'
 Plug 'airblade/vim-gitgutter'
 
-Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdtree'
-" sudo apt install ctags
-Plug 'majutsushi/tagbar'
+" must install universal-ctags
+" not work with exuberant-ctags
+Plug 'liuchengxu/vista.vim'
 Plug 'ap/vim-css-color'
-Plug 'tpope/vim-commentary'
+Plug 'scrooloose/nerdcommenter'
 Plug 'pangloss/vim-javascript'
 
 " Ruby
 Plug 'tpope/vim-endwise'
+
+" Ansible
 Plug 'pearofducks/ansible-vim'
 
 " Color scheme
 Plug 'drewtempelmeyer/palenight.vim'
+
+" Status line
 Plug 'itchyny/lightline.vim'
 Plug 'Yggdroot/indentLine'
-Plug 'w0rp/ale'
+
+" Lint
+Plug 'dense-analysis/ale'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'jiangmiao/auto-pairs'
 
@@ -47,6 +49,8 @@ Plug 'neoclide/coc-css'
 Plug 'neoclide/coc-tsserver'
 " gem install solargraph
 Plug 'neoclide/coc-solargraph'
+
+" Rust
 Plug 'rust-lang/rust.vim'
 
 Plug 'AndrewRadev/splitjoin.vim'
@@ -102,6 +106,7 @@ set wildmenu
 " Ignore compiled files
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 
+let $FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 let g:vim_vue_plugin_use_sass = 1
 
 "Remap key to split screen
@@ -156,14 +161,44 @@ let g:mapleader = " "
 :imap jj <Esc>
 nmap <leader>w :w!<CR>
 nmap <C-p> :FZF<CR>
-map <silent> <leader><CR> :noh<CR>
+map <silent> <ESC><ESC> :noh<CR>
 map <silent> <leader>s :syntax sync fromstart<CR>
 nmap <leader>n :NERDTreeToggle<CR>
-nmap <leader>F :NERDTreeFind<CR>
+nmap <leader>f :NERDTreeFind<CR>
 noremap <Leader>aa :Ack! <cword><cr>
 nnoremap <leader>a :Ack!<Space>
 nmap <leader>r :Rg<CR>
-nmap <F8> :TagbarToggle<CR>
+nmap <F8> :Vista!!<CR>
+map mm <Plug>NERDCommenterToggle
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
+
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
 " Indent
 nnoremap <S-Tab> <<
@@ -210,18 +245,8 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Fold
 au FileType ruby setlocal foldmethod=indent foldnestmax=4 foldlevelstart=1
 
-" Delete trailing white space on save, useful for Python and CoffeeScript ;)
-func! DeleteTrailingWS()
-  exe "normal mz"
-  %s/\s\+$//ge
-  exe "normal `z"
-endfunc
-autocmd BufWrite *.py :call DeleteTrailingWS()
-autocmd BufWrite *.coffee :call DeleteTrailingWS()
-autocmd BufWrite *.sql :call DeleteTrailingWS()
-autocmd BufWrite *.md :call DeleteTrailingWS()
-autocmd BufWrite *.vue :call DeleteTrailingWS()
-autocmd BufWrite *.rb :call DeleteTrailingWS()
+" Auto remove trailing spaces
+autocmd BufWritePre * %s/\s\+$//e
 
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
