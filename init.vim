@@ -6,13 +6,15 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 " Vue syntax highlight
-Plug 'leafOfTree/vim-vue-plugin'
+"Plug 'leafOfTree/vim-vue-plugin'
+Plug 'posva/vim-vue'
 
 " Git
 Plug 'tpope/vim-fugitive'
 Plug 'rhysd/git-messenger.vim'
 Plug 'airblade/vim-gitgutter'
 
+Plug 'AndrewRadev/splitjoin.vim'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdtree'
 " must install universal-ctags
@@ -20,7 +22,14 @@ Plug 'scrooloose/nerdtree'
 Plug 'liuchengxu/vista.vim'
 Plug 'ap/vim-css-color'
 Plug 'scrooloose/nerdcommenter'
+
+" Javascript
 Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'MaxMEllon/vim-jsx-pretty'
+
+" Go
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 " Ruby
 Plug 'tpope/vim-endwise'
@@ -52,8 +61,6 @@ Plug 'neoclide/coc-solargraph'
 
 " Rust
 Plug 'rust-lang/rust.vim'
-
-Plug 'AndrewRadev/splitjoin.vim'
 
 call plug#end()
 
@@ -107,7 +114,10 @@ set wildmenu
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 
 let $FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-let g:vim_vue_plugin_use_sass = 1
+"let g:vim_vue_plugin_use_sass = 1
+let g:vue_pre_processors = ['scss']
+
+let g:NERDSpaceDelims = 1
 
 "Remap key to split screen
 let NERDTreeMapOpenVSplit ='<C-v>'
@@ -126,7 +136,8 @@ if has('nvim')
   let g:ale_linters = {'vue': ['eslint', 'vls']}
   let g:ale_fixers = {
   \   'javascript': ['eslint'],
-  \   'vue': ['eslint']
+  \   'vue': ['eslint'],
+  \   'ruby': ['rubocop'],
   \}
   " let g:ale_fix_on_save = 1
   let g:autoformat_autoindent = 0
@@ -135,7 +146,7 @@ if has('nvim')
 endif
 
 let g:lightline = {
-  \ 'colorscheme': 'powerline',
+  \ 'colorscheme': 'palenight',
   \ 'active': {
   \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'modified', 'filename' ] ],
   \   'right': [ [ 'lineinfo' ], [ 'filetype', 'fileencoding' ] ],
@@ -145,7 +156,6 @@ let g:lightline = {
   \   'fileencoding': 'LightlineFileencoding',
   \ }
   \ }
-let g:lightline.colorscheme = 'palenight'
 
 function! LightlineFiletype()
   return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
@@ -159,8 +169,9 @@ let mapleader = " "
 let g:mapleader = " "
 
 :imap jj <Esc>
+nmap Y y$
 nmap <leader>w :w!<CR>
-nmap <C-p> :FZF<CR>
+nmap <leader>p :FZF<CR>
 map <silent> <ESC><ESC> :noh<CR>
 map <silent> <leader>s :syntax sync fromstart<CR>
 nmap <leader>n :NERDTreeToggle<CR>
@@ -169,7 +180,7 @@ noremap <Leader>aa :Ack! <cword><cr>
 nnoremap <leader>a :Ack!<Space>
 nmap <leader>r :Rg<CR>
 nmap <F8> :Vista!!<CR>
-map mm <Plug>NERDCommenterToggle
+map <leader>m <Plug>NERDCommenterToggle
 
 " don't give |ins-completion-menu| messages.
 set shortmess+=c
@@ -220,6 +231,7 @@ map <leader>t<leader> :tabnext
 " Next/Previous between buffers
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
+map <leader>bb :ls<cr>
 
 " Git
 nmap <leader>j <Plug>(GitGutterNextHunk)
@@ -256,4 +268,3 @@ syntax on
 filetype plugin indent on
 set background=dark
 colorscheme palenight
-
