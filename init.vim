@@ -5,10 +5,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
-" Vue syntax highlight
-"Plug 'leafOfTree/vim-vue-plugin'
-Plug 'posva/vim-vue'
-
 " Git
 Plug 'tpope/vim-fugitive'
 Plug 'rhysd/git-messenger.vim'
@@ -20,13 +16,16 @@ Plug 'scrooloose/nerdtree'
 " must install universal-ctags
 " not work with exuberant-ctags
 Plug 'liuchengxu/vista.vim'
-Plug 'ap/vim-css-color'
 Plug 'scrooloose/nerdcommenter'
 
-" Javascript
+" HTML, CSS, Javascript
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'cakebaker/scss-syntax.vim'
+Plug 'ap/vim-css-color'
+Plug 'posva/vim-vue'
+Plug 'othree/html5.vim'
 
 " Go
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
@@ -49,15 +48,7 @@ Plug 'dense-analysis/ale'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'jiangmiao/auto-pairs'
 
-Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-" yarn global add vue-language-server
-Plug 'neoclide/coc-vetur'
-Plug 'neoclide/coc-json'
-Plug 'neoclide/coc-html'
-Plug 'neoclide/coc-css'
-Plug 'neoclide/coc-tsserver'
-" gem install solargraph
-Plug 'neoclide/coc-solargraph'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Rust
 Plug 'rust-lang/rust.vim'
@@ -69,6 +60,7 @@ if has('mouse')
   set mouse=a
 endif
 
+set updatetime=100
 set termguicolors
 set splitright
 set splitbelow
@@ -85,6 +77,10 @@ set number
 set nowrap
 set autoindent
 set si
+
+" Fold
+set foldmethod=indent
+set foldlevel=99
 
 " Auto read/write
 set autoread
@@ -114,10 +110,34 @@ set wildmenu
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 
 let $FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-"let g:vim_vue_plugin_use_sass = 1
+
+" NERDCommenter
+let g:NERDSpaceDelims = 1
+
+let g:git_messenger_include_diff="current"
+
+" For Vue
 let g:vue_pre_processors = ['scss']
 
-let g:NERDSpaceDelims = 1
+let g:ft = ''
+function! NERDCommenter_before()
+  if &ft == 'vue'
+    let g:ft = 'vue'
+    let stack = synstack(line('.'), col('.'))
+    if len(stack) > 0
+      let syn = synIDattr((stack)[0], 'name')
+      if len(syn) > 0
+        exe 'setf ' . substitute(tolower(syn), '^vue_', '', '')
+      endif
+    endif
+  endif
+endfunction
+function! NERDCommenter_after()
+  if g:ft == 'vue'
+    setf vue
+    let g:ft = ''
+  endif
+endfunction
 
 "Remap key to split screen
 let NERDTreeMapOpenVSplit ='<C-v>'
@@ -172,6 +192,7 @@ let g:mapleader = " "
 nmap Y y$
 nmap <leader>w :w!<CR>
 nmap <leader>p :FZF<CR>
+nmap <leader>q :q<CR>
 map <silent> <ESC><ESC> :noh<CR>
 map <silent> <leader>s :syntax sync fromstart<CR>
 nmap <leader>n :NERDTreeToggle<CR>
@@ -211,9 +232,17 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
-" Indent
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Add `:Fold` command to fold current buffer.
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Indent with Tab
 nnoremap <S-Tab> <<
 nnoremap <Tab> >>
+vnoremap <Tab> >gv
+vnoremap <S-Tab> <gv
 
 " Move between windows
 map <C-j> <C-W>j
@@ -231,7 +260,7 @@ map <leader>t<leader> :tabnext
 " Next/Previous between buffers
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
-map <leader>bb :ls<cr>
+nnoremap <leader>bb :buffers<CR>:buffer<Space>
 
 " Git
 nmap <leader>j <Plug>(GitGutterNextHunk)
@@ -254,9 +283,6 @@ autocmd FileType vue let b:autoformat_autoindent=1
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-" Fold
-au FileType ruby setlocal foldmethod=indent foldnestmax=4 foldlevelstart=1
-
 " Auto remove trailing spaces
 autocmd BufWritePre * %s/\s\+$//e
 
@@ -268,3 +294,4 @@ syntax on
 filetype plugin indent on
 set background=dark
 colorscheme palenight
+
