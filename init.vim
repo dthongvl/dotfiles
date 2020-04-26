@@ -11,6 +11,7 @@ Plug 'rhysd/git-messenger.vim'
 Plug 'airblade/vim-gitgutter'
 
 Plug 'AndrewRadev/splitjoin.vim'
+Plug 'airblade/vim-rooter'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdtree'
 " must install universal-ctags
@@ -38,6 +39,7 @@ Plug 'pearofducks/ansible-vim'
 
 " Color scheme
 Plug 'drewtempelmeyer/palenight.vim'
+Plug 'arcticicestudio/nord-vim'
 
 " Status line
 Plug 'itchyny/lightline.vim'
@@ -257,6 +259,25 @@ map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove<cr>
 map <leader>t<leader> :tabnext
 
+" Go to tab by number
+noremap <leader>1 1gt
+noremap <leader>2 2gt
+noremap <leader>3 3gt
+noremap <leader>4 4gt
+noremap <leader>5 5gt
+noremap <leader>6 6gt
+noremap <leader>7 7gt
+noremap <leader>8 8gt
+noremap <leader>9 9gt
+noremap <leader>0 :tablast<cr>
+
+" Switch to last tab
+if !exists('g:lasttab')
+  let g:lasttab = 1
+endif
+nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
+au TabLeave * let g:lasttab = tabpagenr()
+
 " Next/Previous between buffers
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
@@ -293,5 +314,5 @@ endif
 syntax on
 filetype plugin indent on
 set background=dark
-colorscheme palenight
-
+" colorscheme palenight
+colorscheme nord
