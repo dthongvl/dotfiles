@@ -10,14 +10,15 @@ Plug 'tpope/vim-fugitive'
 Plug 'rhysd/git-messenger.vim'
 Plug 'airblade/vim-gitgutter'
 
+" Utils
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'airblade/vim-rooter'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdtree'
-" must install universal-ctags
-" not work with exuberant-ctags
-Plug 'liuchengxu/vista.vim'
 Plug 'scrooloose/nerdcommenter'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'jiangmiao/auto-pairs'
+Plug 'haya14busa/incsearch.vim'
 
 " HTML, CSS, Javascript
 Plug 'pangloss/vim-javascript'
@@ -27,12 +28,16 @@ Plug 'cakebaker/scss-syntax.vim'
 Plug 'ap/vim-css-color'
 Plug 'posva/vim-vue'
 Plug 'othree/html5.vim'
+Plug 'alvan/vim-closetag'
 
 " Go
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 " Ruby
 Plug 'tpope/vim-endwise'
+
+" Rust
+Plug 'rust-lang/rust.vim'
 
 " Ansible
 Plug 'pearofducks/ansible-vim'
@@ -45,17 +50,27 @@ Plug 'arcticicestudio/nord-vim'
 Plug 'itchyny/lightline.vim'
 Plug 'Yggdroot/indentLine'
 
-" Lint
 Plug 'dense-analysis/ale'
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'jiangmiao/auto-pairs'
-
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Rust
-Plug 'rust-lang/rust.vim'
-
 call plug#end()
+
+set background=dark
+" colorscheme palenight
+colorscheme nord
+
+let g:closetag_filetypes = 'html,vue'
+
+let g:coc_global_extensions = [
+  \'coc-html',
+  \'coc-css',
+  \'coc-json',
+  \'coc-solargraph',
+  \'coc-tsserver',
+  \'coc-vetur',
+  \'coc-svg',
+  \'coc-highlight'
+  \]
 
 " Use mouse
 if has('mouse')
@@ -116,7 +131,7 @@ let $FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 " NERDCommenter
 let g:NERDSpaceDelims = 1
 
-let g:git_messenger_include_diff="current"
+" let g:git_messenger_include_diff="current"
 
 " For Vue
 let g:vue_pre_processors = ['scss']
@@ -202,8 +217,10 @@ nmap <leader>f :NERDTreeFind<CR>
 noremap <Leader>aa :Ack! <cword><cr>
 nnoremap <leader>a :Ack!<Space>
 nmap <leader>r :Rg<CR>
-nmap <F8> :Vista!!<CR>
 map <leader>m <Plug>NERDCommenterToggle
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
 
 " don't give |ins-completion-menu| messages.
 set shortmess+=c
@@ -313,6 +330,4 @@ endif
 
 syntax on
 filetype plugin indent on
-set background=dark
-" colorscheme palenight
-colorscheme nord
+
