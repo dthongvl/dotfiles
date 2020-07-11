@@ -82,6 +82,7 @@ set termguicolors
 set splitright
 set splitbelow
 set noshowmode
+set relativenumber
 " Tab indent
 set expandtab
 set tabstop=2
@@ -330,4 +331,3 @@ endif
 
 syntax on
 filetype plugin indent on
-
