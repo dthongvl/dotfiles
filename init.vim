@@ -52,6 +52,7 @@ Plug 'Yggdroot/indentLine'
 
 Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'nvim-treesitter/nvim-treesitter'
 
 call plug#end()
 
@@ -64,12 +65,10 @@ let g:closetag_filetypes = 'html,vue'
 let g:coc_global_extensions = [
   \'coc-html',
   \'coc-css',
-  \'coc-json',
   \'coc-solargraph',
   \'coc-tsserver',
   \'coc-vetur',
-  \'coc-svg',
-  \'coc-highlight'
+  \'coc-svg'
   \]
 
 " Use mouse
@@ -331,3 +330,13 @@ endif
 
 syntax on
 filetype plugin indent on
+
+" Treesitter
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "markdown", "vue", "go", "python", "rust", "ruby", "javascript", "typescript", "c", "cpp", "css", "html", "json" },     -- one of "all", "language", or a list of languages
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+  },
+}
+EOF
