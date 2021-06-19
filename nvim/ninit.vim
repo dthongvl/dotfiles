@@ -1,3 +1,5 @@
+# DEPRECATED
+
 call plug#begin('~/.vim/plugged')
 
 " Fuzzy search, Ack
@@ -40,12 +42,15 @@ Plug 'tpope/vim-endwise'
 " Rust
 Plug 'rust-lang/rust.vim'
 
-" Ansible
+" Devops
+Plug 'hashivim/vim-terraform'
 Plug 'pearofducks/ansible-vim'
 
 " Color scheme
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'arcticicestudio/nord-vim'
+Plug 'folke/tokyonight.nvim'
+Plug 'sindrets/diffview.nvim'
 Plug 'tyrannicaltoucan/vim-deep-space'
 
 " Status line
@@ -63,9 +68,10 @@ call plug#end()
 "========================================================
 
 set background=dark
+colorscheme tokyonight
 " colorscheme palenight
 " colorscheme nord
-colorscheme deep-space
+" colorscheme deep-space
 
 "========================================================
 " CLOSETAG CONFIGS
@@ -345,7 +351,7 @@ function! LightlineFileencoding()
 endfunction
 
 let g:lightline = {
-  \ 'colorscheme': 'deepspace',
+  \ 'colorscheme': 'palenight',
   \ 'active': {
   \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'modified', 'filename' ] ],
   \   'right': [ [ 'lineinfo' ], [ 'filetype', 'fileencoding' ] ],
