@@ -3,7 +3,7 @@ set -eo pipefail
 
 # Packages
 sudo apt install alacritty curl jq ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip rbenv
-yarn global add vscode-html-languageserver-bin typescript typescript-language-server vscode-css-languageserver-bin dockerfile-language-server-nodejs vscode-json-languageserver vls vim-language-server
+yarn global add vscode-html-languageserver-bin typescript typescript-language-server vscode-css-languageserver-bin dockerfile-language-server-nodejs vscode-json-languageserver vls vim-language-server yaml-language-server
 
 # Config files
 ln -s -f ~/workspace/dotfiles/nvim ~/.config/nvim
