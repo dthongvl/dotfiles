@@ -15,6 +15,10 @@ require('packer').startup(function()
   use 'preservim/nerdtree'
   use 'junegunn/fzf.vim'
   use {'junegunn/fzf', run = 'fzf#install'}
+  use {
+    'nvim-telescope/telescope.nvim',
+    requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}
+  }
 
   -- view
   use 'ap/vim-css-color'
@@ -28,18 +32,20 @@ require('packer').startup(function()
   -- navigation
   use 'christoomey/vim-tmux-navigator'
   use 'airblade/vim-rooter'
-  use 'akinsho/nvim-toggleterm.lua'
 
   -- git
   use 'tpope/vim-fugitive'
   use 'vim-scripts/git-time-lapse'
-  use 'rhysd/git-messenger.vim'
   use 'airblade/vim-gitgutter'
+  use 'tpope/vim-rhubarb'
+  use { 'TimUntersberger/neogit', requires = 'nvim-lua/plenary.nvim' }
+  use 'sindrets/diffview.nvim'
 
   -- edit
   use 'tpope/vim-surround'            -- toggle surround
   use 'AndrewRadev/splitjoin.vim'     -- split and join in vim
   use 'windwp/nvim-autopairs'
+  use 'windwp/nvim-ts-autotag'
 
   -- devops
   use 'hashivim/vim-terraform'
@@ -50,6 +56,7 @@ require('packer').startup(function()
        run = ':TSUpdate'}
   use 'neovim/nvim-lspconfig'
   use 'hrsh7th/nvim-compe'
+  use 'dense-analysis/ale'
 
   -- language
   use 'rust-lang/rust.vim'

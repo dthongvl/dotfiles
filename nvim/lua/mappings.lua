@@ -7,10 +7,10 @@ map('n', '<leader>q', ':q<CR>', {})
 map('n', 'Y', 'y$', {})
 map('i', 'jj', '<Esc>', {})
 
-map('n', '<S-Tab>', '<<', { noremap = true })
-map('n', '<Tab>', '>>', { noremap = true })
-map('v', '<S-Tab>', '<gv', { noremap = true })
-map('v', '<Tab>', '>gv', { noremap = true })
+-- map('n', '<S-Tab>', '<<', { noremap = true })
+-- map('n', '<Tab>', '>>', { noremap = true })
+-- map('v', '<S-Tab>', '<gv', { noremap = true })
+-- map('v', '<Tab>', '>gv', { noremap = true })
 
 -- search
 map('', '/', '<Plug>(incsearch-forward)', {})

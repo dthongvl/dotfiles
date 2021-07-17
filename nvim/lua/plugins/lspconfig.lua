@@ -12,9 +12,11 @@ require'lspconfig'.rls.setup{}
 require'lspconfig'.vuels.setup{}
 require'lspconfig'.bashls.setup{}
 require'lspconfig'.vimls.setup{}
+require'lspconfig'.yamlls.setup{}
+require'lspconfig'.clangd.setup{}
 
 local map = vim.api.nvim_set_keymap
-local opts = { noremap=true, silent=true }
+local opts = { noremap = true, silent = true }
 
 map('n', 'gh', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
 map('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
