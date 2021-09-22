@@ -3,4 +3,4 @@ local global = vim.g
 
 global.NERDSpaceDelims = 1
 
-map('', '<leader>m', '<Plug>NERDCommenterToggle', {})
+map('', '<C-_>', '<Plug>NERDCommenterToggle', {})

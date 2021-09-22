@@ -9,9 +9,7 @@ map('n', '<leader>gd', ':Git diff<CR>', { noremap = true })
 local diffview = require('diffview')
 
 diffview.setup {
-  file_panel = {
-    use_icons = false
-  }
+  use_icons = false
 }
 map('n', '<leader>do', '<ESC>:DiffviewOpen<CR>', { noremap = true, silent = true })
 map('n', '<leader>dc', '<ESC>:DiffviewClose<CR>', { noremap = true, silent = true })
@@ -26,3 +24,5 @@ require('neogit').setup {
 }
 
 map('n', '<c-g>', ':Neogit<CR>', { noremap = true, silent = true })
+
+require('gitsigns').setup()

@@ -17,7 +17,7 @@ npairs.setup({
 })
 
 require('nvim-treesitter.configs').setup {
-  autopairs = { enable = true }
+  autopairs = { enable = true },
   autotag = { enable = true }
 }
 

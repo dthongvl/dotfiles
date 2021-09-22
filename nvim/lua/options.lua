@@ -60,4 +60,4 @@ opt.swapfile = false
 -- clipboard
 opt.clipboard = 'unnamedplus'
 
-cmd('colorscheme deep-space')
+require('nightfox').load()

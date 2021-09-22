@@ -9,6 +9,8 @@ global.ale_linters = {
   ruby = { 'rubocop' },
   rspec = { 'rubocop' },
   vue = { 'eslint', 'vls' },
+  json = { 'jq', 'jsonlint' },
+  go = { 'gopls' },
 }
 
 global.ale_fixers = {
