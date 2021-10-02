@@ -16,4 +16,5 @@ set fish_greeting 'No Sana No Life'
 
 status --is-interactive; and rbenv init - | source
 
-if test -f /home/dthongvl/.autojump/share/autojump/autojump.fish; . /home/dthongvl/.autojump/share/autojump/autojump.fish; end
+if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
+if test -f $HOME/.config/fish/nightfox.fish; . $HOME/.config/fish/nightfox.fish; end
