@@ -15,6 +15,7 @@ set -gx PATH $PATH $HOME/.rbenv/bin (yarn global bin) /usr/local/go/bin $HOME/.l
 set fish_greeting 'No Sana No Life'
 
 status --is-interactive; and rbenv init - | source
+status --is-interactive; and source (jump shell fish | psub)
 
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 if test -f $HOME/.config/fish/nightfox.fish; . $HOME/.config/fish/nightfox.fish; end
