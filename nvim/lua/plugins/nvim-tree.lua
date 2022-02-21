@@ -13,13 +13,13 @@ global.nvim_tree_icons = {
     arrow_closed = '♂',
   },
 }
-global.nvim_tree_ignore = {
-  '.git',
-}
 global.nvim_tree_git_hl = 1
 
 require'nvim-tree'.setup {
   auto_close = true,
+  git = {
+    ignore = true,
+  },
 }
 
 map('n', '<leader>n', ':NvimTreeToggle<CR>', {})

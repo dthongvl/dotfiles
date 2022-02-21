@@ -33,23 +33,31 @@ require('packer').startup(function()
 
   -- view
   -- use 'ap/vim-css-color'
-   use {
-     'norcalli/nvim-colorizer.lua',
-     config = [[require'plugins/nvim-colorizer']],
-   }
+  use {
+    'norcalli/nvim-colorizer.lua',
+    config = [[require'plugins/nvim-colorizer']],
+  }
   use {
     "lukas-reineke/indent-blankline.nvim",
     config = [[require'plugins/indent-blankline']],
   }
   use {
-    'hoob3rt/lualine.nvim',
-    requires = {'kyazdani42/nvim-web-devicons', opt = true},
-    config = [[require'plugins/lualine']],
+    "windwp/windline.nvim",
+    config = [[require'plugins/windline']],
   }
+  -- use {
+    -- 'hoob3rt/lualine.nvim',
+    -- requires = {'kyazdani42/nvim-web-devicons', opt = true},
+    -- config = [[require'plugins/lualine']],
+  -- }
 
   -- theme
-  -- use 'folke/tokyonight.nvim'
-  -- use 'tyrannicaltoucan/vim-deep-space'
+  use 'folke/tokyonight.nvim'
+  use 'tyrannicaltoucan/vim-deep-space'
+  use {
+    "ellisonleao/gruvbox.nvim",
+    requires = {"rktjmp/lush.nvim"},
+  }
   use 'EdenEast/nightfox.nvim'
 
   -- navigation

@@ -57,7 +57,7 @@ end
 time([[Luarocks path setup]], false)
 time([[try_loadstring definition]], true)
 local function try_loadstring(s, component, name)
-  local success, result = pcall(loadstring(s))
+  local success, result = pcall(loadstring(s), name, _G.packer_plugins[name])
   if not success then
     vim.schedule(function()
       vim.api.nvim_notify('packer.nvim: Error running ' .. component .. ' for ' .. name .. ': ' .. result, vim.log.levels.ERROR, {})
@@ -72,7 +72,7 @@ _G.packer_plugins = {
   LuaSnip = {
     config = { "require'plugins/luasnip'" },
     loaded = false,
-    needs_bufread = false,
+    needs_bufread = true,
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/opt/LuaSnip",
     url = "https://github.com/L3MON4D3/LuaSnip"
   },
@@ -166,6 +166,11 @@ _G.packer_plugins = {
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
     url = "https://github.com/lewis6991/gitsigns.nvim"
   },
+  ["gruvbox.nvim"] = {
+    loaded = true,
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/gruvbox.nvim",
+    url = "https://github.com/ellisonleao/gruvbox.nvim"
+  },
   ["html5.vim"] = {
     loaded = true,
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/html5.vim",
@@ -188,11 +193,10 @@ _G.packer_plugins = {
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/lsp-status.nvim",
     url = "https://github.com/nvim-lua/lsp-status.nvim"
   },
-  ["lualine.nvim"] = {
-    config = { "require'plugins/lualine'" },
+  ["lush.nvim"] = {
     loaded = true,
-    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/lualine.nvim",
-    url = "https://github.com/hoob3rt/lualine.nvim"
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/lush.nvim",
+    url = "https://github.com/rktjmp/lush.nvim"
   },
   neogit = {
     config = { "require'plugins/neogit'" },
@@ -222,7 +226,7 @@ _G.packer_plugins = {
     url = "https://github.com/windwp/nvim-autopairs"
   },
   ["nvim-cmp"] = {
-    after = { "cmp-nvim-lua", "nvim-autopairs", "cmp_luasnip", "cmp-path", "cmp-buffer", "cmp-nvim-lsp" },
+    after = { "cmp-buffer", "cmp-nvim-lsp", "cmp-path", "nvim-autopairs", "cmp-nvim-lua", "cmp_luasnip" },
     config = { "require'plugins/nvim-cmp'" },
     loaded = false,
     needs_bufread = false,
@@ -286,10 +290,20 @@ _G.packer_plugins = {
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
   },
+  ["tokyonight.nvim"] = {
+    loaded = true,
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/tokyonight.nvim",
+    url = "https://github.com/folke/tokyonight.nvim"
+  },
   ["typescript-vim"] = {
     loaded = true,
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/typescript-vim",
     url = "https://github.com/leafgarland/typescript-vim"
+  },
+  ["vim-deep-space"] = {
+    loaded = true,
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/vim-deep-space",
+    url = "https://github.com/tyrannicaltoucan/vim-deep-space"
   },
   ["vim-fugitive"] = {
     loaded = true,
@@ -332,54 +346,32 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/vim-vue",
     url = "https://github.com/posva/vim-vue"
+  },
+  ["windline.nvim"] = {
+    config = { "require'plugins/windline'" },
+    loaded = true,
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/windline.nvim",
+    url = "https://github.com/windwp/windline.nvim"
   }
 }
 
 time([[Defining packer_plugins]], false)
--- Config for: fzf
-time([[Config for fzf]], true)
-require'plugins/fzf'
-time([[Config for fzf]], false)
--- Config for: nerdcommenter
-time([[Config for nerdcommenter]], true)
-require'plugins/nerdcommenter'
-time([[Config for nerdcommenter]], false)
--- Config for: lualine.nvim
-time([[Config for lualine.nvim]], true)
-require'plugins/lualine'
-time([[Config for lualine.nvim]], false)
--- Config for: neogit
-time([[Config for neogit]], true)
-require'plugins/neogit'
-time([[Config for neogit]], false)
--- Config for: telescope.nvim
-time([[Config for telescope.nvim]], true)
-require'plugins/telescope'
-time([[Config for telescope.nvim]], false)
--- Config for: nvim-treesitter
-time([[Config for nvim-treesitter]], true)
-require'plugins/treesitter'
-time([[Config for nvim-treesitter]], false)
--- Config for: bufferline.nvim
-time([[Config for bufferline.nvim]], true)
-require'plugins/bufferline'
-time([[Config for bufferline.nvim]], false)
--- Config for: gitsigns.nvim
-time([[Config for gitsigns.nvim]], true)
-require'plugins/gitsigns'
-time([[Config for gitsigns.nvim]], false)
--- Config for: ale
-time([[Config for ale]], true)
-require'plugins/ale'
-time([[Config for ale]], false)
--- Config for: vim-vue
-time([[Config for vim-vue]], true)
-require'plugins/vue'
-time([[Config for vim-vue]], false)
+-- Config for: lsp-status.nvim
+time([[Config for lsp-status.nvim]], true)
+require'plugins/lsp-status'
+time([[Config for lsp-status.nvim]], false)
 -- Config for: nvim-colorizer.lua
 time([[Config for nvim-colorizer.lua]], true)
 require'plugins/nvim-colorizer'
 time([[Config for nvim-colorizer.lua]], false)
+-- Config for: nvim-lspconfig
+time([[Config for nvim-lspconfig]], true)
+require'plugins/lspconfig'
+time([[Config for nvim-lspconfig]], false)
+-- Config for: neogit
+time([[Config for neogit]], true)
+require'plugins/neogit'
+time([[Config for neogit]], false)
 -- Config for: nvim-tree.lua
 time([[Config for nvim-tree.lua]], true)
 require'plugins/nvim-tree'
@@ -388,22 +380,50 @@ time([[Config for nvim-tree.lua]], false)
 time([[Config for diffview.nvim]], true)
 require'plugins/diffview'
 time([[Config for diffview.nvim]], false)
--- Config for: vim-go
-time([[Config for vim-go]], true)
-require'plugins/go'
-time([[Config for vim-go]], false)
+-- Config for: ale
+time([[Config for ale]], true)
+require'plugins/ale'
+time([[Config for ale]], false)
+-- Config for: nvim-treesitter
+time([[Config for nvim-treesitter]], true)
+require'plugins/treesitter'
+time([[Config for nvim-treesitter]], false)
+-- Config for: fzf
+time([[Config for fzf]], true)
+require'plugins/fzf'
+time([[Config for fzf]], false)
+-- Config for: bufferline.nvim
+time([[Config for bufferline.nvim]], true)
+require'plugins/bufferline'
+time([[Config for bufferline.nvim]], false)
+-- Config for: gitsigns.nvim
+time([[Config for gitsigns.nvim]], true)
+require'plugins/gitsigns'
+time([[Config for gitsigns.nvim]], false)
+-- Config for: vim-vue
+time([[Config for vim-vue]], true)
+require'plugins/vue'
+time([[Config for vim-vue]], false)
+-- Config for: windline.nvim
+time([[Config for windline.nvim]], true)
+require'plugins/windline'
+time([[Config for windline.nvim]], false)
+-- Config for: telescope.nvim
+time([[Config for telescope.nvim]], true)
+require'plugins/telescope'
+time([[Config for telescope.nvim]], false)
+-- Config for: nerdcommenter
+time([[Config for nerdcommenter]], true)
+require'plugins/nerdcommenter'
+time([[Config for nerdcommenter]], false)
 -- Config for: indent-blankline.nvim
 time([[Config for indent-blankline.nvim]], true)
 require'plugins/indent-blankline'
 time([[Config for indent-blankline.nvim]], false)
--- Config for: nvim-lspconfig
-time([[Config for nvim-lspconfig]], true)
-require'plugins/lspconfig'
-time([[Config for nvim-lspconfig]], false)
--- Config for: lsp-status.nvim
-time([[Config for lsp-status.nvim]], true)
-require'plugins/lsp-status'
-time([[Config for lsp-status.nvim]], false)
+-- Config for: vim-go
+time([[Config for vim-go]], true)
+require'plugins/go'
+time([[Config for vim-go]], false)
 vim.cmd [[augroup packer_load_aucmds]]
 vim.cmd [[au!]]
   -- Event lazy-loads

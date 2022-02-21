@@ -11,7 +11,10 @@ nvim_lsp.tsserver.setup{}
 nvim_lsp.cssls.setup{}
 nvim_lsp.dockerls.setup{}
 nvim_lsp.jsonls.setup{}
-nvim_lsp.vuels.setup{}
+-- nvim_lsp.vuels.setup{}
+nvim_lsp.volar.setup{
+  filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'}
+}
 nvim_lsp.bashls.setup{}
 nvim_lsp.vimls.setup{}
 nvim_lsp.yamlls.setup{}
@@ -30,7 +33,7 @@ local on_attach = function(client, bufnr)
   map('n', 'ge', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
 end
 
-local servers = { "rust_analyzer", "tsserver" , "gopls", "solargraph", "clangd" }
+local servers = { "rust_analyzer", "tsserver" , "gopls", "solargraph", "clangd", "volar" }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
