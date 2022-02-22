@@ -24,7 +24,7 @@ npm install -g yarn
 yarn global add n
 
 # Packages
-sudo apt install alacritty tmux curl jq ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip rbenv
+sudo apt install alacritty flameshot tmux curl jq ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip rbenv
 yarn global add vscode-html-languageserver-bin typescript typescript-language-server vscode-css-languageserver-bin dockerfile-language-server-nodejs vscode-json-languageserver vls vim-language-server yaml-language-server @volar/server
 
 # Config files
@@ -32,10 +32,10 @@ ln -s -f ~/workspace/dotfiles/nvim ~/.config
 
 ln -s -f ~/workspace/dotfiles/.tmux.conf ~/.tmux.conf
 
-mkdir ~/.config/fish
+mkdir -p ~/.config/fish
 ln -s -f ~/workspace/dotfiles/config.fish ~/.config/fish/config.fish
 
-mkdir ~/.config/alacritty
+mkdir -p ~/.config/alacritty
 ln -s -f ~/workspace/dotfiles/alacritty.yml ~/.config/alacritty/alacritty.yml
 
 # Jump
@@ -49,9 +49,12 @@ git clone https://github.com/neovim/neovim ~/workspace/neovim
 git clone --depth 1 https://github.com/wbthomason/packer.nvim\
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
+# Tmux Plugin Manager
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 # Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-mkdir ~/.local/bin
+mkdir -p ~/.local/bin
 curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-x86_64-unknown-linux-gnu.gz | gunzip -c - > ~/.local/bin/rust-analyzer
 chmod +x ~/.local/bin/rust-analyzer
 rustup component add rust-src
