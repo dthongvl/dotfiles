@@ -204,12 +204,6 @@ _G.packer_plugins = {
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/neogit",
     url = "https://github.com/TimUntersberger/neogit"
   },
-  nerdcommenter = {
-    config = { "require'plugins/nerdcommenter'" },
-    loaded = true,
-    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nerdcommenter",
-    url = "https://github.com/preservim/nerdcommenter"
-  },
   ["nightfox.nvim"] = {
     loaded = true,
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nightfox.nvim",
@@ -226,7 +220,7 @@ _G.packer_plugins = {
     url = "https://github.com/windwp/nvim-autopairs"
   },
   ["nvim-cmp"] = {
-    after = { "cmp-buffer", "cmp-nvim-lsp", "cmp-path", "nvim-autopairs", "cmp-nvim-lua", "cmp_luasnip" },
+    after = { "cmp-path", "cmp_luasnip", "nvim-autopairs", "cmp-buffer", "cmp-nvim-lsp", "cmp-nvim-lua" },
     config = { "require'plugins/nvim-cmp'" },
     loaded = false,
     needs_bufread = false,
@@ -240,6 +234,12 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nvim-colorizer.lua",
     url = "https://github.com/norcalli/nvim-colorizer.lua"
+  },
+  ["nvim-comment"] = {
+    config = { "require'plugins/nvim-comment'" },
+    loaded = true,
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nvim-comment",
+    url = "https://github.com/terrortylor/nvim-comment"
   },
   ["nvim-lspconfig"] = {
     config = { "require'plugins/lspconfig'" },
@@ -360,22 +360,14 @@ time([[Defining packer_plugins]], false)
 time([[Config for lsp-status.nvim]], true)
 require'plugins/lsp-status'
 time([[Config for lsp-status.nvim]], false)
--- Config for: nvim-colorizer.lua
-time([[Config for nvim-colorizer.lua]], true)
-require'plugins/nvim-colorizer'
-time([[Config for nvim-colorizer.lua]], false)
--- Config for: nvim-lspconfig
-time([[Config for nvim-lspconfig]], true)
-require'plugins/lspconfig'
-time([[Config for nvim-lspconfig]], false)
+-- Config for: nvim-comment
+time([[Config for nvim-comment]], true)
+require'plugins/nvim-comment'
+time([[Config for nvim-comment]], false)
 -- Config for: neogit
 time([[Config for neogit]], true)
 require'plugins/neogit'
 time([[Config for neogit]], false)
--- Config for: nvim-tree.lua
-time([[Config for nvim-tree.lua]], true)
-require'plugins/nvim-tree'
-time([[Config for nvim-tree.lua]], false)
 -- Config for: diffview.nvim
 time([[Config for diffview.nvim]], true)
 require'plugins/diffview'
@@ -384,10 +376,6 @@ time([[Config for diffview.nvim]], false)
 time([[Config for ale]], true)
 require'plugins/ale'
 time([[Config for ale]], false)
--- Config for: nvim-treesitter
-time([[Config for nvim-treesitter]], true)
-require'plugins/treesitter'
-time([[Config for nvim-treesitter]], false)
 -- Config for: fzf
 time([[Config for fzf]], true)
 require'plugins/fzf'
@@ -396,30 +384,42 @@ time([[Config for fzf]], false)
 time([[Config for bufferline.nvim]], true)
 require'plugins/bufferline'
 time([[Config for bufferline.nvim]], false)
--- Config for: gitsigns.nvim
-time([[Config for gitsigns.nvim]], true)
-require'plugins/gitsigns'
-time([[Config for gitsigns.nvim]], false)
--- Config for: vim-vue
-time([[Config for vim-vue]], true)
-require'plugins/vue'
-time([[Config for vim-vue]], false)
--- Config for: windline.nvim
-time([[Config for windline.nvim]], true)
-require'plugins/windline'
-time([[Config for windline.nvim]], false)
 -- Config for: telescope.nvim
 time([[Config for telescope.nvim]], true)
 require'plugins/telescope'
 time([[Config for telescope.nvim]], false)
--- Config for: nerdcommenter
-time([[Config for nerdcommenter]], true)
-require'plugins/nerdcommenter'
-time([[Config for nerdcommenter]], false)
+-- Config for: gitsigns.nvim
+time([[Config for gitsigns.nvim]], true)
+require'plugins/gitsigns'
+time([[Config for gitsigns.nvim]], false)
+-- Config for: windline.nvim
+time([[Config for windline.nvim]], true)
+require'plugins/windline'
+time([[Config for windline.nvim]], false)
+-- Config for: nvim-colorizer.lua
+time([[Config for nvim-colorizer.lua]], true)
+require'plugins/nvim-colorizer'
+time([[Config for nvim-colorizer.lua]], false)
+-- Config for: nvim-lspconfig
+time([[Config for nvim-lspconfig]], true)
+require'plugins/lspconfig'
+time([[Config for nvim-lspconfig]], false)
+-- Config for: nvim-treesitter
+time([[Config for nvim-treesitter]], true)
+require'plugins/treesitter'
+time([[Config for nvim-treesitter]], false)
+-- Config for: nvim-tree.lua
+time([[Config for nvim-tree.lua]], true)
+require'plugins/nvim-tree'
+time([[Config for nvim-tree.lua]], false)
 -- Config for: indent-blankline.nvim
 time([[Config for indent-blankline.nvim]], true)
 require'plugins/indent-blankline'
 time([[Config for indent-blankline.nvim]], false)
+-- Config for: vim-vue
+time([[Config for vim-vue]], true)
+require'plugins/vue'
+time([[Config for vim-vue]], false)
 -- Config for: vim-go
 time([[Config for vim-go]], true)
 require'plugins/go'
@@ -436,5 +436,6 @@ if should_profile then save_profiles() end
 end)
 
 if not no_errors then
+  error_msg = error_msg:gsub('"', '\\"')
   vim.api.nvim_command('echohl ErrorMsg | echom "Error in packer_compiled: '..error_msg..'" | echom "Please check your config for correctness" | echohl None')
 end

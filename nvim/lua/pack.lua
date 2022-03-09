@@ -5,9 +5,10 @@ require('packer').startup(function()
 
   -- buffer
   use 'haya14busa/incsearch.vim'
+  use 'JoosepAlviste/nvim-ts-context-commentstring'
   use {
-    'preservim/nerdcommenter',
-    config = [[require'plugins/nerdcommenter']]
+    'terrortylor/nvim-comment',
+    config = [[require'plugins/nvim-comment']]
   }
   use {
     'akinsho/bufferline.nvim',

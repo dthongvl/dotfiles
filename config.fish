@@ -1,7 +1,7 @@
 abbr -a e nvim
 abbr -a o xdg-open
 abbr -a g git
-abbr -a gco 'git checkout'
+abbr -a gc 'git checkout'
 abbr -a gcom 'git checkout master'
 abbr -a ga 'git add -p'
 abbr -a gs 'git status'
