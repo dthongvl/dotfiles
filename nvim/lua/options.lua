@@ -60,5 +60,5 @@ opt.swapfile = false
 -- clipboard
 opt.clipboard = 'unnamedplus'
 
-cmd('colorscheme tokyonight')
--- require('nightfox').load()
+-- cmd('colorscheme tokyonight')
+cmd('colorscheme nightfox')

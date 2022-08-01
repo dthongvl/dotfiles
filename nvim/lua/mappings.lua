@@ -11,10 +11,6 @@ map('i', 'jj', '<Esc>', {})
 map('', '/', '<Plug>(incsearch-forward)', {})
 map('', '?', '<Plug>(incsearch-backward)', {})
 
--- tabs
-map('', '<leader>tn', ':tabnew<CR>', {})
-map('', '<leader>tc', ':tabclose<CR>', {})
-
 -- windows
 map('', '<C-j>', '<C-W>j', {})
 map('', '<C-k>', '<C-W>k', {})

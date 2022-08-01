@@ -6,3 +6,4 @@ diffview.setup {
 }
 map('n', '<leader>do', '<ESC>:DiffviewOpen<CR>', { noremap = true, silent = true })
 map('n', '<leader>dc', '<ESC>:DiffviewClose<CR>', { noremap = true, silent = true })
+map('n', '<leader>dh', '<ESC>:DiffviewFileHistory %<CR>', { noremap = true, silent = true })

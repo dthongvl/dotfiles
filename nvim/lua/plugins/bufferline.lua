@@ -4,7 +4,6 @@ require('bufferline').setup {
   options = {
     offsets = { { filetype = "NvimTree", text = "NvimTree" } },
     numbers = 'ordinal',
-    show_buffer_close_icons = false,
     show_buffer_icons = false,
     show_close_icon = false,
   },
@@ -19,15 +18,9 @@ require('bufferline').setup {
   }
 }
 
-map('', '<leader>1', ':BufferLineGoToBuffer 1<CR>', { noremap = true, silent = true })
-map('', '<leader>2', ':BufferLineGoToBuffer 2<CR>', { noremap = true, silent = true })
-map('', '<leader>3', ':BufferLineGoToBuffer 3<CR>', { noremap = true, silent = true })
-map('', '<leader>4', ':BufferLineGoToBuffer 4<CR>', { noremap = true, silent = true })
-map('', '<leader>5', ':BufferLineGoToBuffer 5<CR>', { noremap = true, silent = true })
-map('', '<leader>6', ':BufferLineGoToBuffer 6<CR>', { noremap = true, silent = true })
-map('', '<leader>7', ':BufferLineGoToBuffer 7<CR>', { noremap = true, silent = true })
-map('', '<leader>8', ':BufferLineGoToBuffer 8<CR>', { noremap = true, silent = true })
-map('', '<leader>9', ':BufferLineGoToBuffer 9<CR>', { noremap = true, silent = true })
-
-map('', '<C-]>', ':BufferLineCycleNext<CR>', { noremap = true, silent = true })
-map('', '<C-[>', ':BufferLineCyclePrev<CR>', { noremap = true, silent = true })
+map('n', '<C-]>', ':BufferLineCycleNext<CR>', { noremap = true, silent = true })
+map('n', 'gt', ':BufferLineCycleNext<CR>', { noremap = true, silent = true })
+map('n', '<C-[>', ':BufferLineCyclePrev<CR>', { noremap = true, silent = true })
+map('n', 'gb', ':BufferLinePick<CR>', { noremap = true, silent = true })
+map('', '<leader>tn', ':enew<CR>', { noremap = true, silent = true })
+map('', '<leader>tc', ':BufferLineCloseLeft<CR>:BufferLineCloseRight<CR>', { noremap = true, silent = true })

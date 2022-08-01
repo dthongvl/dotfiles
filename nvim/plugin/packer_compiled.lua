@@ -209,6 +209,11 @@ _G.packer_plugins = {
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nightfox.nvim",
     url = "https://github.com/EdenEast/nightfox.nvim"
   },
+  ["nord.nvim"] = {
+    loaded = true,
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nord.nvim",
+    url = "https://github.com/shaunsingh/nord.nvim"
+  },
   ["nvim-autopairs"] = {
     config = { "require'plugins/autopairs'" },
     load_after = {
@@ -220,7 +225,7 @@ _G.packer_plugins = {
     url = "https://github.com/windwp/nvim-autopairs"
   },
   ["nvim-cmp"] = {
-    after = { "cmp-path", "cmp_luasnip", "nvim-autopairs", "cmp-buffer", "cmp-nvim-lsp", "cmp-nvim-lua" },
+    after = { "nvim-autopairs", "cmp-nvim-lsp", "cmp-nvim-lua", "cmp-path", "cmp_luasnip", "cmp-buffer" },
     config = { "require'plugins/nvim-cmp'" },
     loaded = false,
     needs_bufread = false,
@@ -259,6 +264,11 @@ _G.packer_plugins = {
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
     url = "https://github.com/nvim-treesitter/nvim-treesitter"
   },
+  ["nvim-ts-context-commentstring"] = {
+    loaded = true,
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nvim-ts-context-commentstring",
+    url = "https://github.com/JoosepAlviste/nvim-ts-context-commentstring"
+  },
   ["nvim-web-devicons"] = {
     loaded = true,
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
@@ -273,6 +283,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/plenary.nvim",
     url = "https://github.com/nvim-lua/plenary.nvim"
+  },
+  ["rose-pine"] = {
+    loaded = true,
+    path = "/home/dthongvl/.local/share/nvim/site/pack/packer/start/rose-pine",
+    url = "https://github.com/rose-pine/neovim"
   },
   ["rust.vim"] = {
     loaded = true,
@@ -356,18 +371,6 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
--- Config for: lsp-status.nvim
-time([[Config for lsp-status.nvim]], true)
-require'plugins/lsp-status'
-time([[Config for lsp-status.nvim]], false)
--- Config for: nvim-comment
-time([[Config for nvim-comment]], true)
-require'plugins/nvim-comment'
-time([[Config for nvim-comment]], false)
--- Config for: neogit
-time([[Config for neogit]], true)
-require'plugins/neogit'
-time([[Config for neogit]], false)
 -- Config for: diffview.nvim
 time([[Config for diffview.nvim]], true)
 require'plugins/diffview'
@@ -388,42 +391,54 @@ time([[Config for bufferline.nvim]], false)
 time([[Config for telescope.nvim]], true)
 require'plugins/telescope'
 time([[Config for telescope.nvim]], false)
--- Config for: gitsigns.nvim
-time([[Config for gitsigns.nvim]], true)
-require'plugins/gitsigns'
-time([[Config for gitsigns.nvim]], false)
--- Config for: windline.nvim
-time([[Config for windline.nvim]], true)
-require'plugins/windline'
-time([[Config for windline.nvim]], false)
--- Config for: nvim-colorizer.lua
-time([[Config for nvim-colorizer.lua]], true)
-require'plugins/nvim-colorizer'
-time([[Config for nvim-colorizer.lua]], false)
--- Config for: nvim-lspconfig
-time([[Config for nvim-lspconfig]], true)
-require'plugins/lspconfig'
-time([[Config for nvim-lspconfig]], false)
--- Config for: nvim-treesitter
-time([[Config for nvim-treesitter]], true)
-require'plugins/treesitter'
-time([[Config for nvim-treesitter]], false)
--- Config for: nvim-tree.lua
-time([[Config for nvim-tree.lua]], true)
-require'plugins/nvim-tree'
-time([[Config for nvim-tree.lua]], false)
--- Config for: indent-blankline.nvim
-time([[Config for indent-blankline.nvim]], true)
-require'plugins/indent-blankline'
-time([[Config for indent-blankline.nvim]], false)
 -- Config for: vim-vue
 time([[Config for vim-vue]], true)
 require'plugins/vue'
 time([[Config for vim-vue]], false)
+-- Config for: nvim-comment
+time([[Config for nvim-comment]], true)
+require'plugins/nvim-comment'
+time([[Config for nvim-comment]], false)
+-- Config for: windline.nvim
+time([[Config for windline.nvim]], true)
+require'plugins/windline'
+time([[Config for windline.nvim]], false)
+-- Config for: nvim-lspconfig
+time([[Config for nvim-lspconfig]], true)
+require'plugins/lspconfig'
+time([[Config for nvim-lspconfig]], false)
+-- Config for: nvim-tree.lua
+time([[Config for nvim-tree.lua]], true)
+require'plugins/nvim-tree'
+time([[Config for nvim-tree.lua]], false)
+-- Config for: neogit
+time([[Config for neogit]], true)
+require'plugins/neogit'
+time([[Config for neogit]], false)
+-- Config for: indent-blankline.nvim
+time([[Config for indent-blankline.nvim]], true)
+require'plugins/indent-blankline'
+time([[Config for indent-blankline.nvim]], false)
+-- Config for: lsp-status.nvim
+time([[Config for lsp-status.nvim]], true)
+require'plugins/lsp-status'
+time([[Config for lsp-status.nvim]], false)
 -- Config for: vim-go
 time([[Config for vim-go]], true)
 require'plugins/go'
 time([[Config for vim-go]], false)
+-- Config for: nvim-colorizer.lua
+time([[Config for nvim-colorizer.lua]], true)
+require'plugins/nvim-colorizer'
+time([[Config for nvim-colorizer.lua]], false)
+-- Config for: gitsigns.nvim
+time([[Config for gitsigns.nvim]], true)
+require'plugins/gitsigns'
+time([[Config for gitsigns.nvim]], false)
+-- Config for: nvim-treesitter
+time([[Config for nvim-treesitter]], true)
+require'plugins/treesitter'
+time([[Config for nvim-treesitter]], false)
 vim.cmd [[augroup packer_load_aucmds]]
 vim.cmd [[au!]]
   -- Event lazy-loads

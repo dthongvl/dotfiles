@@ -60,6 +60,12 @@ require('packer').startup(function()
     requires = {"rktjmp/lush.nvim"},
   }
   use 'EdenEast/nightfox.nvim'
+  use({
+      'rose-pine/neovim',
+      as = 'rose-pine',
+      tag = 'v1.*',
+  })
+  use 'shaunsingh/nord.nvim'
 
   -- navigation
   use 'christoomey/vim-tmux-navigator'

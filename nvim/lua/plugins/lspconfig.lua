@@ -13,7 +13,7 @@ nvim_lsp.dockerls.setup{}
 nvim_lsp.jsonls.setup{}
 -- nvim_lsp.vuels.setup{}
 nvim_lsp.volar.setup{
-  filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'}
+  filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'},
 }
 nvim_lsp.bashls.setup{}
 nvim_lsp.vimls.setup{}
@@ -30,7 +30,7 @@ local on_attach = function(client, bufnr)
   map('n', 'gr', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
   map('n', 'gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
   map('n', 'gf', '<Cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-  map('n', 'ge', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  map('n', 'ge', '<Cmd>lua vim.diagnostic.open_float()<CR>', opts)
 end
 
 local servers = { "rust_analyzer", "tsserver" , "gopls", "solargraph", "clangd", "volar" }
