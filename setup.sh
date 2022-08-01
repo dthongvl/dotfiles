@@ -24,8 +24,12 @@ npm install -g yarn
 yarn global add n
 
 # Packages
-sudo apt install alacritty flameshot tmux curl jq ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip rbenv
-yarn global add vscode-html-languageserver-bin typescript typescript-language-server vscode-css-languageserver-bin dockerfile-language-server-nodejs vscode-json-languageserver vls vim-language-server yaml-language-server @volar/server
+sudo apt install alacritty flameshot tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip rbenv
+yarn global add typescript vscode-langservers-extracted typescript-language-server dockerfile-language-server-nodejs vim-language-server yaml-language-server @volar/vue-language-server
+
+# Key bindings fzf
+mkdir -p ~/.config/fish/functions/
+echo fzf_key_bindings > ~/.config/fish/functions/fish_user_key_bindings.fish
 
 # Config files
 ln -s -f ~/workspace/dotfiles/nvim ~/.config
