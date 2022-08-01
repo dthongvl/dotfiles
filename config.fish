@@ -11,6 +11,7 @@ abbr -a gcm 'git commit -m "'
 set -x ORACLE_HOME /opt/oracle/
 set -x LD_LIBRARY_PATH /opt/oracle/instantclient
 set -x TERM xterm-256color
+set -x EDITOR nvim
 
 set -gx PATH $PATH $HOME/.rbenv/bin (yarn global bin) /usr/local/go/bin $HOME/.local/bin $HOME/.cargo/bin $HOME/workspace/diff-so-fancy
 set fish_greeting 'No Sana No Life'
