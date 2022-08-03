@@ -5,35 +5,15 @@ require('packer').startup(function()
 
   -- buffer
   use 'haya14busa/incsearch.vim'
-  use 'JoosepAlviste/nvim-ts-context-commentstring'
-  use {
-    'terrortylor/nvim-comment',
-    config = [[require'plugins/nvim-comment']]
-  }
   use {
     'akinsho/bufferline.nvim',
     requires = 'kyazdani42/nvim-web-devicons',
     config = [[require'plugins/bufferline']],
   }
-
-  -- file
   use {
-    'kyazdani42/nvim-tree.lua',
-    requires = 'kyazdani42/nvim-web-devicons',
-    config = [[require'plugins/nvim-tree']],
+    "windwp/windline.nvim",
+    config = [[require'plugins/windline']],
   }
-  use 'junegunn/fzf.vim'
-  use { 'junegunn/fzf', run = 'fzf#install', config = [[require'plugins/fzf']] }
-  use {
-    'nvim-telescope/telescope.nvim',
-    requires = {
-      {'nvim-lua/plenary.nvim'}
-    },
-    config = [[require'plugins/telescope']],
-  }
-
-  -- view
-  -- use 'ap/vim-css-color'
   use {
     'norcalli/nvim-colorizer.lua',
     config = [[require'plugins/nvim-colorizer']],
@@ -42,15 +22,20 @@ require('packer').startup(function()
     "lukas-reineke/indent-blankline.nvim",
     config = [[require'plugins/indent-blankline']],
   }
+
+  -- file
   use {
-    "windwp/windline.nvim",
-    config = [[require'plugins/windline']],
+    'kyazdani42/nvim-tree.lua',
+    requires = 'kyazdani42/nvim-web-devicons',
+    config = [[require'plugins/nvim-tree']],
   }
-  -- use {
-    -- 'hoob3rt/lualine.nvim',
-    -- requires = {'kyazdani42/nvim-web-devicons', opt = true},
-    -- config = [[require'plugins/lualine']],
-  -- }
+  use {
+    'nvim-telescope/telescope.nvim',
+    requires = {
+      {'nvim-lua/plenary.nvim'}
+    },
+    config = [[require'plugins/telescope']],
+  }
 
   -- theme
   use 'folke/tokyonight.nvim'
@@ -66,6 +51,8 @@ require('packer').startup(function()
       tag = 'v1.*',
   })
   use 'shaunsingh/nord.nvim'
+  use 'NLKNguyen/papercolor-theme'
+  use 'cocopon/iceberg.vim'
 
   -- navigation
   use 'christoomey/vim-tmux-navigator'
@@ -90,6 +77,11 @@ require('packer').startup(function()
   }
 
   -- edit
+  use 'JoosepAlviste/nvim-ts-context-commentstring'
+  use {
+    'terrortylor/nvim-comment',
+    config = [[require'plugins/nvim-comment']]
+  }
   use 'tpope/vim-surround'            -- toggle surround
   use 'AndrewRadev/splitjoin.vim'     -- split and join in vim
   use {
@@ -103,6 +95,10 @@ require('packer').startup(function()
   use 'pearofducks/ansible-vim'
 
   -- lsp
+  use {
+    'github/copilot.vim',
+    config = [[require'plugins/copilot']],
+  }
   use {
     'L3MON4D3/LuaSnip',
     config = [[require'plugins/luasnip']],

@@ -11,7 +11,6 @@ nvim_lsp.tsserver.setup{}
 nvim_lsp.cssls.setup{}
 nvim_lsp.dockerls.setup{}
 nvim_lsp.jsonls.setup{}
--- nvim_lsp.vuels.setup{}
 nvim_lsp.volar.setup{
   filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'},
 }

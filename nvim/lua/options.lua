@@ -8,7 +8,7 @@ global.mapleader = ' '
 cmd('syntax on')
 cmd('filetype plugin indent on')
 
-opt.background = 'dark'
+opt.background = 'light'
 opt.hidden = true
 
 -- compe
@@ -61,4 +61,5 @@ opt.swapfile = false
 opt.clipboard = 'unnamedplus'
 
 -- cmd('colorscheme tokyonight')
-cmd('colorscheme nightfox')
+-- cmd('colorscheme nightfox')
+cmd('colorscheme iceberg')

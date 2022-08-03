@@ -7,15 +7,15 @@ require('bufferline').setup {
     show_buffer_icons = false,
     show_close_icon = false,
   },
-  highlights = {
-    fill = {
-      guibg = "#232936",
-    },
-    buffer_selected = {
-      guifg = '#1b202a',
-      guibg = '#608cc3',
-    },
-  }
+  -- highlights = {
+  --   fill = {
+  --     guibg = "#232936",
+  --   },
+  --   buffer_selected = {
+  --     guifg = '#1b202a',
+  --     guibg = '#608cc3',
+  --   },
+  -- }
 }
 
 map('n', '<C-]>', ':BufferLineCycleNext<CR>', { noremap = true, silent = true })
