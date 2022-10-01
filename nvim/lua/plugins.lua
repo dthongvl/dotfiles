@@ -89,6 +89,13 @@ require('packer').startup(function()
     after = 'nvim-cmp',
     config = [[require'plugins/autopairs']],
   }
+  use {
+    'windwp/nvim-ts-autotag',
+    config = [[require'plugins/nvim-ts-autotag']],
+  }
+  use {
+    'p00f/nvim-ts-rainbow'
+  }
 
   -- devops
   use 'hashivim/vim-terraform'
