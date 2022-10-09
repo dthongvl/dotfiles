@@ -102,10 +102,10 @@ require('packer').startup(function()
   use 'pearofducks/ansible-vim'
 
   -- lsp
-  use {
-    'github/copilot.vim',
-    config = [[require'plugins/copilot']],
-  }
+  -- use {
+  --   'github/copilot.vim',
+  --   config = [[require'plugins/copilot']],
+  -- }
   use {
     'L3MON4D3/LuaSnip',
     config = [[require'plugins/luasnip']],
