@@ -7,7 +7,7 @@ require('packer').startup(function()
   use 'haya14busa/incsearch.vim'
   use {
     'akinsho/bufferline.nvim',
-    requires = 'kyazdani42/nvim-web-devicons',
+    requires = 'nvim-tree/nvim-web-devicons',
     config = [[require'plugins/bufferline']],
   }
   use {
@@ -25,8 +25,12 @@ require('packer').startup(function()
 
   -- file
   use {
-    'kyazdani42/nvim-tree.lua',
-    requires = 'kyazdani42/nvim-web-devicons',
+    'nvim-pack/nvim-spectre',
+    config = [[require'plugins/nvim-spectre']],
+  }
+  use {
+    'nvim-tree/nvim-tree.lua',
+    requires = 'nvim-tree/nvim-web-devicons',
     config = [[require'plugins/nvim-tree']],
   }
   use {

@@ -14,11 +14,11 @@ cmp.setup({
       end
     end,
   },
-  mapping = {
-    ['<Cr>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    },
+  mapping = cmp.mapping.preset.insert({
+    -- ['<CR>'] = cmp.mapping.confirm({
+    --   behavior = cmp.ConfirmBehavior.Replace,
+    --   select = true,
+    -- }),
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
@@ -39,7 +39,7 @@ cmp.setup({
         fallback()
       end
     end, { "i", "s" }),
-  },
+  }),
   sources = {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
