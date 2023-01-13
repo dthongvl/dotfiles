@@ -128,10 +128,10 @@ require('packer').startup(function()
     'nvim-lua/lsp-status.nvim',
     config = [[require'plugins/lsp-status']],
   }
-  use {
-    'dense-analysis/ale',
-    config = [[require'plugins/ale']],
-  }
+  -- use {
+  --   'dense-analysis/ale',
+  --   config = [[require'plugins/ale']],
+  -- }
   use {
     'hrsh7th/nvim-cmp',
     config = [[require'plugins/nvim-cmp']],
@@ -151,13 +151,9 @@ require('packer').startup(function()
     run = ':GoUpdateBinaries',
     config = [[require'plugins/go']],
   }
-  use 'pangloss/vim-javascript'
-  use 'leafgarland/typescript-vim'
-  use 'MaxMEllon/vim-jsx-pretty'
   use {
     'posva/vim-vue',
     config = [[require'plugins/vue']],
   }
-  use 'othree/html5.vim'
   use 'wuelnerdotexe/vim-astro'
 end)

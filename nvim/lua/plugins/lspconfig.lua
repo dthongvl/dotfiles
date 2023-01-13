@@ -12,7 +12,7 @@ nvim_lsp.cssls.setup{}
 nvim_lsp.dockerls.setup{}
 nvim_lsp.astro.setup{}
 nvim_lsp.eslint.setup{}
-nvim_lsp.ansible.setup{}
+nvim_lsp.ansiblels.setup{}
 nvim_lsp.tailwindcss.setup{}
 nvim_lsp.jsonls.setup{}
 nvim_lsp.volar.setup{
