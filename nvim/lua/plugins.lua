@@ -159,4 +159,5 @@ require('packer').startup(function()
     config = [[require'plugins/vue']],
   }
   use 'othree/html5.vim'
+  use 'wuelnerdotexe/vim-astro'
 end)

@@ -7,6 +7,7 @@ abbr -a ga 'git add -p'
 abbr -a gs 'git status'
 abbr -a gd 'git diff'
 abbr -a gcm 'git commit -m "'
+abbr -a ber 'bundle exec rspec'
 
 set -x ORACLE_HOME /opt/oracle/
 set -x LD_LIBRARY_PATH /opt/oracle/instantclient
