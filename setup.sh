@@ -27,7 +27,7 @@ yarn global add n
 sudo apt install alacritty flameshot tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip rbenv
 yarn global add typescript vscode-langservers-extracted typescript-language-server dockerfile-language-server-nodejs \
   vim-language-server yaml-language-server @volar/vue-language-server @astrojs/language-server @ansible/ansible-language-server \
-  @tailwindcss/language-server
+  @tailwindcss/language-server rustywind
 
 # Key bindings fzf
 mkdir -p ~/.config/fish/functions/

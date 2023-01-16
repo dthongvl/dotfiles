@@ -1,42 +1,46 @@
 local nvim_lsp = require('lspconfig')
 
-nvim_lsp.rust_analyzer.setup{}
-nvim_lsp.gopls.setup{}
-nvim_lsp.solargraph.setup{}
-nvim_lsp.sorbet.setup{
-  cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' }
-}
-nvim_lsp.html.setup{}
-nvim_lsp.tsserver.setup{}
-nvim_lsp.cssls.setup{}
-nvim_lsp.dockerls.setup{}
-nvim_lsp.astro.setup{}
-nvim_lsp.eslint.setup{}
-nvim_lsp.ansiblels.setup{}
-nvim_lsp.tailwindcss.setup{}
-nvim_lsp.jsonls.setup{}
-nvim_lsp.volar.setup{
-  filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'},
-}
-nvim_lsp.bashls.setup{}
-nvim_lsp.vimls.setup{}
-nvim_lsp.yamlls.setup{}
-nvim_lsp.clangd.setup{}
-
 local on_attach = function(client, bufnr)
-  local map = vim.api.nvim_set_keymap
+  local map = vim.keymap.set
   local opts = { noremap = true, silent = true }
 
-  map('n', 'gh', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  map('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  map('n', 'gi', '<Cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  map('n', 'gr', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  map('n', 'gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
-  map('n', 'gf', '<Cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-  map('n', 'ge', '<Cmd>lua vim.diagnostic.open_float()<CR>', opts)
+  map('n', 'gh', vim.lsp.buf.hover, opts)
+  map('n', 'gd', vim.lsp.buf.definition, opts)
+  map('n', 'gi', vim.lsp.buf.implementation, opts)
+  map('n', 'gr', vim.lsp.buf.references, opts)
+  map('n', '<leader>rn', vim.lsp.buf.rename, opts)
+  map('n', 'gf', function() vim.lsp.buf.format({ async = true }) end, opts)
+  map('n', 'ge', vim.diagnostic.open_float, opts)
 end
 
-local servers = { "rust_analyzer", "tsserver" , "gopls", "solargraph", "clangd", "volar" }
+local servers = {
+  "rust_analyzer",
+  "gopls",
+  "solargraph",
+  "html",
+  "tsserver",
+  "cssls",
+  "dockerls",
+  "astro",
+  "eslint",
+  "ansiblels",
+  "tailwindcss",
+  "jsonls",
+  "bashls",
+  "vimls",
+  "yamlls",
+  "clangd",
+}
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
+
+nvim_lsp.sorbet.setup {
+  on_attach = on_attach,
+  cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' },
+}
+
+nvim_lsp.volar.setup {
+  on_attach = on_attach,
+  filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'},
+}

@@ -15,12 +15,20 @@ require('packer').startup(function()
     config = [[require'plugins/windline']],
   }
   use {
-    'norcalli/nvim-colorizer.lua',
+    'NvChad/nvim-colorizer.lua',
     config = [[require'plugins/nvim-colorizer']],
   }
   use {
     "lukas-reineke/indent-blankline.nvim",
     config = [[require'plugins/indent-blankline']],
+  }
+  use {
+    "folke/todo-comments.nvim",
+    requires = "nvim-lua/plenary.nvim",
+    config = [[require'plugins/todo-comments']],
+  }
+  use {
+    'p00f/nvim-ts-rainbow'
   }
 
   -- file
@@ -62,7 +70,6 @@ require('packer').startup(function()
   use 'christoomey/vim-tmux-navigator'
 
   -- git
-  use 'tpope/vim-fugitive'
   use {
     'lewis6991/gitsigns.nvim',
     requires = {
@@ -83,10 +90,14 @@ require('packer').startup(function()
   -- edit
   use 'JoosepAlviste/nvim-ts-context-commentstring'
   use {
-    'terrortylor/nvim-comment',
-    config = [[require'plugins/nvim-comment']]
+    'numToStr/Comment.nvim',
+    config = [[require'plugins/comment']],
   }
-  use 'tpope/vim-surround'            -- toggle surround
+  use({
+    "kylechui/nvim-surround",
+    tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+    config = [[require'plugins/nvim-surround']],
+  })
   use 'AndrewRadev/splitjoin.vim'     -- split and join in vim
   use {
     'windwp/nvim-autopairs',
@@ -97,13 +108,6 @@ require('packer').startup(function()
     'windwp/nvim-ts-autotag',
     config = [[require'plugins/nvim-ts-autotag']],
   }
-  use {
-    'p00f/nvim-ts-rainbow'
-  }
-
-  -- devops
-  use 'hashivim/vim-terraform'
-  use 'pearofducks/ansible-vim'
 
   -- lsp
   -- use {
@@ -114,6 +118,11 @@ require('packer').startup(function()
     'L3MON4D3/LuaSnip',
     config = [[require'plugins/luasnip']],
     opt = true,
+  }
+  use {
+    "jose-elias-alvarez/null-ls.nvim",
+    requires = "nvim-lua/plenary.nvim",
+    config = [[require'plugins/null-ls']],
   }
   use {
     'nvim-treesitter/nvim-treesitter',
@@ -128,10 +137,6 @@ require('packer').startup(function()
     'nvim-lua/lsp-status.nvim',
     config = [[require'plugins/lsp-status']],
   }
-  -- use {
-  --   'dense-analysis/ale',
-  --   config = [[require'plugins/ale']],
-  -- }
   use {
     'hrsh7th/nvim-cmp',
     config = [[require'plugins/nvim-cmp']],
@@ -156,4 +161,8 @@ require('packer').startup(function()
     config = [[require'plugins/vue']],
   }
   use 'wuelnerdotexe/vim-astro'
+
+  -- devops
+  use 'hashivim/vim-terraform'
+  use 'pearofducks/ansible-vim'
 end)
