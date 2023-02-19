@@ -14,10 +14,10 @@ set -x LD_LIBRARY_PATH /opt/oracle/instantclient
 set -x TERM xterm-256color
 set -x EDITOR nvim
 
-set -gx PATH $PATH $HOME/.rbenv/bin (yarn global bin) /usr/local/go/bin $HOME/.local/bin $HOME/.cargo/bin $HOME/workspace/diff-so-fancy
+set -gx PATH $PATH (yarn global bin) $HOME/.local/bin $HOME/.cargo/bin $HOME/workspace/diff-so-fancy
 set fish_greeting 'No Sana No Life'
 
-status --is-interactive; and rbenv init - | source
-status --is-interactive; and source (jump shell fish | psub)
+source (jump shell fish | psub)
+source ~/.asdf/asdf.fish
 
 if test -f $HOME/.config/fish/nightfox.fish; . $HOME/.config/fish/nightfox.fish; end
