@@ -9,7 +9,6 @@ null_ls.setup({
     null_ls.builtins.formatting.rustywind, -- tailwind
     null_ls.builtins.formatting.rustfmt,
     null_ls.builtins.formatting.gofmt,
-    null_ls.builtins.completion.spell,
     null_ls.builtins.code_actions.eslint,
     null_ls.builtins.code_actions.shellcheck,
   },

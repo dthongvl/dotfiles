@@ -17,10 +17,8 @@ mkdir -p ~/.config/fish/completions; and ln -s ~/.asdf/completions/asdf.fish ~/.
 npm install -g yarn
 
 # Packages
-sudo apt install alacritty flameshot tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip rbenv
-yarn global add typescript vscode-langservers-extracted typescript-language-server dockerfile-language-server-nodejs \
-  vim-language-server yaml-language-server @volar/vue-language-server @astrojs/language-server @ansible/ansible-language-server \
-  @tailwindcss/language-server rustywind
+sudo apt install alacritty flameshot peek tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip
+yarn global add typescript rustywind
 
 # Key bindings fzf
 mkdir -p ~/.config/fish/functions/

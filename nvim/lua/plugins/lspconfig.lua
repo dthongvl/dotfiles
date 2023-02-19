@@ -1,3 +1,27 @@
+local servers = {
+  "rust_analyzer",
+  "gopls",
+  "ruby_ls",
+  "html",
+  "tsserver",
+  "cssls",
+  "dockerls",
+  "astro",
+  "eslint",
+  "ansiblels",
+  "tailwindcss",
+  "jsonls",
+  "bashls",
+  "vimls",
+  "yamlls",
+  "clangd",
+}
+
+require("mason").setup()
+require("mason-lspconfig").setup {
+  automatic_installation = true,
+}
+
 local nvim_lsp = require('lspconfig')
 
 local on_attach = function(client, bufnr)
@@ -13,24 +37,6 @@ local on_attach = function(client, bufnr)
   map('n', 'ge', vim.diagnostic.open_float, opts)
 end
 
-local servers = {
-  "rust_analyzer",
-  "gopls",
-  "solargraph",
-  "html",
-  "tsserver",
-  "cssls",
-  "dockerls",
-  "astro",
-  "eslint",
-  "ansiblels",
-  "tailwindcss",
-  "jsonls",
-  "bashls",
-  "vimls",
-  "yamlls",
-  "clangd",
-}
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end

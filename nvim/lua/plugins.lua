@@ -130,6 +130,8 @@ require('packer').startup(function()
     config = [[require'plugins/treesitter']],
   }
   use {
+    'williamboman/mason.nvim',
+    'williamboman/mason-lspconfig.nvim',
     'neovim/nvim-lspconfig',
     config = [[require'plugins/lspconfig']],
   }
