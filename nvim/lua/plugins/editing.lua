@@ -11,6 +11,9 @@ return {
   {
     "numToStr/Comment.nvim",
     event = { "BufEnter", "BufNewFile" },
+    dependencies = {
+      "JoosepAlviste/nvim-ts-context-commentstring",
+    },
     config = function ()
       require("Comment").setup({
         pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
@@ -22,7 +25,7 @@ return {
     "windwp/nvim-autopairs",
     event = { "BufReadPost", "BufNewFile" },
     dependencies = {
-      "nvim-cmp",
+      "hrsh7th/nvim-cmp",
     },
     opts = {
       check_ts = true,
@@ -31,9 +34,6 @@ return {
   {
     "windwp/nvim-ts-autotag",
     event = { "BufWinEnter", "BufNewFile" },
-    config = function ()
-      require("nvim-ts-autotag").setup()
-    end
   },
   {
     "ethanholz/nvim-lastplace",

@@ -37,7 +37,32 @@ return {
       rainbow = {
         enable = true,
       },
-      ensure_installed = {},
+      autotag = {
+        enable = true,
+      },
+      ensure_installed = {
+        'vue',
+        'bash',
+        'astro',
+        'css',
+        'html',
+        'go',
+        'c',
+        'cpp',
+        'javascript',
+        'typescript',
+        'json',
+        'lua',
+        'ruby',
+        'rust',
+        'sql',
+        'python',
+        'terraform',
+        'yaml',
+        'dockerfile',
+        'scss',
+        'vim',
+      },
       incremental_selection = {
         enable = true,
         keymaps = {
