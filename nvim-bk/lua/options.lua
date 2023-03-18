@@ -2,7 +2,6 @@ local cmd = vim.cmd
 local global = vim.g
 local opt = vim.opt
 
-
 global.mapleader = ' '
 
 cmd('syntax on')
@@ -60,6 +59,4 @@ opt.swapfile = false
 -- clipboard
 opt.clipboard = 'unnamedplus'
 
--- cmd('colorscheme tokyonight')
--- cmd('colorscheme nightfox')
 cmd('colorscheme iceberg')

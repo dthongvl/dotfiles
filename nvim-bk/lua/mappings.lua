@@ -7,10 +7,6 @@ map('n', 'Y', 'y$', {})
 map('n', '<leader>q', ':bd<CR>', {})
 map('i', 'jj', '<Esc>', {})
 
--- search
-map('', '/', '<Plug>(incsearch-forward)', {})
-map('', '?', '<Plug>(incsearch-backward)', {})
-
 -- windows
 map('', '<C-j>', '<C-W>j', {})
 map('', '<C-k>', '<C-W>k', {})

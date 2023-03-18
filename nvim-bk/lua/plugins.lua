@@ -4,15 +4,15 @@ require('packer').startup(function()
   use 'wbthomason/packer.nvim'
 
   -- buffer
-  use 'haya14busa/incsearch.vim'
   use {
     'akinsho/bufferline.nvim',
     requires = 'nvim-tree/nvim-web-devicons',
     config = [[require'plugins/bufferline']],
   }
   use {
-    "windwp/windline.nvim",
-    config = [[require'plugins/windline']],
+    'nvim-lualine/lualine.nvim',
+    requires = { 'kyazdani42/nvim-web-devicons', opt = true },
+    config = [[require'plugins/lualine']],
   }
   use {
     'NvChad/nvim-colorizer.lua',
@@ -50,20 +50,10 @@ require('packer').startup(function()
   }
 
   -- theme
-  use 'folke/tokyonight.nvim'
-  use 'tyrannicaltoucan/vim-deep-space'
   use {
     "ellisonleao/gruvbox.nvim",
     requires = {"rktjmp/lush.nvim"},
   }
-  use 'EdenEast/nightfox.nvim'
-  use({
-      'rose-pine/neovim',
-      as = 'rose-pine',
-      tag = 'v1.*',
-  })
-  use 'shaunsingh/nord.nvim'
-  use 'NLKNguyen/papercolor-theme'
   use 'cocopon/iceberg.vim'
 
   -- navigation
@@ -134,6 +124,11 @@ require('packer').startup(function()
     'williamboman/mason-lspconfig.nvim',
     'neovim/nvim-lspconfig',
     config = [[require'plugins/lspconfig']],
+  }
+  use {
+    'nvim-treesitter/nvim-treesitter-context',
+    requires = 'nvim-treesitter/nvim-treesitter',
+    config = [[require'plugins/treesitter-context']],
   }
   use {
     'nvim-lua/lsp-status.nvim',
