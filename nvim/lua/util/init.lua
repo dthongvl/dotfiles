@@ -26,4 +26,16 @@ function M.opts(name)
   return Plugin.values(plugin, "opts", false)
 end
 
+function M.is_in_table(tbl, val)
+  if tbl == nil then
+    return false
+  end
+  for _, value in pairs(tbl) do
+    if val == value then
+        return true
+    end
+  end
+  return false
+end
+
 return M

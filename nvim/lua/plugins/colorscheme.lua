@@ -10,4 +10,13 @@ return {
       vim.cmd.colorscheme("tokyonight")
     end,
   },
+  {
+    "cocopon/iceberg.vim",
+    lazy = false,
+    priority = 1000,
+    config = function(_, opts)
+      -- vim.opt.background = 'light'
+      -- vim.cmd.colorscheme("iceberg")
+    end,
+  },
 }

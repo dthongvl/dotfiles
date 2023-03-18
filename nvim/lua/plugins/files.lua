@@ -15,6 +15,14 @@ return {
       },
     },
     opts = {
+      renderer = {
+        highlight_git = true,
+        icons = {
+          show = {
+            git = false,
+          }
+        }
+      }
     },
 	},
   {
@@ -23,21 +31,21 @@ return {
     tag = '0.1.1',
     dependencies = { 'nvim-lua/plenary.nvim' },
     keys = {
-      { 
-        "<leader>/", 
+      {
+        "<leader>/",
         function ()
           require('telescope.builtin').live_grep()
         end,
         desc = "Find in Files (Grep)",
       },
-      { 
+      {
         "<leader>f",
         function ()
           require('telescope.builtin').find_files()
         end,
         desc = "Find Files (root dir)",
       },
-      { 
+      {
         "<leader>b",
         function ()
           require('telescope.builtin').buffers()

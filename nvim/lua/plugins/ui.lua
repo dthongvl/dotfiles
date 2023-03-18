@@ -41,6 +41,20 @@ return {
           globalstatus = true,
           disabled_filetypes = { statusline = { "dashboard", "lazy", "alpha" } },
         },
+        winbar = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = {
+            -- stylua: ignore
+            {
+              function() return require("nvim-navic").get_location() end,
+              cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
+            },
+          },
+          lualine_x = {},
+          lualine_y = {},
+          lualine_z = {}
+        },
         sections = {
           lualine_a = { "mode" },
           lualine_b = { "branch" },
@@ -48,11 +62,8 @@ return {
             {
               "diagnostics",
             },
-            -- stylua: ignore
-            {
-              function() return require("nvim-navic").get_location() end,
-              cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
-            },
+            { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+            { "filename", path = 0, symbols = { modified = "  ", readonly = "", unnamed = "" } },
           },
           lualine_x = {
             -- stylua: ignore
@@ -73,8 +84,31 @@ return {
             },
           },
           lualine_y = {
-            { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-            { "filename", path = 0, symbols = { modified = "  ", readonly = "", unnamed = "" } },
+            {
+              -- Lsp server name
+              function()
+                local active_clients = vim.lsp.get_active_clients({
+                  bufnr = vim.api.nvim_get_current_buf()
+                })
+
+                local hide_server_names = { 'null-ls', 'copilot' }
+                local clients = {}
+
+                for _, client in ipairs(active_clients) do
+                  if not require("util").is_in_table(hide_server_names, client.name) then
+                    clients[#clients + 1] = client.name
+                  end
+                end
+
+                if next(clients) then
+                  local icon = ' '
+                  local sep = '|'
+                  return icon .. table.concat(clients, sep)
+                end
+
+                return 'No active LSP'
+              end,
+            }
           },
           lualine_z = {
             { "progress", separator = " ", padding = { left = 1, right = 0 } },
@@ -94,7 +128,8 @@ return {
       char = "│",
       filetype_exclude = { "help", "alpha", "dashboard", "neo-tree", "Trouble", "lazy" },
       show_trailing_blankline_indent = false,
-      show_current_context = false,
+      show_current_context = true,
+      show_current_context_start = true,
     },
   },
   -- git signs
@@ -102,6 +137,7 @@ return {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     opts = {
+      current_line_blame = true,
       signs = {
         add = { text = "▎" },
         change = { text = "▎" },
@@ -171,6 +207,15 @@ return {
 
   -- icons
   { "nvim-tree/nvim-web-devicons", lazy = true },
+
+  -- bracket
+  {
+    "HiPhish/nvim-ts-rainbow2",
+    event = { "BufReadPost", "BufNewFile" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
+  },
 
   -- references
   {
