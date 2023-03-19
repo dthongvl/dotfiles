@@ -3,6 +3,8 @@ local M = {}
 function M.get()
   local format = require("plugins.lsp.format").format
   return {
+    { "<leader>cd", vim.diagnostic.open_float, desc = "Line Diagnostics" },
+    { "<leader>cl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },
     { "gd", "<cmd>Telescope lsp_definitions<cr>", desc = "Goto Definition", has = "definition" },
     { "gr", "<cmd>Telescope lsp_references<cr>", desc = "References" },
     { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },

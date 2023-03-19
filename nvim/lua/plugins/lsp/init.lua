@@ -111,6 +111,7 @@ return {
       local null_ls = require("null-ls")
 
       return {
+        root_dir = require("null-ls.utils").root_pattern(".null-ls-root", ".neoconf.json", "Makefile", ".git"),
         sources = {
           null_ls.builtins.formatting.jq,        -- json
           null_ls.builtins.formatting.trim_whitespace,
