@@ -6,17 +6,28 @@ return {
     priority = 1000,
     opts = { style = "moon" },
     config = function(_, opts)
-      require("tokyonight").setup(opts)
-      vim.cmd.colorscheme("tokyonight")
+      -- require("tokyonight").setup(opts)
+      -- vim.cmd.colorscheme("tokyonight")
     end,
   },
   {
-    "cocopon/iceberg.vim",
+    "edeneast/nightfox.nvim",
     lazy = false,
     priority = 1000,
     config = function(_, opts)
-      -- vim.opt.background = 'light'
-      -- vim.cmd.colorscheme("iceberg")
+      -- vim.cmd.colorscheme("duskfox")
+      -- vim.cmd.colorscheme("dayfox")
+    end,
+  },
+  {
+    "Shatur/neovim-ayu",
+    lazy = false,
+    priority = 1000,
+    config = function(_, opts)
+      require('ayu').setup({
+          mirage = false, -- Set to `true` to use `mirage` variant instead of `dark` for dark background.
+      })
+      vim.cmd.colorscheme("ayu")
     end,
   },
 }

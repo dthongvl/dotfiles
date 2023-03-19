@@ -7,6 +7,15 @@ return {
       require("nvim-surround").setup()
     end,
   },
+  -- Switch between single-line and multiline forms of code
+  {
+    'Wansmer/treesj',
+    keys = { '<space>m', '<space>j', '<space>s' },
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    config = function()
+      require('treesj').setup({--[[ your config ]]})
+    end,
+  },
   -- comment
   {
     "numToStr/Comment.nvim",
