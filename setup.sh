@@ -9,13 +9,6 @@ sudo apt install fish
 # Set fishshell to default shell
 chsh -s /usr/bin/fish
 
-# Asdf
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.1
-mkdir -p ~/.config/fish/completions; and ln -s ~/.asdf/completions/asdf.fish ~/.config/fish/completions
-
-# Install yarn
-npm install -g yarn
-
 # Packages
 sudo apt install alacritty flameshot peek tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip
 yarn global add typescript rustywind
@@ -34,6 +27,16 @@ ln -s -f ~/workspace/dotfiles/config.fish ~/.config/fish/config.fish
 
 mkdir -p ~/.config/alacritty
 ln -s -f ~/workspace/dotfiles/alacritty.yml ~/.config/alacritty/alacritty.yml
+
+# Asdf
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.1
+mkdir -p ~/.config/fish/completions; and ln -s ~/.asdf/completions/asdf.fish ~/.config/fish/completions
+
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
+
+# Install yarn
+npm install -g yarn
 
 # Jump
 wget https://github.com/gsamokovarov/jump/releases/download/v0.40.0/jump_0.40.0_amd64.deb && sudo dpkg -i jump_0.40.0_amd64.deb
