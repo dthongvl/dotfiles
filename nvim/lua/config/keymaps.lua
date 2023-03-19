@@ -45,11 +45,7 @@ map("n", "<leader>wq", ":bd<CR>", { desc = "Delete current buffer" })
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
 
 -- Save file
-map({ "i", "v", "n", "s" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save file" })
-
--- Better indenting
-map("v", "<", "<gv")
-map("v", ">", ">gv")
+map({ "n" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save file" })
 
 -- lazy
 map("n", "<leader>l", "<cmd>:Lazy<cr>", { desc = "Lazy" })
