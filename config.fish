@@ -17,7 +17,6 @@ set -x EDITOR nvim
 set -gx PATH $PATH (yarn global bin) $HOME/.local/bin $HOME/.cargo/bin $HOME/workspace/diff-so-fancy
 set fish_greeting 'No Sana No Life'
 
-source (jump shell fish | psub)
 source ~/.asdf/asdf.fish
 
 if test -f $HOME/.config/fish/nightfox.fish; . $HOME/.config/fish/nightfox.fish; end

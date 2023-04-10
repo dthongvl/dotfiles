@@ -38,9 +38,6 @@ asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
 # Install yarn
 npm install -g yarn
 
-# Jump
-wget https://github.com/gsamokovarov/jump/releases/download/v0.40.0/jump_0.40.0_amd64.deb && sudo dpkg -i jump_0.40.0_amd64.deb
-
 # Neovim
 git clone https://github.com/neovim/neovim ~/workspace/neovim
 (cd ~/workspace/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo -j4 && sudo make install)
