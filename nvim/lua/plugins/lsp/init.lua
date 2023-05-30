@@ -20,7 +20,7 @@ return {
         eslint = {},
         html = {},
         cssls = {},
-        ruby_ls = {},
+        solargraph = {},
         astro = {},
         ansiblels = {},
         tailwindcss = {},
@@ -128,6 +128,7 @@ return {
   -- cmdline tools and lsp servers
   {
     "williamboman/mason.nvim",
+    build = ":MasonUpdate",
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     config = function()

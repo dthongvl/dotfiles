@@ -15,6 +15,9 @@ return {
       },
     },
     opts = {
+      update_focused_file = {
+        enable = true,
+      },
       renderer = {
         highlight_git = true,
         icons = {

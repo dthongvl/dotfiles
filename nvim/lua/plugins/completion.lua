@@ -96,4 +96,11 @@ return {
     "JoosepAlviste/nvim-ts-context-commentstring",
     lazy = true,
   },
+  {
+    'Exafunction/codeium.vim',
+    event = "InsertEnter",
+    config = function ()
+      vim.keymap.set('i', '<C-x>', function () return vim.fn['codeium#Accept']() end, { expr = true })
+    end
+  },
 }

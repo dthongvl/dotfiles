@@ -85,6 +85,9 @@ return {
           },
           lualine_y = {
             {
+              function() return vim.fn['codeium#GetStatusString']() end,
+            },
+            {
               -- Lsp server name
               function()
                 local active_clients = vim.lsp.get_active_clients({
@@ -108,7 +111,7 @@ return {
 
                 return 'No active LSP'
               end,
-            }
+            },
           },
           lualine_z = {
             { "progress", separator = " ", padding = { left = 1, right = 0 } },
@@ -167,21 +170,6 @@ return {
         map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
       end,
-    },
-  },
-  -- todo comments
-  {
-    "folke/todo-comments.nvim",
-    cmd = { "TodoTrouble", "TodoTelescope" },
-    event = { "BufReadPost", "BufNewFile" },
-    config = true,
-    -- stylua: ignore
-    keys = {
-      { "]t", function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
-      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
-      { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo (Trouble)" },
-      { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
-      { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
     },
   },
   -- lsp symbol navigation for lualine
