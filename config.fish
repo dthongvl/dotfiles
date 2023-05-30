@@ -13,6 +13,7 @@ set -x ORACLE_HOME /opt/oracle/
 set -x LD_LIBRARY_PATH /opt/oracle/instantclient
 set -x TERM xterm-256color
 set -x EDITOR nvim
+set -x HELIX_RUNTIME /home/dthongvl/workspace/helix/runtime
 
 set -gx PATH $PATH (yarn global bin) $HOME/.local/bin $HOME/.cargo/bin $HOME/workspace/diff-so-fancy
 set fish_greeting 'No Sana No Life'
@@ -20,3 +21,6 @@ set fish_greeting 'No Sana No Life'
 source ~/.asdf/asdf.fish
 
 if test -f $HOME/.config/fish/nightfox.fish; . $HOME/.config/fish/nightfox.fish; end
+
+set -gx PNPM_HOME "/home/dthongvl/.local/share/pnpm"
+set -gx PATH "$PNPM_HOME" $PATH
