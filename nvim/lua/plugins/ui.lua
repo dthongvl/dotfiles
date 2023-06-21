@@ -9,6 +9,10 @@ return {
     },
     opts = {
       options = {
+        -- stylua: ignore
+        close_command = function(n) require("mini.bufremove").delete(n, false) end,
+        -- stylua: ignore
+        right_mouse_command = function(n) require("mini.bufremove").delete(n, false) end,
         diagnostics = "nvim_lsp",
         always_show_bufferline = false,
         offsets = {
@@ -34,12 +38,12 @@ return {
           return hl and hl.foreground and { fg = string.format("#%06x", hl.foreground) }
         end
       end
+      local Util = require("util")
 
       return {
         options = {
           theme = "auto",
           globalstatus = true,
-          disabled_filetypes = { statusline = { "dashboard", "lazy", "alpha" } },
         },
         winbar = {
           lualine_a = {},
@@ -70,13 +74,13 @@ return {
             {
               function() return require("noice").api.status.command.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-              color = fg("Statement")
+              color = Util.fg("Statement")
             },
             -- stylua: ignore
             {
               function() return require("noice").api.status.mode.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-              color = fg("Constant") ,
+              color = Util.fg("Constant") ,
             },
             { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg("Special") },
             {
@@ -118,9 +122,50 @@ return {
             { "location", padding = { left = 0, right = 1 } },
           },
         },
-        extensions = { "nvim-tree" },
+        extensions = { "nvim-tree", "lazy" },
       }
     end,
+  },
+  -- better diagnostics list and others
+  {
+    "folke/trouble.nvim",
+    cmd = { "TroubleToggle", "Trouble" },
+    opts = { use_diagnostic_signs = true },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    keys = {
+      { "<leader>xx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
+      { "<leader>xX", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
+      { "<leader>xL", "<cmd>TroubleToggle loclist<cr>", desc = "Location List (Trouble)" },
+      { "<leader>xQ", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
+      {
+        "[q",
+        function()
+          if require("trouble").is_open() then
+            require("trouble").previous({ skip_groups = true, jump = true })
+          else
+            local ok, err = pcall(vim.cmd.cprev)
+            if not ok then
+              vim.notify(err, vim.log.levels.ERROR)
+            end
+          end
+        end,
+        desc = "Previous trouble/quickfix item",
+      },
+      {
+        "]q",
+        function()
+          if require("trouble").is_open() then
+            require("trouble").next({ skip_groups = true, jump = true })
+          else
+            local ok, err = pcall(vim.cmd.cnext)
+            if not ok then
+              vim.notify(err, vim.log.levels.ERROR)
+            end
+          end
+        end,
+        desc = "Next trouble/quickfix item",
+      },
+    },
   },
   -- indent guides for Neovim
   {
@@ -129,7 +174,7 @@ return {
     opts = {
       -- char = "▏",
       char = "│",
-      filetype_exclude = { "help", "alpha", "dashboard", "neo-tree", "Trouble", "lazy" },
+      filetype_exclude = { "help", "nvim-tree", "lazy", "Trouble" },
       show_trailing_blankline_indent = false,
       show_current_context = true,
       show_current_context_start = true,
@@ -234,6 +279,14 @@ return {
     keys = {
       { "]]", desc = "Next Reference" },
       { "[[", desc = "Prev Reference" },
+    },
+  },
+  -- buffer remove
+  {
+    "echasnovski/mini.bufremove",
+    -- stylua: ignore
+    keys = {
+      { "<leader>wq", function() require("mini.bufremove").delete(0, false) end, desc = "Delete Buffer" },
     },
   },
 }

@@ -7,8 +7,8 @@ local function map(mode, lhs, rhs, opts)
 end
 
 -- better up/down
-map("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-map("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
 -- copy
 map("n", "Y", "y$", { desc = "Copy to end of line" })
@@ -39,7 +39,6 @@ else
   map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
   map("n", "]b", "<cmd>bnext<cr>", { desc = "Next buffer" })
 end
-map("n", "<leader>wq", ":bd<CR>", { desc = "Delete current buffer" })
 
 -- Clear search with <esc>
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
@@ -50,5 +49,5 @@ map({ "n" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save file" })
 -- lazy
 map("n", "<leader>l", "<cmd>:Lazy<cr>", { desc = "Lazy" })
 
--- quit
+-- Quit
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })

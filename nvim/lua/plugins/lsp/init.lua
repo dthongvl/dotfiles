@@ -12,6 +12,35 @@ return {
     },
     ---@class PluginLspOpts
     opts = {
+      -- options for vim.diagnostic.config()
+      diagnostics = {
+        underline = true,
+        update_in_insert = false,
+        virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          prefix = "●",
+          -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
+          -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
+          -- prefix = "icons",
+        },
+        severity_sort = true,
+      },
+      -- Enable this to enable the builtin LSP inlay hints on Neovim >= 0.10.0
+      -- Be aware that you also will need to properly configure your LSP server to
+      -- provide the inlay hints.
+      inlay_hints = {
+        enabled = true
+      },
+      -- Automatically format on save
+      autoformat = true,
+      -- options for vim.lsp.buf.format
+      -- `bufnr` and `filter` is handled by the LazyVim formatter,
+      -- but can be also overridden when specified
+      format = {
+        formatting_options = nil,
+        timeout_ms = nil,
+      },
       -- LSP Server Settings
       ---@type lspconfig.options
       servers = {
@@ -54,13 +83,33 @@ return {
     },
     ---@param opts PluginLspOpts
     config = function(_, opts)
-      require("util").on_attach(function(client, buffer)
-        require("plugins.lsp.format").on_attach(client, buffer)
+      local Util = require("util")
+
+      -- setup autoformat
+      require("plugins.lsp.format").setup(opts)
+
+      Util.on_attach(function(client, buffer)
         require("plugins.lsp.keymaps").on_attach(client, buffer)
       end)
 
+      if opts.inlay_hints.enabled and vim.lsp.buf.inlay_hint then
+        Util.on_attach(function(client, buffer)
+          if client.server_capabilities.inlayHintProvider then
+            vim.lsp.buf.inlay_hint(buffer, true)
+          end
+        end)
+      end
+
+      vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
+
       local servers = opts.servers
-      local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+      local capabilities = vim.tbl_deep_extend(
+        "force",
+        {},
+        vim.lsp.protocol.make_client_capabilities(),
+        require("cmp_nvim_lsp").default_capabilities(),
+        opts.capabilities or {}
+      )
 
       local function setup(server)
         local server_opts = vim.tbl_deep_extend("force", {
@@ -79,15 +128,19 @@ return {
         require("lspconfig")[server].setup(server_opts)
       end
 
+      -- get all the servers that are available thourgh mason-lspconfig
       local have_mason, mlsp = pcall(require, "mason-lspconfig")
-      local available = have_mason and mlsp.get_available_servers() or {}
+      local all_mslp_servers = {}
+      if have_mason then
+        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+      end
 
       local ensure_installed = {} ---@type string[]
       for server, server_opts in pairs(servers) do
         if server_opts then
           server_opts = server_opts == true and {} or server_opts
           -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
-          if server_opts.mason == false or not vim.tbl_contains(available, server) then
+          if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
             setup(server)
           else
             ensure_installed[#ensure_installed + 1] = server
@@ -96,8 +149,7 @@ return {
       end
 
       if have_mason then
-        mlsp.setup({ ensure_installed = ensure_installed })
-        mlsp.setup_handlers({ setup })
+        mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
       end
     end,
   },
@@ -118,7 +170,7 @@ return {
           null_ls.builtins.code_actions.eslint,
           null_ls.builtins.diagnostics.shellcheck,
           null_ls.builtins.diagnostics.rubocop,
-          null_ls.builtins.diagnostics.eslint,
+          -- null_ls.builtins.diagnostics.eslint,
           null_ls.builtins.diagnostics.ansiblelint,
         },
       }
@@ -128,11 +180,10 @@ return {
   -- cmdline tools and lsp servers
   {
     "williamboman/mason.nvim",
-    build = ":MasonUpdate",
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
-    config = function()
-      require("mason").setup()
+    config = function(_, opts)
+      require("mason").setup(opts)
     end,
   },
   -- bridges mason.nvim with the null-ls plugin
