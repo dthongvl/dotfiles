@@ -58,13 +58,7 @@ return {
   {
     "windwp/nvim-ts-autotag",
     event = { "BufWinEnter", "BufNewFile" },
-  },
-  {
-    "ethanholz/nvim-lastplace",
-    event = { "BufWinEnter", "FileType" },
-    opts = {
-      lastplace_ignore_buftype = { "quickfix", "nofile", "help" },
-      lastplace_ignore_filetype = { "gitcommit", "gitrebase", "svn", "hgcommit" },
-    },
+    ft = { 'typescriptreact', 'javascript', 'javascriptreact', 'html', 'vue', 'svelte' },
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
   },
 }

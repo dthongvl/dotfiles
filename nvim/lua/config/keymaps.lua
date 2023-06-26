@@ -51,3 +51,6 @@ map("n", "<leader>l", "<cmd>:Lazy<cr>", { desc = "Lazy" })
 
 -- Quit
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
+
+-- Windows
+map("n", "<leader>wd", "<C-W>c", { desc = "Delete window", remap = true })

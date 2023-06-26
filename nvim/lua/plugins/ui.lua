@@ -1,3 +1,5 @@
+local strwidth = vim.api.nvim_strwidth
+
 return {
   -- bufferline
   {
@@ -44,20 +46,6 @@ return {
         options = {
           theme = "auto",
           globalstatus = true,
-        },
-        winbar = {
-          lualine_a = {},
-          lualine_b = {},
-          lualine_c = {
-            -- stylua: ignore
-            {
-              function() return require("nvim-navic").get_location() end,
-              cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
-            },
-          },
-          lualine_x = {},
-          lualine_y = {},
-          lualine_z = {}
         },
         sections = {
           lualine_a = { "mode" },
@@ -174,11 +162,71 @@ return {
     opts = {
       -- char = "▏",
       char = "│",
+      context_char = '▎',
       filetype_exclude = { "help", "nvim-tree", "lazy", "Trouble" },
       show_trailing_blankline_indent = false,
       show_current_context = true,
       show_current_context_start = true,
+      show_current_context_start_on_current_line = false,
     },
+  },
+  -- folding
+  {
+    'kevinhwang91/nvim-ufo',
+    event = 'VeryLazy',
+    dependencies = { 'kevinhwang91/promise-async' },
+    keys = {
+      { 'zR', function() require('ufo').openAllFolds() end, 'open all folds' },
+      { 'zM', function() require('ufo').closeAllFolds() end, 'close all folds' },
+      { 'zP', function() require('ufo').peekFoldedLinesUnderCursor() end, 'preview fold' },
+    },
+    opts = function()
+      local ft_map = { rust = 'lsp' }
+      require('ufo').setup({
+        open_fold_hl_timeout = 0,
+        preview = { win_config = { winhighlight = 'Normal:Normal,FloatBorder:Normal' } },
+        enable_get_fold_virt_text = true,
+        close_fold_kinds = { 'imports', 'comment' },
+        provider_selector = function(_, ft) return ft_map[ft] or { 'treesitter', 'indent' } end,
+        fold_virt_text_handler = function(virt_text, _, end_lnum, width, truncate, ctx)
+          local result, cur_width, padding = {}, 0, ''
+          local suffix_width = strwidth(ctx.text)
+          local target_width = width - suffix_width
+
+          for _, chunk in ipairs(virt_text) do
+            local chunk_text = chunk[1]
+            local chunk_width = strwidth(chunk_text)
+            if target_width > cur_width + chunk_width then
+              table.insert(result, chunk)
+            else
+              chunk_text = truncate(chunk_text, target_width - cur_width)
+              local hl_group = chunk[2]
+              table.insert(result, { chunk_text, hl_group })
+              chunk_width = strwidth(chunk_text)
+              if cur_width + chunk_width < target_width then
+                padding = padding .. (' '):rep(target_width - cur_width - chunk_width)
+              end
+              break
+            end
+            cur_width = cur_width + chunk_width
+          end
+
+          if ft_map[vim.bo[ctx.bufnr].ft] == 'lsp' then
+            table.insert(result, { ' ⋯ ', 'UfoFoldedEllipsis' })
+            return result
+          end
+
+          local end_text = ctx.get_fold_virt_text(end_lnum)
+          -- reformat the end text to trim excess whitespace from
+          -- indentation usually the first item is indentation
+          if end_text[1] and end_text[1][1] then end_text[1][1] = end_text[1][1]:gsub('[%s\t]+', '') end
+
+          vim.list_extend(result, { { ' ⋯ ', 'UfoFoldedEllipsis' }, unpack(end_text) })
+          table.insert(result, { padding, '' })
+          return result
+        end,
+      })
+    end,
   },
   -- git signs
   {
@@ -217,27 +265,6 @@ return {
       end,
     },
   },
-  -- lsp symbol navigation for lualine
-  {
-    "SmiteshP/nvim-navic",
-    lazy = true,
-    init = function()
-      vim.g.navic_silence = true
-      require("util").on_attach(function(client, buffer)
-        if client.server_capabilities.documentSymbolProvider then
-          require("nvim-navic").attach(client, buffer)
-        end
-      end)
-    end,
-    opts = function()
-      return {
-        separator = " ",
-        highlight = true,
-        depth_limit = 5,
-      }
-    end,
-  },
-
   -- icons
   { "nvim-tree/nvim-web-devicons", lazy = true },
 
@@ -281,12 +308,114 @@ return {
       { "[[", desc = "Prev Reference" },
     },
   },
+  -- lsp context in winbar
+  {
+    "Bekaboo/dropbar.nvim",
+    event = 'VeryLazy',
+  },
   -- buffer remove
   {
     "echasnovski/mini.bufremove",
     -- stylua: ignore
     keys = {
-      { "<leader>wq", function() require("mini.bufremove").delete(0, false) end, desc = "Delete Buffer" },
+      {
+        "<leader>wq",
+        function()
+          require("mini.bufremove").delete(0, false)
+        end,
+        desc = "Delete Buffer",
+      },
+    },
+  },
+  -- Better `vim.notify()`
+  {
+    "rcarriga/nvim-notify",
+    keys = {
+      {
+        "<leader>un",
+        function()
+          require("notify").dismiss({ silent = true, pending = true })
+        end,
+        desc = "Dismiss all Notifications",
+      },
+    },
+    opts = {
+      timeout = 3000,
+      max_height = function()
+        return math.floor(vim.o.lines * 0.75)
+      end,
+      max_width = function()
+        return math.floor(vim.o.columns * 0.75)
+      end,
+    },
+    init = function()
+      -- when noice is not enabled, install notify on VeryLazy
+      local Util = require("util")
+      if not Util.has("noice.nvim") then
+        Util.on_very_lazy(function()
+          vim.notify = require("notify")
+        end)
+      end
+    end,
+  },
+  -- better vim.ui
+  {
+    "stevearc/dressing.nvim",
+    lazy = true,
+    init = function()
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.select = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.select(...)
+      end
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.input = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.input(...)
+      end
+    end,
+  },
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    dependencies = { 'MunifTanjim/nui.nvim' },
+    opts = {
+      lsp = {
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+          ["vim.lsp.util.stylize_markdown"] = true,
+          ["cmp.entry.get_documentation"] = true,
+        },
+      },
+      routes = {
+        {
+          filter = {
+            event = "msg_show",
+            any = {
+              { find = "%d+L, %d+B" },
+              { find = "; after #%d+" },
+              { find = "; before #%d+" },
+            },
+          },
+          view = "mini",
+        },
+      },
+      presets = {
+        bottom_search = true,
+        command_palette = true,
+        long_message_to_split = true,
+        inc_rename = true,
+      },
+    },
+    -- stylua: ignore
+    keys = {
+      { "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end, mode = "c", desc = "Redirect Cmdline" },
+      { "<leader>snl", function() require("noice").cmd("last") end, desc = "Noice Last Message" },
+      { "<leader>snh", function() require("noice").cmd("history") end, desc = "Noice History" },
+      { "<leader>sna", function() require("noice").cmd("all") end, desc = "Noice All" },
+      { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
+      { "<c-f>", function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end, silent = true, expr = true, desc = "Scroll forward", mode = {"i", "n", "s"} },
+      { "<c-b>", function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end, silent = true, expr = true, desc = "Scroll backward", mode = {"i", "n", "s"}},
     },
   },
 }

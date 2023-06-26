@@ -12,6 +12,8 @@ return {
     },
     ---@class PluginLspOpts
     opts = {
+      capabilities = {
+      },
       -- options for vim.diagnostic.config()
       diagnostics = {
         underline = true,
@@ -49,7 +51,8 @@ return {
         eslint = {},
         html = {},
         cssls = {},
-        solargraph = {},
+        -- solargraph = {},
+        ruby_ls = {},
         astro = {},
         ansiblels = {},
         tailwindcss = {},
