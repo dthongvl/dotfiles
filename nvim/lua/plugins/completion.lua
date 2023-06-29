@@ -93,11 +93,6 @@ return {
       }
     end,
   },
-  -- comments
-  {
-    "JoosepAlviste/nvim-ts-context-commentstring",
-    lazy = true,
-  },
   {
     'Exafunction/codeium.vim',
     event = "InsertEnter",

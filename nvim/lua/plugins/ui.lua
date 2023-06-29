@@ -101,7 +101,7 @@ return {
                   return icon .. table.concat(clients, sep)
                 end
 
-                return 'No active LSP'
+                return 'No active LSP clients'
               end,
             },
           },
@@ -122,9 +122,6 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
     keys = {
       { "<leader>xx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
-      { "<leader>xX", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
-      { "<leader>xL", "<cmd>TroubleToggle loclist<cr>", desc = "Location List (Trouble)" },
-      { "<leader>xQ", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
       {
         "[q",
         function()
@@ -228,43 +225,6 @@ return {
       })
     end,
   },
-  -- git signs
-  {
-    "lewis6991/gitsigns.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    opts = {
-      current_line_blame = true,
-      signs = {
-        add = { text = "▎" },
-        change = { text = "▎" },
-        delete = { text = "" },
-        topdelete = { text = "" },
-        changedelete = { text = "▎" },
-        untracked = { text = "▎" },
-      },
-      on_attach = function(buffer)
-        local gs = package.loaded.gitsigns
-
-        local function map(mode, l, r, desc)
-          vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
-        end
-
-        -- stylua: ignore start
-        map("n", "]h", gs.next_hunk, "Next Hunk")
-        map("n", "[h", gs.prev_hunk, "Prev Hunk")
-        map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
-        map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
-        map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
-        map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
-        map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
-        map("n", "<leader>ghp", gs.preview_hunk, "Preview Hunk")
-        map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
-        map("n", "<leader>ghd", gs.diffthis, "Diff This")
-        map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
-        map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
-      end,
-    },
-  },
   -- icons
   { "nvim-tree/nvim-web-devicons", lazy = true },
 
@@ -276,7 +236,6 @@ return {
       "nvim-treesitter/nvim-treesitter",
     },
   },
-
   -- references
   {
     "RRethy/vim-illuminate",
@@ -312,6 +271,32 @@ return {
   {
     "Bekaboo/dropbar.nvim",
     event = 'VeryLazy',
+    opts = {
+      bar = {
+        sources = function(_, _)
+          local sources = require('dropbar.sources')
+          return {
+            {
+              get_symbols = function(buf, win, cursor)
+                if vim.bo[buf].ft == 'markdown' then
+                  return sources.markdown.get_symbols(buf, win, cursor)
+                end
+                for _, source in ipairs({
+                  sources.lsp,
+                  sources.treesitter,
+                }) do
+                  local symbols = source.get_symbols(buf, win, cursor)
+                  if not vim.tbl_isempty(symbols) then
+                    return symbols
+                  end
+                end
+                return {}
+              end,
+            },
+          }
+        end
+      },
+    },
   },
   -- buffer remove
   {
@@ -416,6 +401,21 @@ return {
       { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
       { "<c-f>", function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end, silent = true, expr = true, desc = "Scroll forward", mode = {"i", "n", "s"} },
       { "<c-b>", function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end, silent = true, expr = true, desc = "Scroll backward", mode = {"i", "n", "s"}},
+    },
+  },
+  -- todo comments
+  {
+    "folke/todo-comments.nvim",
+    cmd = { "TodoTrouble", "TodoTelescope" },
+    event = { "BufReadPost", "BufNewFile" },
+    config = true,
+    -- stylua: ignore
+    keys = {
+      { "]t", function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
+      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
+      { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo (Trouble)" },
+      { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
+      { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
     },
   },
 }

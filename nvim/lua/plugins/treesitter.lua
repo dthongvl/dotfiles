@@ -110,4 +110,9 @@ return {
       end
     end,
   },
+  -- comments
+  {
+    "JoosepAlviste/nvim-ts-context-commentstring",
+    lazy = true,
+  },
 }
