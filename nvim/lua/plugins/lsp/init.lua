@@ -205,4 +205,11 @@ return {
         automatic_setup = false,
       },
   },
+  {
+    'DNLHC/glance.nvim',
+    opts = {
+      preview_win_opts = { relativenumber = false },
+      theme = { enable = true, mode = 'darken' },
+    },
+  },
 }

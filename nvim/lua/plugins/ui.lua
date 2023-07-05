@@ -12,9 +12,9 @@ return {
     opts = {
       options = {
         -- stylua: ignore
-        close_command = function(n) require("mini.bufremove").delete(n, false) end,
+        close_command = function(n) require("bufdelete").bufdelete(n, false) end,
         -- stylua: ignore
-        right_mouse_command = function(n) require("mini.bufremove").delete(n, false) end,
+        right_mouse_command = function(n) require("bufdelete").bufdelete(n, false) end,
         diagnostics = "nvim_lsp",
         always_show_bufferline = false,
         offsets = {
@@ -122,34 +122,6 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
     keys = {
       { "<leader>xx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
-      {
-        "[q",
-        function()
-          if require("trouble").is_open() then
-            require("trouble").previous({ skip_groups = true, jump = true })
-          else
-            local ok, err = pcall(vim.cmd.cprev)
-            if not ok then
-              vim.notify(err, vim.log.levels.ERROR)
-            end
-          end
-        end,
-        desc = "Previous trouble/quickfix item",
-      },
-      {
-        "]q",
-        function()
-          if require("trouble").is_open() then
-            require("trouble").next({ skip_groups = true, jump = true })
-          else
-            local ok, err = pcall(vim.cmd.cnext)
-            if not ok then
-              vim.notify(err, vim.log.levels.ERROR)
-            end
-          end
-        end,
-        desc = "Next trouble/quickfix item",
-      },
     },
   },
   -- indent guides for Neovim
@@ -227,14 +199,22 @@ return {
   },
   -- icons
   { "nvim-tree/nvim-web-devicons", lazy = true },
-
-  -- bracket
+  -- brackets color
   {
-    "HiPhish/nvim-ts-rainbow2",
-    event = { "BufReadPost", "BufNewFile" },
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-    },
+    'HiPhish/rainbow-delimiters.nvim',
+    event = 'VeryLazy',
+    config = function()
+      local rainbow_delimiters = require('rainbow-delimiters')
+
+      vim.g.rainbow_delimiters = {
+        strategy = {
+          [''] = rainbow_delimiters.strategy['global'],
+        },
+        query = {
+          [''] = 'rainbow-delimiters',
+        },
+      }
+    end,
   },
   -- references
   {
@@ -300,13 +280,13 @@ return {
   },
   -- buffer remove
   {
-    "echasnovski/mini.bufremove",
+    "famiu/bufdelete.nvim",
     -- stylua: ignore
     keys = {
       {
         "<leader>wq",
         function()
-          require("mini.bufremove").delete(0, false)
+          require("bufdelete").bufdelete(0, false)
         end,
         desc = "Delete Buffer",
       },
@@ -346,7 +326,6 @@ return {
   -- better vim.ui
   {
     "stevearc/dressing.nvim",
-    lazy = true,
     init = function()
       ---@diagnostic disable-next-line: duplicate-set-field
       vim.ui.select = function(...)
@@ -411,10 +390,7 @@ return {
     config = true,
     -- stylua: ignore
     keys = {
-      { "]t", function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
-      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
-      { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo (Trouble)" },
-      { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
+      { "<leader>xt", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
       { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
     },
   },

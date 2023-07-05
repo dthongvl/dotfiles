@@ -35,10 +35,10 @@ return {
         enable = true,
         enable_autocmd = false,
       },
-      rainbow = {
+      autopairs = {
         enable = true,
       },
-      autopairs = {
+      endwise = {
         enable = true,
       },
       autotag = {

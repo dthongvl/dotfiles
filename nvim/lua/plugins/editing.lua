@@ -10,11 +10,12 @@ return {
   -- Switch between single-line and multiline forms of code
   {
     'Wansmer/treesj',
-    keys = { '<space>m', '<space>j', '<space>s' },
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    config = function()
-      require('treesj').setup({--[[ your config ]]})
-    end,
+    opts = { use_default_keymaps = false },
+    keys = {
+      { 'gS', '<Cmd>TSJSplit<CR>', desc = 'split expression to multiple lines' },
+      { 'gJ', '<Cmd>TSJJoin<CR>', desc = 'join expression to single line' },
+    },
   },
   -- comment
   {
@@ -36,12 +37,30 @@ return {
     dependencies = {
       "hrsh7th/nvim-cmp",
     },
-    opts = {
-      check_ts = true,
-    },
+    config = function ()
+      local autopairs = require('nvim-autopairs')
+      local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+      require('cmp').event:on('confirm_done', cmp_autopairs.on_confirm_done())
+      autopairs.setup({
+        close_triple_quotes = true,
+        check_ts = true,
+        fast_wrap = { map = '<c-e>' },
+        ts_config = {
+          lua = { 'string' },
+          dart = { 'string' },
+          javascript = { 'template_string' },
+        },
+      })
+    end
   },
   {
     "windwp/nvim-ts-autotag",
+    event = "InsertEnter",
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+  },
+  -- for ruby, lua
+  {
+    "RRethy/nvim-treesitter-endwise",
     event = "InsertEnter",
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
   },
