@@ -10,6 +10,7 @@ return {
   -- Switch between single-line and multiline forms of code
   {
     'Wansmer/treesj',
+    event = { "BufEnter", "BufNewFile" },
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
     opts = { use_default_keymaps = false },
     keys = {
@@ -52,16 +53,5 @@ return {
         },
       })
     end
-  },
-  {
-    "windwp/nvim-ts-autotag",
-    event = "InsertEnter",
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-  },
-  -- for ruby, lua
-  {
-    "RRethy/nvim-treesitter-endwise",
-    event = "InsertEnter",
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
   },
 }

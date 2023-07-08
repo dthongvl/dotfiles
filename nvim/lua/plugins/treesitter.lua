@@ -115,4 +115,15 @@ return {
     "JoosepAlviste/nvim-ts-context-commentstring",
     lazy = true,
   },
+  {
+    "windwp/nvim-ts-autotag",
+    event = "InsertEnter",
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+  },
+  -- for ruby, lua
+  {
+    "RRethy/nvim-treesitter-endwise",
+    event = "InsertEnter",
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+  },
 }

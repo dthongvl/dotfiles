@@ -47,8 +47,8 @@ return {
       ---@type lspconfig.options
       servers = {
         lua_ls = {},
-        tsserver = {},
-        eslint = {},
+        -- tsserver = {},
+        -- eslint = {},
         html = {},
         cssls = {},
         -- solargraph = {},
@@ -172,11 +172,12 @@ return {
         sources = {
           null_ls.builtins.formatting.jq,        -- json
           null_ls.builtins.formatting.trim_whitespace,
-          null_ls.builtins.code_actions.eslint,
+          -- null_ls.builtins.code_actions.eslint,
           null_ls.builtins.diagnostics.shellcheck,
           null_ls.builtins.diagnostics.rubocop,
-          -- null_ls.builtins.diagnostics.eslint,
+          null_ls.builtins.diagnostics.eslint,
           null_ls.builtins.diagnostics.ansiblelint,
+          null_ls.builtins.diagnostics.luacheck,
         },
       }
     end,

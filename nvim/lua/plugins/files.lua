@@ -32,7 +32,10 @@ return {
     'nvim-telescope/telescope.nvim',
     cmd = "Telescope",
     tag = '0.1.2',
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      { "nvim-telescope/telescope-fzf-native.nvim", enabled = vim.fn.executable "make" == 1, build = "make" },
+    },
     keys = {
       {
         "<leader>/",
@@ -56,8 +59,11 @@ return {
         desc = "Buffers",
       },
     },
-    opts = {
-    },
+    config = function (_, opts)
+      local telescope = require('telescope')
+      telescope.setup(opts)
+      telescope.load_extension('fzf')
+    end
   },
   -- search/replace in multiple files
   {
@@ -66,7 +72,7 @@ return {
     opts = { open_cmd = "noswapfile vnew" },
     -- stylua: ignore
     keys = {
-      { "<leader>sw", function() require("spectre").open_visual({ select_word = true }) end, desc = "Replace current word in files (Spectre)" },
+      { "<leader>sw", function() require("spectre").open_visual({ select_word = true }) end, desc = "Search current word in files (Spectre)" },
     },
   },
 }

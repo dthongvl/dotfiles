@@ -31,13 +31,9 @@ map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" })
 if Util.has("bufferline.nvim") then
   map("n", "<S-h>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
   map("n", "<S-l>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next buffer" })
-  map("n", "[b", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
-  map("n", "]b", "<cmd>BufferLineCycleNext<cr>", { desc = "Next buffer" })
 else
   map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
   map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
-  map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
-  map("n", "]b", "<cmd>bnext<cr>", { desc = "Next buffer" })
 end
 
 -- Clear search with <esc>

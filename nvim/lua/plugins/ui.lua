@@ -6,8 +6,8 @@ return {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
     keys = {
-      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
-      { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
+      { "<leader>gb", "<Cmd>BufferLinePick<CR>", desc = "Pick buffer" },
+      { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>", desc = "Delete other buffers" },
     },
     opts = {
       options = {
@@ -220,7 +220,13 @@ return {
   {
     "RRethy/vim-illuminate",
     event = { "BufReadPost", "BufNewFile" },
-    opts = { delay = 200 },
+    opts = {
+      delay = 200,
+      large_file_cutoff = 2000,
+      large_file_overrides = {
+        providers = { "lsp" },
+      },
+    },
     config = function(_, opts)
       require("illuminate").configure(opts)
 
@@ -393,5 +399,22 @@ return {
       { "<leader>xt", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
       { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
     },
+  },
+  {
+    'folke/flash.nvim',
+    event = "VeryLazy",
+    vscode = true,
+    opts = {},
+    keys = {
+      { 's', function() require('flash').jump() end, mode = { 'n', 'x', 'o' } },
+      { 'S', function() require('flash').treesitter() end, mode = { 'o', 'x' } },
+      { 'r', function() require('flash').remote() end, mode = 'o', desc = 'Remote Flash' },
+    },
+  },
+  {
+    "NvChad/nvim-colorizer.lua",
+    config = function (_, opts)
+      require 'colorizer'.setup(opts)
+    end
   },
 }
