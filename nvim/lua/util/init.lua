@@ -33,16 +33,4 @@ function M.fg(name)
   return fg and { fg = string.format("#%06x", fg) }
 end
 
-function M.is_in_table(tbl, val)
-  if tbl == nil then
-    return false
-  end
-  for _, value in pairs(tbl) do
-    if val == value then
-        return true
-    end
-  end
-  return false
-end
-
 return M

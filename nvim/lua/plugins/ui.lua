@@ -80,28 +80,51 @@ return {
               function() return vim.fn['codeium#GetStatusString']() end,
             },
             {
-              -- Lsp server name
+              -- lsp server name
               function()
+                local bufnr = vim.api.nvim_get_current_buf()
                 local active_clients = vim.lsp.get_active_clients({
-                  bufnr = vim.api.nvim_get_current_buf()
+                  bufnr = bufnr
                 })
 
-                local hide_server_names = { 'null-ls', 'copilot' }
+                local hide_server_names = { 'copilot' }
                 local clients = {}
 
+                -- filter servers
                 for _, client in ipairs(active_clients) do
-                  if not require("util").is_in_table(hide_server_names, client.name) then
-                    clients[#clients + 1] = client.name
+                  if not vim.tbl_contains(hide_server_names, client.name) then
+                    clients[#clients + 1] = client
                   end
                 end
 
-                if next(clients) then
-                  local icon = ' '
-                  local sep = '|'
-                  return icon .. table.concat(clients, sep)
+                -- sort null-ls last
+                table.sort(clients, function(a, b)
+                  if a.name == 'null-ls' then return false end
+                  if b.name == 'null-ls' then return true end
+                  return a.name < b.name
+                end)
+
+                if next(clients) == nil then
+                  return 'No active LSP clients'
                 end
 
-                return 'No active LSP clients'
+                local clients_name = vim.tbl_map(function(client)
+                  if client.name:match('null') then
+                    local sources = require('null-ls.sources').get_available(vim.bo[bufnr].filetype)
+                    local hide_source_names = { 'trim_whitespace' }
+                    sources = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_source_names, s.name) end, sources)
+
+                    local source_names = vim.tbl_map(function(s) return s.name end, sources)
+
+                    return '␀ ' .. table.concat(source_names, ', ')
+                  end
+
+                  return client.name
+                end, clients)
+
+                local icon = ' '
+                local sep = '|'
+                return icon .. table.concat(clients_name, sep)
               end,
             },
           },

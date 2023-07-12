@@ -11,12 +11,11 @@ return {
   {
     'Wansmer/treesj',
     event = { "BufEnter", "BufNewFile" },
+    keys = { '<space>m', '<space>j', '<space>s' },
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    opts = { use_default_keymaps = false },
-    keys = {
-      { 'gS', '<Cmd>TSJSplit<CR>', desc = 'split expression to multiple lines' },
-      { 'gJ', '<Cmd>TSJJoin<CR>', desc = 'join expression to single line' },
-    },
+    config = function (_, opts)
+      require('treesj').setup(opts)
+    end
   },
   -- comment
   {

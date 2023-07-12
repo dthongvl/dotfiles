@@ -8,7 +8,7 @@ function M.get()
     { "gd", "<cmd>Glance definitions<cr>", desc = "Goto Definition", has = "definition" },
     { "gr", "<cmd>Glance references<cr>", desc = "References" },
     { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
-    { "gI", "<cmd>Glance implementations<cr>", desc = "Goto Implementation" },
+    { "gi", "<cmd>Glance implementations<cr>", desc = "Goto Implementation" },
     { "gt", "<cmd>Glance type_definitions<cr>", desc = "Goto Type Definition" },
     { "K", vim.lsp.buf.hover, desc = "Hover" },
     { "gK", vim.lsp.buf.signature_help, desc = "Signature Help", has = "signatureHelp" },

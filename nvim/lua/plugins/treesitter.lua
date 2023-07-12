@@ -47,8 +47,8 @@ return {
       ensure_installed = {
         'astro',
         'bash',
-        'c',
         'comment',
+        'c',
         'cpp',
         'css',
         'dockerfile',
@@ -64,6 +64,7 @@ return {
         'scss',
         'sql',
         'terraform',
+        'hcl',
         'typescript',
         'vim',
         'vue',
