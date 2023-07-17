@@ -4,7 +4,7 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      { "folke/neoconf.nvim", cmd = "Neoconf", config = true },
+      { "folke/neoconf.nvim", cmd = "Neoconf", config = false, dependencies = { "nvim-lspconfig" } },
       { "folke/neodev.nvim",  opts = { experimental = { pathStrict = true } } },
       "mason.nvim",
       "williamboman/mason-lspconfig.nvim",
@@ -64,6 +64,7 @@ return {
         gopls = {},
         rust_analyzer = {},
         dockerls = {},
+        docker_compose_language_service = {},
         sorbet = {
           cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' },
         },
@@ -88,6 +89,11 @@ return {
     config = function(_, opts)
       local Util = require("util")
 
+      if Util.has("neoconf.nvim") then
+        local plugin = require("lazy.core.config").spec.plugins["neoconf.nvim"]
+        require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
+      end
+
       -- setup autoformat
       require("plugins.lsp.format").setup(opts)
 
@@ -108,11 +114,12 @@ return {
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
       local servers = opts.servers
+      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       local capabilities = vim.tbl_deep_extend(
         "force",
         {},
         vim.lsp.protocol.make_client_capabilities(),
-        require("cmp_nvim_lsp").default_capabilities(),
+        has_cmp and cmp_nvim_lsp.default_capabilities() or {},
         opts.capabilities or {}
       )
 
@@ -173,13 +180,14 @@ return {
           null_ls.builtins.formatting.jq,        -- json
           null_ls.builtins.formatting.trim_whitespace,
           null_ls.builtins.formatting.terraform_fmt,
-          -- null_ls.builtins.code_actions.eslint,
+          null_ls.builtins.code_actions.eslint,
           null_ls.builtins.diagnostics.shellcheck,
           null_ls.builtins.diagnostics.rubocop,
-          null_ls.builtins.diagnostics.eslint,
+          -- null_ls.builtins.diagnostics.eslint,
           null_ls.builtins.diagnostics.ansiblelint,
           null_ls.builtins.diagnostics.luacheck,
           null_ls.builtins.diagnostics.terraform_validate,
+          null_ls.builtins.diagnostics.hadolint,
         },
       }
     end,
@@ -189,6 +197,7 @@ return {
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
+    build = ":MasonUpdate",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     config = function(_, opts)
       require("mason").setup(opts)

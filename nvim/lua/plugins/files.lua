@@ -1,6 +1,92 @@
 return {
+  -- file explorer
+  {
+    'nvim-neo-tree/neo-tree.nvim',
+    cmd = { 'Neotree' },
+    keys = { { '<leader>e', '<Cmd>Neotree toggle reveal<CR>', desc = 'NeoTree' } },
+    config = function()
+      vim.g.neo_tree_remove_legacy_commands = 1
+
+      require('neo-tree').setup({
+        sources = { 'filesystem', 'git_status', 'document_symbols' },
+        source_selector = {
+          winbar = true,
+          separator_active = '',
+          sources = {
+            { source = 'filesystem' },
+            { source = 'git_status' },
+            { source = 'document_symbols' },
+          },
+        },
+        enable_git_status = true,
+        git_status_async = true,
+        filesystem = {
+          hijack_netrw_behavior = 'open_current',
+          use_libuv_file_watcher = true,
+          group_empty_dirs = false,
+          follow_current_file = {
+            enabled = true,
+          },
+          filtered_items = {
+            visible = true,
+            hide_dotfiles = false,
+            hide_gitignored = true,
+            never_show = { '.DS_Store' },
+          },
+          window = {
+            mappings = {
+              ['/'] = 'noop',
+              ['g/'] = 'fuzzy_finder',
+            },
+          },
+        },
+        default_component_configs = {
+          name = {
+            highlight_opened_files = true,
+          },
+          document_symbols = {
+            follow_cursor = true,
+          },
+        },
+        window = {
+          mappings = {
+            ['o'] = 'toggle_node',
+            ['<CR>'] = 'open_with_window_picker',
+            ['<c-s>'] = 'split_with_window_picker',
+            ['<c-v>'] = 'vsplit_with_window_picker',
+            ['<esc>'] = 'revert_preview',
+            ['P'] = { 'toggle_preview', config = { use_float = false } },
+          },
+        },
+      })
+    end,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      'nvim-tree/nvim-web-devicons',
+      {
+        's1n7ax/nvim-window-picker',
+        version = '*',
+        config = function()
+          require('window-picker').setup({
+            hint = 'floating-big-letter',
+            autoselect_one = true,
+            include_current = false,
+            other_win_hl_color = '#e35e4f',
+            filter_rules = {
+              bo = {
+                filetype = { 'neo-tree-popup', 'quickfix' },
+                buftype = { 'terminal', 'quickfix', 'nofile' },
+              },
+            },
+          })
+        end,
+      },
+    },
+  },
 	{
 		"nvim-tree/nvim-tree.lua",
+    enabled = false,
     version = "*",
     dependencies = {
       "nvim-tree/nvim-web-devicons",

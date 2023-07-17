@@ -19,8 +19,8 @@ return {
         always_show_bufferline = false,
         offsets = {
           {
-            filetype = 'NvimTree',
-            text = 'NvimTree',
+            filetype = 'neo-tree',
+            text = 'Neo-tree',
             highlight = 'Directory',
             text_align = 'left',
           },
@@ -82,49 +82,48 @@ return {
             {
               -- lsp server name
               function()
-                local bufnr = vim.api.nvim_get_current_buf()
-                local active_clients = vim.lsp.get_active_clients({
-                  bufnr = bufnr
-                })
-
-                local hide_server_names = { 'copilot' }
-                local clients = {}
-
-                -- filter servers
-                for _, client in ipairs(active_clients) do
-                  if not vim.tbl_contains(hide_server_names, client.name) then
-                    clients[#clients + 1] = client
-                  end
-                end
-
-                -- sort null-ls last
-                table.sort(clients, function(a, b)
-                  if a.name == 'null-ls' then return false end
-                  if b.name == 'null-ls' then return true end
-                  return a.name < b.name
-                end)
-
-                if next(clients) == nil then
-                  return 'No active LSP clients'
-                end
-
-                local clients_name = vim.tbl_map(function(client)
-                  if client.name:match('null') then
-                    local sources = require('null-ls.sources').get_available(vim.bo[bufnr].filetype)
-                    local hide_source_names = { 'trim_whitespace' }
-                    sources = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_source_names, s.name) end, sources)
-
-                    local source_names = vim.tbl_map(function(s) return s.name end, sources)
-
-                    return '␀ ' .. table.concat(source_names, ', ')
-                  end
-
-                  return client.name
-                end, clients)
-
-                local icon = ' '
-                local sep = '|'
-                return icon .. table.concat(clients_name, sep)
+                -- local bufnr = vim.api.nvim_get_current_buf()
+                -- local active_clients = vim.lsp.get_active_clients({
+                --   bufnr = bufnr
+                -- })
+                --
+                -- local hide_server_names = { 'copilot', 'null-ls' }
+                -- local clients = {}
+                -- local null_ls_client = nil
+                --
+                -- -- filter servers
+                -- for _, client in ipairs(active_clients) do
+                --   if client.name == 'null-ls' then
+                --     null_ls_client = client
+                --   end
+                --
+                --   if not vim.tbl_contains(hide_server_names, client.name) then
+                --     clients[#clients + 1] = client.name
+                --   end
+                -- end
+                --
+                -- if not null_ls_client == nil then
+                --   local sources = require('null-ls.sources').get_available(vim.bo[bufnr].filetype)
+                --   local hide_source_names = { 'trim_whitespace' }
+                --   sources = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_source_names, s.name) end, sources)
+                --
+                --   local source_names = vim.tbl_map(function(s) return s.name end, sources)
+                --
+                --   if next(source_names) == nil then
+                --     return ''
+                --   end
+                --
+                --   return '␀ ' .. table.concat(source_names, ', ')
+                -- end
+                --
+                -- if next(clients) == nil then
+                --   return 'No active LSP clients'
+                -- end
+                --
+                -- local icon = ' '
+                -- local sep = '|'
+                -- return icon .. table.concat(clients_name, sep)
+                return 'ahihi'
               end,
             },
           },
@@ -133,7 +132,7 @@ return {
             { "location", padding = { left = 0, right = 1 } },
           },
         },
-        extensions = { "nvim-tree", "lazy" },
+        extensions = { "nvim-tree", "lazy", "neo-tree" },
       }
     end,
   },
@@ -155,7 +154,7 @@ return {
       -- char = "▏",
       char = "│",
       context_char = '▎',
-      filetype_exclude = { "help", "nvim-tree", "lazy", "Trouble" },
+      filetype_exclude = { "help", "nvim-tree", 'neo-tree', "lazy", "Trouble" },
       show_trailing_blankline_indent = false,
       show_current_context = true,
       show_current_context_start = true,
@@ -427,11 +426,15 @@ return {
     'folke/flash.nvim',
     event = "VeryLazy",
     vscode = true,
+    ---@type Flash.Config
     opts = {},
+    -- stylua: ignore
     keys = {
-      { 's', function() require('flash').jump() end, mode = { 'n', 'x', 'o' } },
-      { 'S', function() require('flash').treesitter() end, mode = { 'o', 'x' } },
-      { 'r', function() require('flash').remote() end, mode = 'o', desc = 'Remote Flash' },
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     },
   },
   {

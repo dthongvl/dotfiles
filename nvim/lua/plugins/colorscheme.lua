@@ -24,8 +24,8 @@ return {
     lazy = false,
     priority = 1000,
     config = function(_, opts)
-      -- vim.cmd.colorscheme("duskfox")
-      vim.cmd.colorscheme("dayfox")
+      vim.cmd.colorscheme("duskfox")
+      -- vim.cmd.colorscheme("dayfox")
     end,
   },
   -- {
