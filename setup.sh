@@ -8,6 +8,10 @@ sudo apt install fish
 # Set fishshell to default shell
 chsh -s /usr/bin/fish
 
+# Install fisher
+curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+fisher install rose-pine/fish
+
 # Packages
 sudo apt install alacritty flameshot peek tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip
 yarn global add typescript rustywind

@@ -20,7 +20,7 @@ set fish_greeting 'No Sana No Life'
 
 source ~/.asdf/asdf.fish
 
-if test -f $HOME/.config/fish/nightfox.fish; . $HOME/.config/fish/nightfox.fish; end
+fish_config theme choose "Rosé Pine Dawn"
 
 set -gx PNPM_HOME "/home/dthongvl/.local/share/pnpm"
 set -gx PATH "$PNPM_HOME" $PATH
