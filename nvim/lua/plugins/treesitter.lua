@@ -48,6 +48,7 @@ return {
         'astro',
         'bash',
         'comment',
+        'fish',
         'c',
         'cpp',
         'css',

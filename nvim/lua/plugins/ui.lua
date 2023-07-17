@@ -7,7 +7,7 @@ return {
     event = "VeryLazy",
     keys = {
       { "<leader>gb", "<Cmd>BufferLinePick<CR>", desc = "Pick buffer" },
-      { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>", desc = "Delete other buffers" },
+      { "<leader>co", "<Cmd>BufferLineCloseOthers<CR>", desc = "Delete other buffers" },
     },
     opts = {
       options = {
@@ -82,48 +82,36 @@ return {
             {
               -- lsp server name
               function()
-                -- local bufnr = vim.api.nvim_get_current_buf()
-                -- local active_clients = vim.lsp.get_active_clients({
-                --   bufnr = bufnr
-                -- })
-                --
-                -- local hide_server_names = { 'copilot', 'null-ls' }
-                -- local clients = {}
-                -- local null_ls_client = nil
-                --
-                -- -- filter servers
-                -- for _, client in ipairs(active_clients) do
-                --   if client.name == 'null-ls' then
-                --     null_ls_client = client
-                --   end
-                --
-                --   if not vim.tbl_contains(hide_server_names, client.name) then
-                --     clients[#clients + 1] = client.name
-                --   end
-                -- end
-                --
-                -- if not null_ls_client == nil then
-                --   local sources = require('null-ls.sources').get_available(vim.bo[bufnr].filetype)
-                --   local hide_source_names = { 'trim_whitespace' }
-                --   sources = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_source_names, s.name) end, sources)
-                --
-                --   local source_names = vim.tbl_map(function(s) return s.name end, sources)
-                --
-                --   if next(source_names) == nil then
-                --     return ''
-                --   end
-                --
-                --   return '␀ ' .. table.concat(source_names, ', ')
-                -- end
-                --
-                -- if next(clients) == nil then
-                --   return 'No active LSP clients'
-                -- end
-                --
-                -- local icon = ' '
-                -- local sep = '|'
-                -- return icon .. table.concat(clients_name, sep)
-                return 'ahihi'
+                local bufnr = vim.api.nvim_get_current_buf()
+                local active_clients = vim.lsp.get_active_clients({
+                  bufnr = bufnr
+                })
+
+                -- filter clients
+                local server_names = 'No active LSP clients'
+                local hide_server_names = { 'copilot', 'null-ls' }
+                local clients = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_server_names, s.name) end, active_clients)
+                local client_names = vim.tbl_map(function(s) return s.name end, clients)
+
+                if next(client_names) ~= nil then
+                  server_names = ' ' .. table.concat(client_names, '|')
+                end
+
+                -- get null-ls sources
+                local null_ls_names = ''
+                local sources = require('null-ls.sources').get_available(vim.bo[bufnr].filetype)
+
+                -- filter sources
+                local hide_source_names = { 'trim_whitespace' }
+                sources = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_source_names, s.name) end, sources)
+
+                local source_names = vim.tbl_map(function(s) return s.name end, sources)
+
+                if next(source_names) ~= nil then
+                  null_ls_names = '␀ ' .. table.concat(source_names, '|')
+                end
+
+                return server_names .. null_ls_names
               end,
             },
           },
