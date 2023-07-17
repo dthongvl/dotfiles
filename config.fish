@@ -13,14 +13,17 @@ set -x ORACLE_HOME /opt/oracle/
 set -x LD_LIBRARY_PATH /opt/oracle/instantclient
 set -x TERM xterm-256color
 set -x EDITOR nvim
-set -x HELIX_RUNTIME /home/dthongvl/workspace/helix/runtime
+set -x HELIX_RUNTIME ~/workspace/helix/runtime
+set -x PNPM_HOME ~/.local/share/pnpm
 
-set -gx PATH $PATH (yarn global bin) $HOME/.local/bin $HOME/.cargo/bin $HOME/workspace/diff-so-fancy
+fish_add_path (yarn global bin)
+fish_add_path $HOME/.local/bin
+fish_add_path $HOME/.cargo/bin
+fish_add_path $HOME/workspace/diff-so-fancy
+fish_add_path $PNPM_HOME
+
 set fish_greeting 'No Sana No Life'
 
 source ~/.asdf/asdf.fish
 
 fish_config theme choose "Rosé Pine Dawn"
-
-set -gx PNPM_HOME "/home/dthongvl/.local/share/pnpm"
-set -gx PATH "$PNPM_HOME" $PATH
