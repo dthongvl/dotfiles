@@ -37,7 +37,8 @@ return {
         quickfix = { enabled = false, open = true },
         adapters = {
           require('neotest-plenary'),
-          require("neotest-rspec"),
+          require('neotest-rspec'),
+          require('neotest-go'),
           require('neotest-jest')({
             jestCommand = 'yarn test:unit',
             jestConfigFile = 'jest.config.js',
@@ -46,9 +47,10 @@ return {
       })
     end,
     dependencies = {
+      { 'nvim-neotest/neotest-go' },
       { 'haydenmeade/neotest-jest' },
       { 'rcarriga/neotest-plenary', dependencies = { 'nvim-lua/plenary.nvim' } },
-      { "olimorris/neotest-rspec" },
+      { 'olimorris/neotest-rspec' },
     },
   },
 }

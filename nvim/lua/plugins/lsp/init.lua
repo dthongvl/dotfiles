@@ -71,6 +71,7 @@ return {
         volar = {
           filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json' },
         },
+        svelte = {},
       },
       -- you can do any additional lsp server setup here
       -- return true if you don't want this server to be setup with lspconfig
@@ -83,6 +84,26 @@ return {
         -- end,
         -- Specify * to use this function as a fallback for any server
         -- ["*"] = function(server, opts) end,
+        gopls = function(_, opts)
+          -- workaround for gopls not supporting semanticTokensProvider
+          -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
+          require("util").on_attach(function(client, _)
+            if client.name == "gopls" then
+              if not client.server_capabilities.semanticTokensProvider then
+                local semantic = client.config.capabilities.textDocument.semanticTokens
+                client.server_capabilities.semanticTokensProvider = {
+                  full = true,
+                  legend = {
+                    tokenTypes = semantic.tokenTypes,
+                    tokenModifiers = semantic.tokenModifiers,
+                  },
+                  range = true,
+                }
+              end
+            end
+          end)
+          -- end workaround
+        end,
       },
     },
     ---@param opts PluginLspOpts
@@ -105,7 +126,7 @@ return {
 
       if opts.inlay_hints.enabled and inlay_hint then
         Util.on_attach(function(client, buffer)
-          if client.server_capabilities.inlayHintProvider then
+          if client.supports_method('textDocument/inlayHint') then
             inlay_hint(buffer, true)
           end
         end)
@@ -177,10 +198,12 @@ return {
       return {
         root_dir = require("null-ls.utils").root_pattern(".null-ls-root", ".neoconf.json", "Makefile", ".git"),
         sources = {
-          null_ls.builtins.formatting.jq,        -- json
+          null_ls.builtins.formatting.jq,
           null_ls.builtins.formatting.trim_whitespace,
           null_ls.builtins.formatting.terraform_fmt,
-          -- null_ls.builtins.code_actions.eslint,
+          null_ls.builtins.code_actions.eslint,
+          null_ls.builtins.code_actions.gomodifytags,
+          null_ls.builtins.code_actions.impl,
           null_ls.builtins.diagnostics.shellcheck,
           null_ls.builtins.diagnostics.rubocop,
           null_ls.builtins.diagnostics.eslint,
@@ -222,6 +245,15 @@ return {
     opts = {
       preview_win_opts = { relativenumber = false },
       theme = { enable = true, mode = 'darken' },
+    },
+  },
+  {
+    'kosayoda/nvim-lightbulb',
+    event = 'LspAttach',
+    opts = {
+      autocmd = { enabled = true },
+      sign = { enabled = false },
+      float = { enabled = true, win_opts = { border = 'none' } },
     },
   },
 }

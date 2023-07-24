@@ -59,6 +59,11 @@ return {
           opt.colorcolumn = ''
         end,
       },
+      view = {
+        merge_tool = {
+          layout = "diff3_mixed",
+        },
+      },
       keymaps = {
         view = { q = '<Cmd>DiffviewClose<CR>' },
         file_panel = { q = '<Cmd>DiffviewClose<CR>' },

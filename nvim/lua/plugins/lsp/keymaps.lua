@@ -10,7 +10,6 @@ function M.get()
     { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
     { "gi", "<cmd>Glance implementations<cr>", desc = "Goto Implementation" },
     { "gt", "<cmd>Glance type_definitions<cr>", desc = "Goto Type Definition" },
-    { "K", vim.lsp.buf.hover, desc = "Hover" },
     { "gK", vim.lsp.buf.signature_help, desc = "Signature Help", has = "signatureHelp" },
     { "<leader>cf", format, desc = "Format Document", has = "documentFormatting" },
     { "<leader>cf", format, desc = "Format Range", mode = "v", has = "documentRangeFormatting" },

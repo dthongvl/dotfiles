@@ -70,6 +70,7 @@ return {
         'vim',
         'vue',
         'yaml',
+        'svelte',
       },
       incremental_selection = {
         enable = true,
