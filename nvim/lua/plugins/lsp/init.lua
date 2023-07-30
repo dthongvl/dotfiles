@@ -1,3 +1,7 @@
+local function augroup(name)
+  return vim.api.nvim_create_augroup("lazyvim_" .. name, { clear = true })
+end
+
 return {
   -- lspconfig
   {
@@ -127,7 +131,23 @@ return {
       if opts.inlay_hints.enabled and inlay_hint then
         Util.on_attach(function(client, buffer)
           if client.supports_method('textDocument/inlayHint') then
-            inlay_hint(buffer, true)
+            local group = augroup(("LspInlayHints%d"):format(buffer))
+
+            vim.api.nvim_create_autocmd("InsertEnter", {
+              group = group,
+              buffer = buffer,
+              callback = function()
+                inlay_hint(buffer, false)
+              end,
+            })
+
+            vim.api.nvim_create_autocmd("InsertLeave", {
+              group = group,
+              buffer = buffer,
+              callback = function()
+                inlay_hint(buffer, true)
+              end,
+            })
           end
         end)
       end

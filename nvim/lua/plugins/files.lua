@@ -71,12 +71,11 @@ return {
         config = function()
           require('window-picker').setup({
             hint = 'floating-big-letter',
-            autoselect_one = true,
-            include_current = false,
-            other_win_hl_color = '#e35e4f',
             filter_rules = {
+              autoselect_one = true,
+              include_current_win = false,
               bo = {
-                filetype = { 'neo-tree-popup', 'quickfix' },
+                filetype = { 'neo-tree-popup', 'quickfix', 'neo-tree' },
                 buftype = { 'terminal', 'quickfix', 'nofile' },
               },
             },
@@ -85,36 +84,6 @@ return {
       },
     },
   },
-	{
-		"nvim-tree/nvim-tree.lua",
-    enabled = false,
-    version = "*",
-    dependencies = {
-      "nvim-tree/nvim-web-devicons",
-    },
-    keys = {
-      {
-        "<leader>e",
-        function ()
-          require("nvim-tree.api").tree.toggle({ find_file = true, focus = true })
-        end,
-        desc = "File Explorer",
-      },
-    },
-    opts = {
-      update_focused_file = {
-        enable = true,
-      },
-      renderer = {
-        highlight_git = true,
-        icons = {
-          show = {
-            git = false,
-          }
-        }
-      }
-    },
-	},
   {
     'nvim-telescope/telescope.nvim',
     cmd = "Telescope",
