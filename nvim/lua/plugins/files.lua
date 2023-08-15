@@ -66,20 +66,16 @@ return {
       'MunifTanjim/nui.nvim',
       'nvim-tree/nvim-web-devicons',
       {
-        's1n7ax/nvim-window-picker',
-        version = '*',
+        'ten3roberts/window-picker.nvim',
+        name = 'window-picker',
         config = function()
-          require('window-picker').setup({
-            hint = 'floating-big-letter',
-            filter_rules = {
-              autoselect_one = true,
-              include_current_win = false,
-              bo = {
-                filetype = { 'neo-tree-popup', 'quickfix', 'neo-tree' },
-                buftype = { 'terminal', 'quickfix', 'nofile' },
-              },
-            },
-          })
+          local picker = require('window-picker')
+          picker.setup()
+          picker.pick_window = function()
+            return picker.select({ hl = 'WindowPicker', prompt = 'Pick window: ' },
+              function(winid) return winid or nil end
+            )
+          end
         end,
       },
     },
