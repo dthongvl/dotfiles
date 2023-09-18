@@ -131,23 +131,25 @@ return {
       if opts.inlay_hints.enabled and inlay_hint then
         Util.on_attach(function(client, buffer)
           if client.supports_method('textDocument/inlayHint') then
-            -- local group = augroup(("LspInlayHints%d"):format(buffer))
-            --
-            -- vim.api.nvim_create_autocmd("InsertEnter", {
-            --   group = group,
-            --   buffer = buffer,
-            --   callback = function()
-            --     inlay_hint(buffer, false)
-            --   end,
-            -- })
-            --
-            -- vim.api.nvim_create_autocmd("InsertLeave", {
-            --   group = group,
-            --   buffer = buffer,
-            --   callback = function()
-            --     inlay_hint(buffer, true)
-            --   end,
-            -- })
+            local group = augroup(("LspInlayHints%d"):format(buffer))
+
+            vim.api.nvim_create_autocmd("InsertEnter", {
+              group = group,
+              buffer = buffer,
+              callback = function()
+                inlay_hint(buffer, false)
+              end,
+            })
+
+            vim.api.nvim_create_autocmd("InsertLeave", {
+              group = group,
+              buffer = buffer,
+              callback = function()
+                inlay_hint(buffer, true)
+              end,
+            })
+
+            inlay_hint(buffer, true)
           end
         end)
       end

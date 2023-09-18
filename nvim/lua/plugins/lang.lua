@@ -1,6 +1,8 @@
 return {
   {
     'pmizio/typescript-tools.nvim',
+    -- use Volar take over mode
+    enabled = false,
     lazy = false,
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
     opts = {

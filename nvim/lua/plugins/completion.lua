@@ -83,7 +83,7 @@ return {
           { name = "luasnip" },
           { name = "buffer" },
           { name = "path" },
-          { name = 'emoji' },
+          { name = "emoji" },
         }),
         experimental = {
           ghost_text = {

@@ -72,7 +72,8 @@ return {
           local picker = require('window-picker')
           picker.setup()
           picker.pick_window = function()
-            return picker.select({ hl = 'WindowPicker', prompt = 'Pick window: ' },
+            return picker.select(
+              { hl = 'WindowPicker', prompt = 'Pick window: ' },
               function(winid) return winid or nil end
             )
           end
@@ -109,6 +110,11 @@ return {
           require('telescope.builtin').buffers()
         end,
         desc = "Buffers",
+      },
+    },
+    opts = {
+      defaults = {
+        sorting_strategy = "ascending",
       },
     },
     config = function (_, opts)

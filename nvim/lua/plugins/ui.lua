@@ -1,4 +1,12 @@
-local strwidth = vim.api.nvim_strwidth
+local highlight = {
+  "RainbowRed",
+  "RainbowYellow",
+  "RainbowBlue",
+  "RainbowOrange",
+  "RainbowGreen",
+  "RainbowViolet",
+  "RainbowCyan",
+}
 
 return {
   -- bufferline
@@ -33,13 +41,6 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     opts = function(plugin)
-      local function fg(name)
-        return function()
-          ---@type {foreground?:number}?
-          local hl = vim.api.nvim_get_hl_by_name(name, true)
-          return hl and hl.foreground and { fg = string.format("#%06x", hl.foreground) }
-        end
-      end
       local Util = require("util")
 
       return {
@@ -70,7 +71,7 @@ return {
               cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
               color = Util.fg("Constant") ,
             },
-            { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg("Special") },
+            { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = Util.fg("Special") },
             {
               "diff",
             },
@@ -138,16 +139,43 @@ return {
   {
     "lukas-reineke/indent-blankline.nvim",
     event = { "BufReadPost", "BufNewFile" },
+    branch = "v3",
     opts = {
       -- char = "▏",
-      char = "│",
-      context_char = '▎',
-      filetype_exclude = { "help", "nvim-tree", 'neo-tree', "lazy", "Trouble" },
-      show_trailing_blankline_indent = false,
-      show_current_context = true,
-      show_current_context_start = true,
-      show_current_context_start_on_current_line = false,
+      -- char = "│",
+      indent = {
+        char = "│",
+      },
+      scope = {
+        highlight = highlight,
+      }
+      -- context_char = '▎',
+      -- filetype_exclude = { "help", "nvim-tree", 'neo-tree', "lazy", "Trouble" },
+      -- show_trailing_blankline_indent = false,
+      -- show_current_context = true,
+      -- show_current_context_start = true,
+      -- show_current_context_start_on_current_line = false,
     },
+    config = function(_, opts)
+
+      local hooks = require "ibl.hooks"
+      -- create the highlight groups in the highlight setup hook, so they are reset
+      -- every time the colorscheme changes
+      hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+        vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
+        vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
+        vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
+        vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
+        vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
+        vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
+        vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
+      end)
+
+      vim.g.rainbow_delimiters = vim.list_extend(vim.g.rainbow_delimiters or {}, { highlight = highlight })
+      require("ibl").setup(opts)
+
+      hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
+    end
   },
   -- folding
   {
@@ -175,18 +203,19 @@ return {
   -- brackets color
   {
     'HiPhish/rainbow-delimiters.nvim',
+    url = 'https://gitlab.com/HiPhish/rainbow-delimiters.nvim',
     event = 'VeryLazy',
     config = function()
       local rainbow_delimiters = require('rainbow-delimiters')
 
-      vim.g.rainbow_delimiters = {
+      vim.g.rainbow_delimiters = vim.list_extend(vim.g.rainbow_delimiters or {}, {
         strategy = {
           [''] = rainbow_delimiters.strategy['global'],
         },
         query = {
           [''] = 'rainbow-delimiters',
         },
-      }
+      })
     end,
   },
   -- references

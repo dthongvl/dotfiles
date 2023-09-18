@@ -6,12 +6,13 @@ global.loaded_netrwPlugin = 1
 global.mapleader = " "
 global.maplocalleader = " "
 
--- opt.background = 'light'
+opt.background = 'light'
 opt.autowrite = true -- Enable auto write
 opt.clipboard = "unnamedplus" -- Sync with system clipboard
 opt.completeopt = "menu,menuone,noselect"
 opt.confirm = true -- Confirm to save changes before exiting modified buffer
 opt.cursorline = true -- Enable highlighting of the current line
+opt.cursorcolumn =  true -- Enable highlighting of the current column
 opt.expandtab = true -- Use spaces instead of tabs
 opt.ignorecase = true -- Ignore case
 opt.inccommand = "nosplit" -- preview incremental substitute

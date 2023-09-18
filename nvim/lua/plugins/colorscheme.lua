@@ -10,14 +10,22 @@ return {
   --     vim.cmd.colorscheme("tokyonight")
   --   end,
   -- },
+  -- {
+  --   "projekt0n/github-nvim-theme",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function(_, opts)
+  --     require('github-theme').setup(opts)
+  --     vim.cmd.colorscheme("github_light_high_contrast")
+  --   end,
+  -- },
   {
-    "projekt0n/github-nvim-theme",
-    lazy = false,
-    priority = 1000,
-    config = function(_, opts)
-      require('github-theme').setup(opts)
-      vim.cmd.colorscheme("github_light_high_contrast")
-    end,
+      'Verf/deepwhite.nvim',
+      lazy = false,
+      priority = 1000,
+      config = function(_, opts)
+        vim.cmd.colorscheme("deepwhite")
+      end,
   },
   -- {
   --   "edeneast/nightfox.nvim",
