@@ -14,6 +14,16 @@ function M.get()
     { "<leader>cf", format, desc = "Format Document", has = "documentFormatting" },
     { "<leader>cf", format, desc = "Format Range", mode = "v", has = "documentRangeFormatting" },
     { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" }, has = "codeAction" },
+    {
+      "<leader>cr",
+      function()
+        local inc_rename = require("inc_rename")
+        return ":" .. inc_rename.config.cmd_name .. " " .. vim.fn.expand("<cword>")
+      end,
+      expr = true,
+      desc = "Rename",
+      has = "rename",
+    },
   }
 end
 

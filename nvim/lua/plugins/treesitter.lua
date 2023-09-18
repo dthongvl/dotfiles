@@ -125,4 +125,13 @@ return {
     event = "InsertEnter",
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
   },
+  {
+    'nvim-treesitter/nvim-treesitter-context',
+    event = 'VeryLazy',
+    opts = {
+      multiline_threshold = 4,
+      separator = '─', -- alternatives: ▁ ─ ▄
+      mode = 'cursor',
+    },
+  },
 }
