@@ -102,6 +102,7 @@ font:
     # family: DankMono
     # family: FiraCode Nerd Font
     family: FantasqueSansM Nerd Font Propo
+    # family: CaskaydiaCove Nerd Font Propo
 
     # The `style` can be specified to pick a specific face.
     #style: Regular
