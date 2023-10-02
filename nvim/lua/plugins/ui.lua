@@ -14,7 +14,7 @@ return {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
     keys = {
-      { "<leader>gb", "<Cmd>BufferLinePick<CR>", desc = "Pick buffer" },
+      { "<leader>gb", "<Cmd>BufferLinePick<CR>",        desc = "Pick buffer" },
       { "<leader>co", "<Cmd>BufferLineCloseOthers<CR>", desc = "Delete other buffers" },
     },
     opts = {
@@ -69,7 +69,7 @@ return {
             {
               function() return require("noice").api.status.mode.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-              color = Util.fg("Constant") ,
+              color = Util.fg("Constant"),
             },
             { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = Util.fg("Special") },
             {
@@ -90,34 +90,21 @@ return {
 
                 -- filter clients
                 local server_names = 'No active LSP clients'
-                local hide_server_names = { 'copilot', 'null-ls' }
-                local clients = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_server_names, s.name) end, active_clients)
+                local hide_server_names = { 'copilot' }
+                local clients = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_server_names, s.name) end,
+                  active_clients)
                 local client_names = vim.tbl_map(function(s) return s.name end, clients)
 
                 if next(client_names) ~= nil then
                   server_names = ' ' .. table.concat(client_names, '|')
                 end
 
-                -- get null-ls sources
-                local null_ls_names = ''
-                local sources = require('null-ls.sources').get_available(vim.bo[bufnr].filetype)
-
-                -- filter sources
-                local hide_source_names = { 'trim_whitespace' }
-                sources = vim.tbl_filter(function(s) return not vim.tbl_contains(hide_source_names, s.name) end, sources)
-
-                local source_names = vim.tbl_map(function(s) return s.name end, sources)
-
-                if next(source_names) ~= nil then
-                  null_ls_names = '␀ ' .. table.concat(source_names, '|')
-                end
-
-                return server_names .. null_ls_names
+                return server_names
               end,
             },
           },
           lualine_z = {
-            { "progress", separator = " ", padding = { left = 1, right = 0 } },
+            { "progress", separator = " ",                  padding = { left = 1, right = 0 } },
             { "location", padding = { left = 0, right = 1 } },
           },
         },
@@ -139,25 +126,25 @@ return {
   {
     "lukas-reineke/indent-blankline.nvim",
     event = { "BufReadPost", "BufNewFile" },
-    branch = "v3",
     opts = {
-      -- char = "▏",
-      -- char = "│",
       indent = {
         char = "│",
+        tab_char = "│",
       },
       scope = {
+        char = "▎",
         highlight = highlight,
-      }
-      -- context_char = '▎',
-      -- filetype_exclude = { "help", "nvim-tree", 'neo-tree', "lazy", "Trouble" },
-      -- show_trailing_blankline_indent = false,
-      -- show_current_context = true,
-      -- show_current_context_start = true,
-      -- show_current_context_start_on_current_line = false,
+        show_start = true,
+      },
+      exclude = {
+        filetypes = {
+          'dbout', 'neo-tree-popup', 'log', 'gitcommit',
+          'txt', 'help', 'NvimTree', 'git', 'flutterToolsOutline',
+          'undotree', 'markdown', 'norg', 'org', 'orgagenda',
+        },
+      },
     },
     config = function(_, opts)
-
       local hooks = require "ibl.hooks"
       -- create the highlight groups in the highlight setup hook, so they are reset
       -- every time the colorscheme changes
@@ -183,8 +170,8 @@ return {
     event = 'VeryLazy',
     dependencies = { 'kevinhwang91/promise-async' },
     keys = {
-      { 'zR', function() require('ufo').openAllFolds() end, 'open all folds' },
-      { 'zM', function() require('ufo').closeAllFolds() end, 'close all folds' },
+      { 'zR', function() require('ufo').openAllFolds() end,               'open all folds' },
+      { 'zM', function() require('ufo').closeAllFolds() end,              'close all folds' },
       { 'zP', function() require('ufo').peekFoldedLinesUnderCursor() end, 'preview fold' },
     },
     opts = function()
@@ -381,13 +368,52 @@ return {
     },
     -- stylua: ignore
     keys = {
-      { "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end, mode = "c", desc = "Redirect Cmdline" },
-      { "<leader>snl", function() require("noice").cmd("last") end, desc = "Noice Last Message" },
-      { "<leader>snh", function() require("noice").cmd("history") end, desc = "Noice History" },
+      {
+        "<S-Enter>",
+        function() require("noice").redirect(vim.fn.getcmdline()) end,
+        mode = "c",
+        desc =
+        "Redirect Cmdline"
+      },
+      {
+        "<leader>snl",
+        function() require("noice").cmd("last") end,
+        desc =
+        "Noice Last Message"
+      },
+      {
+        "<leader>snh",
+        function() require("noice").cmd("history") end,
+        desc =
+        "Noice History"
+      },
       { "<leader>sna", function() require("noice").cmd("all") end, desc = "Noice All" },
-      { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
-      { "<c-f>", function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end, silent = true, expr = true, desc = "Scroll forward", mode = {"i", "n", "s"} },
-      { "<c-b>", function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end, silent = true, expr = true, desc = "Scroll backward", mode = {"i", "n", "s"}},
+      {
+        "<leader>snd",
+        function() require("noice").cmd("dismiss") end,
+        desc =
+        "Dismiss All"
+      },
+      {
+        "<c-f>",
+        function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end,
+        silent = true,
+        expr = true,
+        desc =
+        "Scroll forward",
+        mode = {
+          "i", "n", "s" }
+      },
+      {
+        "<c-b>",
+        function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end,
+        silent = true,
+        expr = true,
+        desc =
+        "Scroll backward",
+        mode = {
+          "i", "n", "s" }
+      },
     },
   },
   -- todo comments
@@ -399,7 +425,7 @@ return {
     -- stylua: ignore
     keys = {
       { "<leader>xt", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
-      { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
+      { "<leader>st", "<cmd>TodoTelescope<cr>",                       desc = "Todo" },
     },
   },
   {
@@ -410,16 +436,28 @@ return {
     opts = {},
     -- stylua: ignore
     keys = {
-      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end,       desc = "Flash" },
       { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+      { "r", mode = "o",               function() require("flash").remote() end,     desc = "Remote Flash" },
+      {
+        "R",
+        mode = { "o", "x" },
+        function() require("flash").treesitter_search() end,
+        desc =
+        "Treesitter Search"
+      },
+      {
+        "<c-s>",
+        mode = { "c" },
+        function() require("flash").toggle() end,
+        desc =
+        "Toggle Flash Search"
+      },
     },
   },
   {
     "NvChad/nvim-colorizer.lua",
-    config = function (_, opts)
+    config = function(_, opts)
       require 'colorizer'.setup(opts)
     end
   },

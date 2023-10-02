@@ -9,7 +9,7 @@ return {
     },
     keys = {
       { "<c-space>", desc = "Increment selection" },
-      { "<bs>", desc = "Decrement selection", mode = "x" },
+      { "<bs>",      desc = "Decrement selection", mode = "x" },
     },
     opts = {
       auto_install = true,
@@ -43,6 +43,9 @@ return {
         'css',
         'dockerfile',
         'go',
+        'gomod',
+        'gowork',
+        'gosum',
         'html',
         'typescript',
         'javascript',
@@ -100,7 +103,7 @@ return {
       },
     },
     ---@param opts TSConfig
-    config = function (_, opts)
+    config = function(_, opts)
       require('nvim-treesitter.configs').setup(opts)
     end,
   },
