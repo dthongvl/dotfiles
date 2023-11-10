@@ -245,6 +245,7 @@ return {
   -- lsp context in winbar
   {
     "Bekaboo/dropbar.nvim",
+    enabled = false,
     event = 'VeryLazy',
     opts = {
       bar = {

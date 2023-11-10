@@ -50,6 +50,7 @@ return {
           },
         },
         window = {
+          position = 'right',
           mappings = {
             ['o'] = 'toggle_node',
             ['<CR>'] = 'open_with_window_picker',
@@ -92,21 +93,21 @@ return {
     keys = {
       {
         "<leader>/",
-        function ()
+        function()
           require('telescope.builtin').live_grep()
         end,
         desc = "Find in Files (Grep)",
       },
       {
         "<leader>f",
-        function ()
+        function()
           require('telescope.builtin').find_files()
         end,
         desc = "Find Files (root dir)",
       },
       {
         "<leader>b",
-        function ()
+        function()
           require('telescope.builtin').buffers()
         end,
         desc = "Buffers",
@@ -117,7 +118,7 @@ return {
         sorting_strategy = "ascending",
       },
     },
-    config = function (_, opts)
+    config = function(_, opts)
       local telescope = require('telescope')
       telescope.setup(opts)
       telescope.load_extension('fzf')
@@ -130,7 +131,8 @@ return {
     opts = { open_cmd = "noswapfile vnew" },
     -- stylua: ignore
     keys = {
-      { "<leader>sw", function() require("spectre").open_visual({ select_word = true }) end, desc = "Search current word in files (Spectre)" },
+      { "<leader>sw", function() require("spectre").open_visual({ select_word = true }) end,
+        desc = "Search current word in files (Spectre)" },
     },
   },
 }

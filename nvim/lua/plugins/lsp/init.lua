@@ -110,7 +110,7 @@ return {
       },
       -- options for vim.diagnostic.config()
       diagnostics = {
-        underline = true,
+        underline = false,
         update_in_insert = false,
         virtual_text = {
           spacing = 4,
@@ -226,7 +226,7 @@ return {
         },
         rust_analyzer = {},
         dockerls = {},
-        docker_compose_language_service = {},
+        -- docker_compose_language_service = {},
         sorbet = {
           cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' },
         },
@@ -289,6 +289,7 @@ return {
         require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
       end
 
+      -- setup keymaps
       Util.on_attach(function(client, buffer)
         require("plugins.lsp.keymaps").on_attach(client, buffer)
       end)
@@ -423,15 +424,32 @@ return {
       end
 
       function M.lint()
-        local lint = require("lint")
-        local names = lint.linters_by_ft[vim.bo.filetype] or {}
+        -- Use nvim-lint's logic first:
+        -- * checks if linters exist for the full filetype first
+        -- * otherwise will split filetype by "." and add all those linters
+        -- * this differs from conform.nvim which only uses the first filetype that has a formatter
+        local names = lint._resolve_linter_by_ft(vim.bo.filetype)
+
+        -- Add fallback linters.
+        if #names == 0 then
+          vim.list_extend(names, lint.linters_by_ft["_"] or {})
+        end
+
+        -- Add global linters.
+        vim.list_extend(names, lint.linters_by_ft["*"] or {})
+
+        -- Filter out linters that don't exist or don't match the condition.
         local ctx = { filename = vim.api.nvim_buf_get_name(0) }
         ctx.dirname = vim.fn.fnamemodify(ctx.filename, ":h")
         names = vim.tbl_filter(function(name)
           local linter = lint.linters[name]
-          return linter and not (linter.condition and not linter.condition(ctx))
+          if not linter then
+            Util.warn("Linter not found: " .. name, { title = "nvim-lint" })
+          end
+          return linter and not (type(linter) == "table" and linter.condition and not linter.condition(ctx))
         end, names)
 
+        -- Run linters.
         if #names > 0 then
           lint.try_lint(names)
         end
@@ -449,31 +467,31 @@ return {
     event = 'BufReadPre',
     opts = {
       formatters_by_ft = {
-        lua = { 'stylua' },
-        javascript = { 'eslint' },
-        typescript = { 'eslint' },
-        vue = { 'eslint' },
-        ruby = { 'rubocop' },
-        markdown = { 'prettier' },
-        go = { 'goimports', 'gofumpt' },
-        pgsql = { 'sql_formatter' },
-        sql = { 'sql_formatter' },
-        json = { 'jq' },
+        -- lua = { 'stylua' },
+        -- javascript = { 'eslint' },
+        -- typescript = { 'eslint' },
+        -- vue = { 'eslint' },
+        -- ruby = { 'rubocop' },
+        -- markdown = { 'prettier' },
+        -- go = { 'goimports', 'gofumpt' },
+        -- pgsql = { 'sql_formatter' },
+        -- sql = { 'sql_formatter' },
+        -- json = { 'jq' },
         ['_'] = { 'trim_whitespace' },
       },
       format_on_save = function(bufnr)
         -- Disable autoformat on certain filetypes
-        local ignore_filetypes = { "javascript", "typescript", "vue", "ruby" }
-        if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
-          return
-        end
+        -- local ignore_filetypes = { "javascript", "typescript", "vue", "ruby", "markdown", "dockerfile" }
+        -- if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
+        --   return
+        -- end
 
         -- Disable with a global or buffer-local variable
         if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
           return
         end
 
-        return { timeout_ms = 500, lsp_fallback = true }
+        return { timeout_ms = 500, lsp_fallback = false }
       end,
     },
     config = function(_, opts)
