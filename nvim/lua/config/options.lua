@@ -6,7 +6,7 @@ global.loaded_netrwPlugin = 1
 global.mapleader = " "
 global.maplocalleader = " "
 
-opt.background = 'light'
+-- opt.background = 'light'
 opt.autowrite = true               -- Enable auto write
 opt.clipboard = "unnamedplus"      -- Sync with system clipboard
 opt.completeopt = "menu,menuone,noselect"

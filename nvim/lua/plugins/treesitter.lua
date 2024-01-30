@@ -20,10 +20,6 @@ return {
         enable = true,
         disable = { "python" },
       },
-      context_commentstring = {
-        enable = true,
-        enable_autocmd = false,
-      },
       autopairs = {
         enable = true,
       },
