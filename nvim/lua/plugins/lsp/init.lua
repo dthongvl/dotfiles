@@ -230,9 +230,7 @@ return {
         sorbet = {
           cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' },
         },
-        volar = {
-          filetypes = { 'typescript', 'javascript', 'vue' },
-        },
+        volar = {},
         svelte = {},
       },
       -- you can do any additional lsp server setup here

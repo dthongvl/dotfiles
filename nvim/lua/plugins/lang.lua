@@ -1,11 +1,10 @@
 return {
   {
     'pmizio/typescript-tools.nvim',
-    -- use Volar take over mode
-    enabled = false,
     lazy = false,
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
     opts = {
+      filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue" },
       settings = {
         tsserver_file_preferences = {
           includeInlayParameterNameHints = 'literal',
