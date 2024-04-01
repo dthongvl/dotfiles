@@ -48,11 +48,28 @@ return {
       inlay_hints = {
         enabled = true
       },
+      -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
+      -- Be aware that you also will need to properly configure your LSP server to
+      -- provide the code lenses.
+      codelens = {
+        enabled = false,
+      },
       -- LSP Server Settings
       ---@type lspconfig.options
       servers = {
         lua_ls = {},
-        -- tsserver = {},
+        -- tsserver = {
+        --   init_options = {
+        --     plugins = {
+        --       {
+        --         name = "@vue/typescript-plugin",
+        --         location = "/home/dthongvl/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin",
+        --         languages = { "vue" },
+        --       },
+        --     },
+        --   },
+        --   -- filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+        -- },
         eslint = {},
         html = {},
         cssls = {},
@@ -150,7 +167,14 @@ return {
         sorbet = {
           cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' },
         },
-        volar = {},
+        volar = {
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+          init_options = {
+            vue = {
+              hybridMode = false,
+            },
+          },
+        },
         svelte = {},
       },
       -- you can do any additional lsp server setup here
@@ -159,7 +183,7 @@ return {
       setup = {
         -- example to setup with typescript.nvim
         -- tsserver = function(_, opts)
-        --   require("typescript").setup({ server = opts })
+        --   require("tsserver").setup({ server = opts })
         --   return true
         -- end,
         -- Specify * to use this function as a fallback for any server
@@ -191,10 +215,19 @@ return {
         end,
         tailwindcss = function(_, opts)
           local tw = require("lspconfig.server_configurations.tailwindcss")
+          opts.filetypes = opts.filetypes or {}
+
+          -- Add default filetypes
+          vim.list_extend(opts.filetypes, tw.default_config.filetypes)
+
+          -- Remove excluded filetypes
           --- @param ft string
           opts.filetypes = vim.tbl_filter(function(ft)
             return not vim.tbl_contains(opts.filetypes_exclude or {}, ft)
-          end, tw.default_config.filetypes)
+          end, opts.filetypes)
+
+          -- Add additional filetypes
+          vim.list_extend(opts.filetypes, opts.filetypes_include or {})
         end,
       },
     },
@@ -224,29 +257,25 @@ return {
         return ret
       end
 
+      -- inlay hints
       if opts.inlay_hints.enabled then
         Util.on_attach(function(client, buffer)
           if client.supports_method('textDocument/inlayHint') then
             Util.inlay_hints(buffer, true);
-            -- local group = augroup(("LspInlayHints%d"):format(buffer))
-            --
-            -- vim.api.nvim_create_autocmd("InsertEnter", {
-            --   group = group,
-            --   buffer = buffer,
-            --   callback = function()
-            --     inlay_hint(buffer, false)
-            --   end,
-            -- })
-            --
-            -- vim.api.nvim_create_autocmd("InsertLeave", {
-            --   group = group,
-            --   buffer = buffer,
-            --   callback = function()
-            --     inlay_hint(buffer, true)
-            --   end,
-            -- })
-            --
-            -- inlay_hint(buffer, true)
+          end
+        end)
+      end
+
+      -- code lens
+      if opts.codelens.enabled and vim.lsp.codelens then
+        Util.on_attach(function(client, buffer)
+          if client.supports_method("textDocument/codeLens") then
+            vim.lsp.codelens.refresh()
+            --- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
+            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+              buffer = buffer,
+              callback = vim.lsp.codelens.refresh,
+            })
           end
         end)
       end
@@ -426,8 +455,44 @@ return {
     cmd = "Mason",
     build = ":MasonUpdate",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
+    opts = {
+      ensure_installed = {
+        "stylua",
+        "shfmt",
+        "solargraph",
+        "goimports",
+        "gofumpt",
+        "hadolint",
+        "ansible-lint",
+        "codelldb",
+      },
+    },
+    ---@param opts MasonSettings | {ensure_installed: string[]}
     config = function(_, opts)
       require("mason").setup(opts)
+      local mr = require("mason-registry")
+      mr:on("package:install:success", function()
+        vim.defer_fn(function()
+          -- trigger FileType event to possibly load this newly installed LSP server
+          require("lazy.core.handler.event").trigger({
+            event = "FileType",
+            buf = vim.api.nvim_get_current_buf(),
+          })
+        end, 100)
+      end)
+      local function ensure_installed()
+        for _, tool in ipairs(opts.ensure_installed) do
+          local p = mr.get_package(tool)
+          if not p:is_installed() then
+            p:install()
+          end
+        end
+      end
+      if mr.refresh then
+        mr.refresh(ensure_installed)
+      else
+        ensure_installed()
+      end
     end,
   },
   {

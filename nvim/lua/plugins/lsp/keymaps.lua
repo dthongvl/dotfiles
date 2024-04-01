@@ -9,7 +9,10 @@ function M.get()
     { "gD",         vim.lsp.buf.declaration,            desc = "Goto Declaration" },
     { "gi",         "<cmd>Glance implementations<cr>",  desc = "Goto Implementation" },
     { "gt",         "<cmd>Glance type_definitions<cr>", desc = "Goto Type Definition" },
+    { "K", vim.lsp.buf.hover, desc = "Hover" },
     { "gK",         vim.lsp.buf.signature_help,         desc = "Signature Help",      has = "signatureHelp" },
+    { "<leader>cc", vim.lsp.codelens.run, desc = "Run Codelens", mode = { "n", "v" }, has = "codeLens" },
+    { "<leader>cC", vim.lsp.codelens.refresh, desc = "Refresh & Display Codelens", mode = { "n" }, has = "codeLens" },
     -- { "<leader>cf", require("conform").format(),        desc = "Format Document",     has = "documentFormatting" },
     {
       "<leader>ca",

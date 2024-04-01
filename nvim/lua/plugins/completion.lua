@@ -42,6 +42,13 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-emoji",
       "saadparwaiz1/cmp_luasnip",
+      -- codeium
+      {
+        "Exafunction/codeium.nvim",
+        cmd = "Codeium",
+        build = ":Codeium Auth",
+        opts = {},
+      },
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
@@ -81,6 +88,11 @@ return {
           { name = "buffer" },
           { name = "path" },
           { name = "emoji" },
+          {
+            name = "codeium",
+            group_index = 1,
+            priority = 100,
+          },
         }),
         experimental = {
           ghost_text = {
@@ -91,11 +103,11 @@ return {
       }
     end,
   },
-  {
-    'Exafunction/codeium.vim',
-    event = "InsertEnter",
-    config = function ()
-      vim.keymap.set('i', '<C-x>', function () return vim.fn['codeium#Accept']() end, { expr = true })
-    end
-  },
+  -- {
+  --   'Exafunction/codeium.vim',
+  --   event = "InsertEnter",
+  --   config = function ()
+  --     vim.keymap.set('i', '<C-x>', function () return vim.fn['codeium#Accept']() end, { expr = true })
+  --   end
+  -- },
 }

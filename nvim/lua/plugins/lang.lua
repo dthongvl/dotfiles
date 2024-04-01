@@ -1,6 +1,7 @@
 return {
   {
     'pmizio/typescript-tools.nvim',
+    enabled = false,
     lazy = false,
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
     opts = {
@@ -15,6 +16,9 @@ return {
           includeInlayFunctionLikeReturnTypeHints = false,
           includeInlayPropertyDeclarationTypeHints = true,
           includeInlayEnumMemberValueHints = true,
+        },
+        tsserver_plugins = {
+          "@vue/typescript-plugin",
         },
       },
     },
