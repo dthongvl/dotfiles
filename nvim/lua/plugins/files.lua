@@ -90,7 +90,7 @@ return {
   {
     'nvim-telescope/telescope.nvim',
     cmd = "Telescope",
-    tag = '0.1.2',
+    tag = '0.1.6',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { "nvim-telescope/telescope-fzf-native.nvim", enabled = vim.fn.executable "make" == 1, build = "make" },
@@ -119,9 +119,9 @@ return {
       },
     },
     opts = {
-      defaults = {
-        sorting_strategy = "ascending",
-      },
+      -- defaults = {
+      --   sorting_strategy = "ascending",
+      -- },
     },
     config = function(_, opts)
       local telescope = require('telescope')

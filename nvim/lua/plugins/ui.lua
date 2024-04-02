@@ -115,11 +115,12 @@ return {
   -- better diagnostics list and others
   {
     "folke/trouble.nvim",
-    cmd = { "TroubleToggle", "Trouble" },
-    opts = { use_diagnostic_signs = true },
+    branch = "dev",
+    cmd = { "Trouble" },
+    -- opts = { use_diagnostic_signs = true },
     dependencies = { "nvim-tree/nvim-web-devicons" },
     keys = {
-      { "<leader>xx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
+      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
     },
   },
   -- indent guides for Neovim
@@ -308,6 +309,7 @@ return {
       max_width = function()
         return math.floor(vim.o.columns * 0.75)
       end,
+      render = "compact",
     },
     init = function()
       -- when noice is not enabled, install notify on VeryLazy
@@ -457,9 +459,12 @@ return {
     },
   },
   {
-    "NvChad/nvim-colorizer.lua",
+    "brenoprata10/nvim-highlight-colors",
+    opts = {
+      enable_tailwind = true,
+    },
     config = function(_, opts)
-      require 'colorizer'.setup(opts)
+      require 'nvim-highlight-colors'.setup(opts)
     end
   },
 }
