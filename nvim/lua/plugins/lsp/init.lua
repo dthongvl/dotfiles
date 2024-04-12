@@ -73,8 +73,8 @@ return {
         eslint = {},
         html = {},
         cssls = {},
-        solargraph = {},
-        -- ruby_ls = {},
+        -- solargraph = {},
+        ruby_ls = {},
         astro = {},
         ansiblels = {},
         tailwindcss = {
@@ -459,7 +459,8 @@ return {
       ensure_installed = {
         "stylua",
         "shfmt",
-        "solargraph",
+        -- "solargraph",
+        "ruby-lsp",
         "goimports",
         "gofumpt",
         "hadolint",
