@@ -42,13 +42,20 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-emoji",
       "saadparwaiz1/cmp_luasnip",
-      -- codeium
       {
-        "Exafunction/codeium.nvim",
-        cmd = "Codeium",
-        build = ":Codeium Auth",
-        opts = {},
+        "sourcegraph/sg.nvim",
+        dependencies = { "nvim-lua/plenary.nvim", --[[ "nvim-telescope/telescope.nvim ]] },
+        config = function (opts)
+          require("sg").setup(opts)
+        end
       },
+      -- codeium
+      -- {
+      --   "Exafunction/codeium.nvim",
+      --   cmd = "Codeium",
+      --   build = ":Codeium Auth",
+      --   opts = {},
+      -- },
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
@@ -83,16 +90,21 @@ return {
           end,
         }),
         sources = cmp.config.sources({
+          {
+            name = "cody",
+            group_index = 1,
+            priority = 100,
+          },
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "buffer" },
           { name = "path" },
           { name = "emoji" },
-          {
-            name = "codeium",
-            group_index = 1,
-            priority = 100,
-          },
+          -- {
+          --   name = "codeium",
+          --   group_index = 1,
+          --   priority = 100,
+          -- },
         }),
         experimental = {
           ghost_text = {
@@ -103,11 +115,4 @@ return {
       }
     end,
   },
-  -- {
-  --   'Exafunction/codeium.vim',
-  --   event = "InsertEnter",
-  --   config = function ()
-  --     vim.keymap.set('i', '<C-x>', function () return vim.fn['codeium#Accept']() end, { expr = true })
-  --   end
-  -- },
 }
