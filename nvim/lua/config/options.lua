@@ -37,7 +37,7 @@ opt.winminwidth = 5                -- Minimum window width
 opt.wrap = false                   -- Disable line wrap
 opt.smoothscroll = true
 -- folding options for nvim-ufo
-opt.foldcolumn = '1' -- '0' is not bad
+opt.foldcolumn = '0' -- '0' is not bad
 opt.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
 opt.foldlevelstart = 99
 opt.foldenable = true

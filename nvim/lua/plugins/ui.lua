@@ -71,15 +71,19 @@ return {
               cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
               color = Util.fg("Constant"),
             },
-            { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = Util.fg("Special") },
             {
-              "diff",
+              require("lazy.status").updates,
+              cond = require("lazy.status").has_updates,
+              color = Util.fg("Special"),
+            },
+            {
+              "searchcount",
             },
           },
           lualine_y = {
-            {
-              function() return vim.fn['codeium#GetStatusString']() end,
-            },
+            -- {
+            --   function() return vim.fn['codeium#GetStatusString']() end,
+            -- },
             {
               -- lsp server name
               function()
@@ -130,7 +134,7 @@ return {
         tab_char = "│",
       },
       scope = {
-        char = "▎",
+        char = "│",
         highlight = highlight,
         show_start = true,
       },
@@ -243,7 +247,6 @@ return {
   -- lsp context in winbar
   {
     "Bekaboo/dropbar.nvim",
-    enabled = false,
     event = 'VeryLazy',
     opts = {
       bar = {

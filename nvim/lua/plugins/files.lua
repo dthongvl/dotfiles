@@ -58,7 +58,7 @@ return {
             ['<c-v>'] = 'vsplit_with_window_picker',
             ['<esc>'] = 'revert_preview',
             ['P'] = { 'toggle_preview', config = { use_float = false } },
-            ["Y"] = function(state)
+            ['Y'] = function(state)
               local node = state.tree:get_node()
               local path = node:get_id()
               vim.fn.setreg("+", path, "c")

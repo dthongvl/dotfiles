@@ -1,13 +1,32 @@
 return {
   -- tokyonight
+  -- {
+  --   "folke/tokyonight.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   opts = { style = "night" },
+  --   config = function(_, opts)
+  --     require("tokyonight").setup(opts)
+  --     vim.cmd.colorscheme("tokyonight")
+  --   end,
+  -- },
+  -- {
+  --   "sainnhe/everforest",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function(_, opts)
+  --     vim.opt.background = 'dark'
+  --     vim.g.everforest_background = 'medium'
+  --     vim.cmd.colorscheme("everforest")
+  --   end,
+  -- },
   {
-    "folke/tokyonight.nvim",
+    "catppuccin/nvim",
+    name = "catppuccin",
     lazy = false,
     priority = 1000,
-    opts = { style = "night" },
     config = function(_, opts)
-      require("tokyonight").setup(opts)
-      vim.cmd.colorscheme("tokyonight")
+      vim.cmd.colorscheme("catppuccin-frappe")
     end,
   },
   -- {
@@ -16,7 +35,7 @@ return {
   --   priority = 1000,
   --   config = function(_, opts)
   --     require('github-theme').setup(opts)
-  --     vim.cmd.colorscheme("github_light_high_contrast")
+  --     vim.cmd.colorscheme("github_dark_tritanopia")
   --   end,
   -- },
   -- {
