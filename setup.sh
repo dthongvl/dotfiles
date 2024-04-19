@@ -25,6 +25,8 @@ ln -s -f ~/workspace/dotfiles/nvim ~/.config
 
 ln -s -f ~/workspace/dotfiles/.tmux.conf ~/.tmux.conf
 
+ln -s -f ~/workspace/dotfiles/.wezterm.lua ~/.wezterm.lua
+
 mkdir -p ~/.config/fish
 ln -s -f ~/workspace/dotfiles/config.fish ~/.config/fish/config.fish
 
