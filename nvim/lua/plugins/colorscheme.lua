@@ -10,32 +10,32 @@ return {
   --     vim.cmd.colorscheme("tokyonight")
   --   end,
   -- },
-  -- {
-  --   "sainnhe/everforest",
-  --   lazy = false,
-  --   priority = 1000,
-  --   config = function(_, opts)
-  --     vim.opt.background = 'dark'
-  --     vim.g.everforest_background = 'medium'
-  --     vim.cmd.colorscheme("everforest")
-  --   end,
-  -- },
   {
-    "catppuccin/nvim",
-    name = "catppuccin",
+    "sainnhe/everforest",
     lazy = false,
     priority = 1000,
     config = function(_, opts)
-      vim.cmd.colorscheme("catppuccin-frappe")
+      vim.opt.background = 'dark'
+      vim.g.everforest_background = 'medium'
+      vim.cmd.colorscheme("everforest")
     end,
   },
+  -- {
+  --   "catppuccin/nvim",
+  --   name = "catppuccin",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function(_, opts)
+  --     vim.cmd.colorscheme("catppuccin-frappe")
+  --   end,
+  -- },
   -- {
   --   "projekt0n/github-nvim-theme",
   --   lazy = false,
   --   priority = 1000,
   --   config = function(_, opts)
   --     require('github-theme').setup(opts)
-  --     vim.cmd.colorscheme("github_dark_tritanopia")
+  --     vim.cmd.colorscheme("github_dark_high_contrast")
   --   end,
   -- },
   -- {

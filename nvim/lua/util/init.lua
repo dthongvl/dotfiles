@@ -1,15 +1,19 @@
+local LazyUtil = require("lazy.core.util")
+
+---@field lsp util.lsp
+
 local M = {}
 
----@param on_attach fun(client, buffer)
-function M.on_attach(on_attach)
-  vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(args)
-      local buffer = args.buf
-      local client = vim.lsp.get_client_by_id(args.data.client_id)
-      on_attach(client, buffer)
-    end,
-  })
-end
+setmetatable(M, {
+  __index = function(t, k)
+    if LazyUtil[k] then
+      return LazyUtil[k]
+    end
+    ---@diagnostic disable-next-line: no-unknown
+    t[k] = require("util." .. k)
+    return t[k]
+  end,
+})
 
 ---@param plugin string
 function M.has(plugin)
@@ -41,9 +45,9 @@ function M.inlay_hints(buf, value)
     ih(buf, value)
   elseif type(ih) == "table" and ih.enable then
     if value == nil then
-      value = not ih.is_enabled(buf)
+      value = not ih.is_enabled({ bufnr = buf or 0 })
     end
-    ih.enable(buf, value)
+    ih.enable(value, { bufnr = buf })
   end
 end
 

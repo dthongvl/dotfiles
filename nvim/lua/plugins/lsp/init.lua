@@ -16,9 +16,7 @@ return {
       },
       {
         "folke/neodev.nvim",
-        opts = {
-          experimental = { pathStrict = true },
-        }
+        opts = {},
       },
       "mason.nvim",
       "williamboman/mason-lspconfig.nvim",
@@ -46,7 +44,7 @@ return {
       -- Be aware that you also will need to properly configure your LSP server to
       -- provide the inlay hints.
       inlay_hints = {
-        enabled = false
+        enabled = true
       },
       -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
       -- Be aware that you also will need to properly configure your LSP server to
@@ -54,10 +52,39 @@ return {
       codelens = {
         enabled = false,
       },
+      -- Enable lsp cursor word highlighting
+      document_highlight = {
+        enabled = false,
+      },
       -- LSP Server Settings
       ---@type lspconfig.options
       servers = {
-        lua_ls = {},
+        lua_ls = {
+          settings = {
+            Lua = {
+              workspace = {
+                checkThirdParty = false,
+              },
+              codeLens = {
+                enable = true,
+              },
+              completion = {
+                callSnippet = "Replace",
+              },
+              doc = {
+                privateName = { "^_" },
+              },
+              hint = {
+                enable = true,
+                setType = false,
+                paramType = true,
+                paramName = "Disable",
+                semicolon = "Disable",
+                arrayIndex = "Disable",
+              },
+            },
+          },
+        },
         -- tsserver = {
         --   init_options = {
         --     plugins = {
@@ -74,7 +101,7 @@ return {
         html = {},
         cssls = {},
         -- solargraph = {},
-        ruby_ls = {},
+        ruby_lsp = {},
         -- astro = {},
         ansiblels = {},
         tailwindcss = {
@@ -191,7 +218,7 @@ return {
         gopls = function(_, opts)
           -- workaround for gopls not supporting semanticTokensProvider
           -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
-          require("util").on_attach(function(client, _)
+          require("util").lsp.on_attach(function(client, _)
             if client.name == "gopls" then
               if not client.server_capabilities.semanticTokensProvider then
                 local semantic = client.config.capabilities.textDocument.semanticTokens
@@ -236,47 +263,33 @@ return {
       local Util = require("util")
 
       if Util.has("neoconf.nvim") then
-        local plugin = require("lazy.core.config").spec.plugins["neoconf.nvim"]
-        require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
+        require("neoconf").setup(Util.opts("neoconf.nvim"))
       end
 
       -- setup keymaps
-      Util.on_attach(function(client, buffer)
+      Util.lsp.on_attach(function(client, buffer)
         require("plugins.lsp.keymaps").on_attach(client, buffer)
       end)
 
-      local register_capability = vim.lsp.handlers["client/registerCapability"]
-
-      vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
-        local ret = register_capability(err, res, ctx)
-        local client_id = ctx.client_id
-        ---@type lsp.Client
-        local client = vim.lsp.get_client_by_id(client_id)
-        local buffer = vim.api.nvim_get_current_buf()
-        require("plugins.lsp.keymaps").on_attach(client, buffer)
-        return ret
-      end
+      Util.lsp.setup()
+      Util.lsp.on_dynamic_capability(require("plugins.lsp.keymaps").on_attach)
+      Util.lsp.words.setup(opts.document_highlight)
 
       -- inlay hints
       if opts.inlay_hints.enabled then
-        Util.on_attach(function(client, buffer)
-          if client.supports_method('textDocument/inlayHint') then
-            Util.inlay_hints(buffer, true);
-          end
+        Util.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
+          Util.inlay_hints(buffer, true);
         end)
       end
 
       -- code lens
       if opts.codelens.enabled and vim.lsp.codelens then
-        Util.on_attach(function(client, buffer)
-          if client.supports_method("textDocument/codeLens") then
-            vim.lsp.codelens.refresh()
-            --- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
-            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-              buffer = buffer,
-              callback = vim.lsp.codelens.refresh,
-            })
-          end
+        Util.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
+          vim.lsp.codelens.refresh()
+          vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+            buffer = buffer,
+            callback = vim.lsp.codelens.refresh,
+          })
         end)
       end
 
@@ -323,14 +336,21 @@ return {
           -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
           if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
             setup(server)
-          else
+          elseif server_opts.enabled ~= false then
             ensure_installed[#ensure_installed + 1] = server
           end
         end
       end
 
       if have_mason then
-        mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
+        mlsp.setup({
+          ensure_installed = vim.tbl_deep_extend(
+            "force",
+            ensure_installed,
+            Util.opts("mason-lspconfig.nvim").ensure_installed or {}
+          ),
+          handlers = { setup },
+        })
       end
     end,
   },
@@ -418,7 +438,8 @@ return {
         -- typescript = { 'eslint' },
         -- vue = { 'eslint' },
         -- ruby = { 'rubocop' },
-        -- markdown = { 'prettier' },
+        -- ["markdown"] = { { "prettierd", "prettier" }, "markdownlint", "markdown-toc" },
+        -- ["markdown.mdx"] = { { "prettierd", "prettier" }, "markdownlint", "markdown-toc" },
         -- go = { 'goimports', 'gofumpt' },
         -- pgsql = { 'sql_formatter' },
         -- sql = { 'sql_formatter' },

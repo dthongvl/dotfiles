@@ -90,7 +90,7 @@ return {
   {
     'nvim-telescope/telescope.nvim',
     cmd = "Telescope",
-    tag = '0.1.6',
+    tag = '0.1.7',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { "nvim-telescope/telescope-fzf-native.nvim", enabled = vim.fn.executable "make" == 1, build = "make" },

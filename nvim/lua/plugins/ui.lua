@@ -121,8 +121,13 @@ return {
     "folke/trouble.nvim",
     branch = "dev",
     keys = {
-      { "<leader>xx", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
+      {
+        "<leader>xx",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
+      },
     },
+    config = true,
   },
   -- indent guides for Neovim
   {

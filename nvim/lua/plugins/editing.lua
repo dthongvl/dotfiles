@@ -17,18 +17,6 @@ return {
       require('treesj').setup(opts)
     end
   },
-  -- comment
-  {
-    "numToStr/Comment.nvim",
-    event = { "BufEnter", "BufNewFile" },
-    dependencies = {
-      "JoosepAlviste/nvim-ts-context-commentstring",
-    },
-    opts = function (_, opts)
-      local ok, integration = pcall(require, 'ts_context_commentstring.integrations.comment_nvim')
-      if ok then opts.pre_hook = integration.create_pre_hook() end
-    end
-  },
   -- autopairs
   {
     "windwp/nvim-autopairs",
@@ -51,5 +39,22 @@ return {
         },
       })
     end
+  },
+  {
+    'smoka7/multicursors.nvim',
+    event = 'VeryLazy',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'smoka7/hydra.nvim' },
+    opts = {
+      hint_config = { border = border },
+    },
+    cmd = { 'MCstart', 'MCvisual', 'MCclear', 'MCpattern', 'MCvisualPattern', 'MCunderCursor' },
+    keys = {
+      {
+        '<A-e>',
+        '<cmd>MCstart<cr>',
+        mode = { 'v', 'n' },
+        desc = 'Create a selection for selected text or word under the cursor',
+      },
+    },
   },
 }

@@ -108,8 +108,9 @@ return {
   },
   -- comments
   {
-    "JoosepAlviste/nvim-ts-context-commentstring",
-    lazy = true,
+    "folke/ts-comments.nvim",
+    event = "VeryLazy",
+    opts = {},
   },
   {
     'nvim-treesitter/playground',
