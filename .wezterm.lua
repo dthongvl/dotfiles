@@ -14,7 +14,7 @@ end)
 -- For example, changing the color scheme:
 config.color_scheme = 'Catppuccin Frappe'
 config.font_size = 16
-config.font = wezterm.font('ZedMono NFP', { stretch = 'Expanded' })
+config.font = wezterm.font('Mononoki Nerd Font Propo', { stretch = 'Expanded' })
 config.window_decorations = 'RESIZE'
 config.window_padding = {
   left = 0,
