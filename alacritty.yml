@@ -101,9 +101,9 @@ font:
     # family: DankMono Nerd Font
     # family: DankMono
     # family: FiraCode Nerd Font
-    # family: FantasqueSansM Nerd Font Propo
+    family: FantasqueSansM Nerd Font Propo
     # family: CaskaydiaCove Nerd Font Propo
-    family: Mononoki Nerd Font Propo
+    # family: Mononoki Nerd Font Propo
     # family: ZedMono NFP
 
     # The `style` can be specified to pick a specific face.
@@ -115,7 +115,7 @@ font:
     #
     # If the bold family is not specified, it will fall back to the
     # value specified for the normal font.
-    family: Mononoki Nerd Font Propo
+    family: FantasqueSansM Nerd Font Propo
 
     # The `style` can be specified to pick a specific face.
     style: Bold
@@ -126,7 +126,7 @@ font:
     #
     # If the italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    family: Mononoki Nerd Font Propo
+    family: FantasqueSansM Nerd Font Propo
 
     # The `style` can be specified to pick a specific face.
     style: Italic
@@ -137,7 +137,7 @@ font:
     #
     # If the bold italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    family: Mononoki Nerd Font Propo
+    family: FantasqueSansM Nerd Font Propo
 
     # The `style` can be specified to pick a specific face.
     style: Bold Italic

@@ -2,7 +2,8 @@ abbr -a e nvim
 abbr -a o xdg-open
 abbr -a g git
 abbr -a gc 'git checkout'
-abbr -a gcom 'git checkout master'
+abbr -a gp 'git pull'
+abbr -a gm 'git checkout master'
 abbr -a ga 'git add -p'
 abbr -a gs 'git status'
 abbr -a gd 'git diff'
@@ -15,6 +16,7 @@ set -x TERM xterm-256color
 set -x EDITOR nvim
 set -x HELIX_RUNTIME ~/workspace/helix/runtime
 set -x PNPM_HOME ~/.local/share/pnpm
+set -x ASDF_FORCE_PREPEND yes
 
 fish_add_path (yarn global bin)
 fish_add_path $HOME/.local/bin
