@@ -1,5 +1,9 @@
 local M = {}
 
+---@alias LazyKeysLspSpec LazyKeysSpec|{has?:string, cond?:fun():boolean}
+---@alias LazyKeysLsp LazyKeys|{has?:string, cond?:fun():boolean}
+
+---@return LazyKeysLspSpec[]
 function M.get()
   return {
     { "<leader>cd", vim.diagnostic.open_float,          desc = "Line Diagnostics" },
@@ -47,7 +51,7 @@ function M.has(buffer, method)
   return false
 end
 
----@return (LazyKeys|{has?:string})[]
+---@return LazyKeysLsp[]
 function M.resolve(buffer)
   local Keys = require("lazy.core.handler.keys")
   if not Keys.resolve then
@@ -68,8 +72,12 @@ function M.on_attach(_, buffer)
   local keymaps = M.resolve(buffer)
 
   for _, keys in pairs(keymaps) do
-    if not keys.has or M.has(buffer, keys.has) then
+    local has = not keys.has or M.has(buffer, keys.has)
+    local cond = not (keys.cond == false or ((type(keys.cond) == "function") and not keys.cond()))
+
+    if has and cond then
       local opts = Keys.opts(keys)
+      opts.cond = nil
       opts.has = nil
       opts.silent = opts.silent ~= false
       opts.buffer = buffer

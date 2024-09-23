@@ -42,6 +42,7 @@ return {
   },
   {
     'smoka7/multicursors.nvim',
+    enabled = false,
     event = 'VeryLazy',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'smoka7/hydra.nvim' },
     opts = {
@@ -56,5 +57,22 @@ return {
         desc = 'Create a selection for selected text or word under the cursor',
       },
     },
+  },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      file_types = { "markdown", "norg", "rmd", "org" },
+      code = {
+        sign = false,
+        width = "block",
+        right_pad = 1,
+      },
+      heading = {
+        sign = false,
+        icons = {},
+      },
+    },
+    ft = { "markdown", "norg", "rmd", "org" },
+    enabled = true,
   },
 }

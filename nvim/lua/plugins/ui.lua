@@ -119,7 +119,6 @@ return {
   -- better diagnostics list and others
   {
     "folke/trouble.nvim",
-    branch = "dev",
     keys = {
       {
         "<leader>xx",
@@ -187,16 +186,37 @@ return {
         open_fold_hl_timeout = 0,
         preview = { win_config = { winhighlight = 'Normal:Normal,FloatBorder:Normal' } },
         enable_get_fold_virt_text = true,
-        close_fold_kinds = { 'imports', 'comment' },
+        close_fold_kinds_for_ft = {
+          default = {'imports', 'comment'},
+        },
         provider_selector = function(_, ft) return ft_map[ft] or { 'treesitter', 'indent' } end,
       })
     end,
   },
   -- icons
-  { "nvim-tree/nvim-web-devicons", lazy = true },
+  {
+    "echasnovski/mini.icons",
+    lazy = true,
+    opts = {
+      file = {
+        [".keep"] = { glyph = "󰊢", hl = "MiniIconsGrey" },
+        ["devcontainer.json"] = { glyph = "", hl = "MiniIconsAzure" },
+      },
+      filetype = {
+        dotenv = { glyph = "", hl = "MiniIconsYellow" },
+      },
+    },
+    init = function()
+      package.preload["nvim-web-devicons"] = function()
+        require("mini.icons").mock_nvim_web_devicons()
+        return package.loaded["nvim-web-devicons"]
+      end
+    end,
+  },
   -- brackets color
   {
     'HiPhish/rainbow-delimiters.nvim',
+    enabled = false,
     url = 'https://gitlab.com/HiPhish/rainbow-delimiters.nvim',
     event = 'VeryLazy',
     config = function()
@@ -252,6 +272,7 @@ return {
   -- lsp context in winbar
   {
     "Bekaboo/dropbar.nvim",
+    enabled = false,
     event = 'VeryLazy',
     opts = {
       bar = {

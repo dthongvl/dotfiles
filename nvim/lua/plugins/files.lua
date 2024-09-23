@@ -8,7 +8,7 @@ return {
       vim.g.neo_tree_remove_legacy_commands = 1
 
       require('neo-tree').setup({
-        sources = { 'filesystem', 'git_status', 'document_symbols' },
+        sources = { 'filesystem', 'buffers', 'git_status' },
         source_selector = {
           winbar = true,
           separator_active = '',
@@ -131,13 +131,26 @@ return {
   },
   -- search/replace in multiple files
   {
-    "nvim-pack/nvim-spectre",
-    cmd = "Spectre",
-    opts = { open_cmd = "noswapfile vnew" },
-    -- stylua: ignore
+    "MagicDuck/grug-far.nvim",
+    opts = { headerMaxWidth = 80 },
+    cmd = "GrugFar",
     keys = {
-      { "<leader>sw", function() require("spectre").open_visual({ select_word = true }) end,
-        desc = "Search current word in files (Spectre)" },
+      {
+        "<leader>sr",
+        function()
+          local grug = require("grug-far")
+          local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
+          grug.open({
+            transient = true,
+            search = vim.fn.expand("<cword>"),
+            prefills = {
+              filesFilter = ext and ext ~= "" and "*." .. ext or nil,
+            },
+          })
+        end,
+        mode = { "n", "v" },
+        desc = "Search and Replace",
+      },
     },
   },
 }

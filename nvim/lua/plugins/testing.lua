@@ -11,6 +11,7 @@ local function cancel() neotest().run.stop({ interactive = true }) end
 return {
   {
     'nvim-neotest/neotest',
+    enabled = false,
     keys = {
       { '<localleader>ts', toggle_summary, desc = 'neotest: toggle summary' },
       { '<localleader>to', open, desc = 'neotest: output' },

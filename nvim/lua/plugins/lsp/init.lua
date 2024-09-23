@@ -23,203 +23,257 @@ return {
       { "hrsh7th/cmp-nvim-lsp" },
     },
     ---@class PluginLspOpts
-    opts = {
-      capabilities = {
-      },
-      -- options for vim.diagnostic.config()
-      diagnostics = {
-        underline = false,
-        update_in_insert = false,
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-          prefix = "●",
-          -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
-          -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
-          -- prefix = "icons",
+    opts = function ()
+      return {
+        capabilities = {
         },
-        severity_sort = true,
-      },
-      -- Enable this to enable the builtin LSP inlay hints on Neovim >= 0.10.0
-      -- Be aware that you also will need to properly configure your LSP server to
-      -- provide the inlay hints.
-      inlay_hints = {
-        enabled = true
-      },
-      -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
-      -- Be aware that you also will need to properly configure your LSP server to
-      -- provide the code lenses.
-      codelens = {
-        enabled = false,
-      },
-      -- Enable lsp cursor word highlighting
-      document_highlight = {
-        enabled = false,
-      },
-      -- LSP Server Settings
-      ---@type lspconfig.options
-      servers = {
-        lua_ls = {
-          settings = {
-            Lua = {
-              workspace = {
-                checkThirdParty = false,
-              },
-              codeLens = {
-                enable = true,
-              },
-              completion = {
-                callSnippet = "Replace",
-              },
-              doc = {
-                privateName = { "^_" },
-              },
-              hint = {
-                enable = true,
-                setType = false,
-                paramType = true,
-                paramName = "Disable",
-                semicolon = "Disable",
-                arrayIndex = "Disable",
-              },
+        -- options for vim.diagnostic.config()
+        diagnostics = {
+          underline = false,
+          update_in_insert = false,
+          severity_sort = true,
+          virtual_text = {
+            spacing = 2,
+            source = "if_many",
+            prefix = "●",
+            -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
+            -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
+            -- prefix = "icons",
+          },
+          float = {
+            source = 'always',
+            border = 'rounded',
+          },
+          signs = {
+            text = {
+              [vim.diagnostic.severity.ERROR] = " ",
+              [vim.diagnostic.severity.WARN] = " ",
+              [vim.diagnostic.severity.HINT] = " ",
+              [vim.diagnostic.severity.INFO] = " ",
             },
           },
         },
-        -- tsserver = {
-        --   init_options = {
-        --     plugins = {
-        --       {
-        --         name = "@vue/typescript-plugin",
-        --         location = "/home/dthongvl/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin",
-        --         languages = { "vue" },
-        --       },
-        --     },
-        --   },
-        --   -- filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-        -- },
-        eslint = {},
-        html = {},
-        cssls = {},
-        -- solargraph = {},
-        ruby_lsp = {},
-        -- astro = {},
-        ansiblels = {},
-        tailwindcss = {
-          filetypes_exclude = { "markdown" },
+        -- Enable this to enable the builtin LSP inlay hints on Neovim >= 0.10.0
+        -- Be aware that you also will need to properly configure your LSP server to
+        -- provide the inlay hints.
+        inlay_hints = {
+          enabled = false
         },
-        jsonls = {},
-        bashls = {},
-        vimls = {},
-        yamlls = {},
-        clangd = {
-          keys = {
-            { "<leader>cR", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
-          },
-          root_dir = function(fname)
-            return require("lspconfig.util").root_pattern(
-              "Makefile",
-              "configure.ac",
-              "configure.in",
-              "config.h.in",
-              "meson.build",
-              "meson_options.txt",
-              "build.ninja"
-            )(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(
-              fname
-            ) or require("lspconfig.util").find_git_ancestor(fname)
-          end,
-          capabilities = {
-            offsetEncoding = { "utf-16" },
-          },
-          cmd = {
-            "clangd",
-            "--background-index",
-            "--clang-tidy",
-            "--header-insertion=iwyu",
-            "--completion-style=detailed",
-            "--function-arg-placeholders",
-            "--fallback-style=llvm",
-          },
-          init_options = {
-            usePlaceholders = true,
-            completeUnimported = true,
-            clangdFileStatus = true,
-          },
+        -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
+        -- Be aware that you also will need to properly configure your LSP server to
+        -- provide the code lenses.
+        codelens = {
+          enabled = false,
         },
-        gopls = {
-          keys = {
-            -- Workaround for the lack of a DAP strategy in neotest-go: https://github.com/nvim-neotest/neotest-go/issues/12
-            { "<leader>td", "<cmd>lua require('dap-go').debug_test()<CR>", desc = "Debug Nearest (Go)" },
+        -- Enable lsp cursor word highlighting
+        document_highlight = {
+          enabled = false,
+        },
+        -- LSP Server Settings
+        ---@type lspconfig.options
+        servers = {
+          ruby_lsp = {
+            cmd = { 'old-ruby-lsp' }
           },
-          settings = {
-            gopls = {
-              gofumpt = true,
-              codelenses = {
-                gc_details = false,
-                generate = true,
-                regenerate_cgo = true,
-                run_govulncheck = true,
-                test = true,
-                tidy = true,
-                upgrade_dependency = true,
-                vendor = true,
+          lua_ls = {
+            settings = {
+              Lua = {
+                workspace = {
+                  checkThirdParty = false,
+                },
+                codeLens = {
+                  enable = true,
+                },
+                completion = {
+                  callSnippet = "Replace",
+                },
+                doc = {
+                  privateName = { "^_" },
+                },
+                hint = {
+                  enable = true,
+                  setType = false,
+                  paramType = true,
+                  paramName = "Disable",
+                  semicolon = "Disable",
+                  arrayIndex = "Disable",
+                },
               },
-              hints = {
-                assignVariableTypes = true,
-                compositeLiteralFields = true,
-                compositeLiteralTypes = true,
-                constantValues = true,
-                functionTypeParameters = true,
-                parameterNames = true,
-                rangeVariableTypes = true,
+            },
+          },
+          tsserver = {
+            enabled = false,
+          },
+          vtsls = {
+            -- explicitly add default filetypes, so that we can extend
+            -- them in related extras
+            filetypes = {
+              "javascript",
+              "javascriptreact",
+              "javascript.jsx",
+              "typescript",
+              "typescriptreact",
+              "typescript.tsx",
+              "vue",
+            },
+            settings = {
+              complete_function_calls = true,
+              vtsls = {
+                enableMoveToFileCodeAction = true,
+                autoUseWorkspaceTsdk = true,
+                experimental = {
+                  completion = {
+                    enableServerSideFuzzyMatch = true,
+                  },
+                },
+                tsserver = {
+                  globalPlugins = {
+                    {
+                      name = "@vue/typescript-plugin",
+                      location = require('util').get_pkg_path("vue-language-server", "/node_modules/@vue/language-server"),
+                      languages = { "vue" },
+                      configNamespace = "typescript",
+                      enableForWorkspaceTypeScriptVersions = true,
+                    },
+                    {
+                      name = "typescript-svelte-plugin",
+                      location = require('util').get_pkg_path("svelte-language-server", "/node_modules/typescript-svelte-plugin"),
+                      enableForWorkspaceTypeScriptVersions = true,
+                    },
+                  }
+                },
               },
-              analyses = {
-                fieldalignment = true,
-                nilness = true,
-                unusedparams = true,
-                unusedwrite = true,
-                useany = true,
+              typescript = {
+                updateImportsOnFileMove = { enabled = "always" },
+                suggest = {
+                  completeFunctionCalls = true,
+                },
+                inlayHints = {
+                  enumMemberValues = { enabled = true },
+                  functionLikeReturnTypes = { enabled = true },
+                  parameterNames = { enabled = "literals" },
+                  parameterTypes = { enabled = true },
+                  propertyDeclarationTypes = { enabled = true },
+                  variableTypes = { enabled = false },
+                },
               },
+            },
+          },
+          eslint = {},
+          html = {},
+          cssls = {},
+          -- astro = {},
+          ansiblels = {},
+          tailwindcss = {
+            filetypes_exclude = { "markdown" },
+          },
+          jsonls = {},
+          bashls = {},
+          vimls = {},
+          yamlls = {},
+          clangd = {
+            keys = {
+              { "<leader>cR", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
+            },
+            root_dir = function(fname)
+              return require("lspconfig.util").root_pattern(
+                "Makefile",
+                "configure.ac",
+                "configure.in",
+                "config.h.in",
+                "meson.build",
+                "meson_options.txt",
+                "build.ninja"
+              )(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(
+                fname
+              ) or require("lspconfig.util").find_git_ancestor(fname)
+            end,
+            capabilities = {
+              offsetEncoding = { "utf-16" },
+            },
+            cmd = {
+              "clangd",
+              "--background-index",
+              "--clang-tidy",
+              "--header-insertion=iwyu",
+              "--completion-style=detailed",
+              "--function-arg-placeholders",
+              "--fallback-style=llvm",
+            },
+            init_options = {
               usePlaceholders = true,
               completeUnimported = true,
-              staticcheck = true,
-              directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
-              semanticTokens = true,
+              clangdFileStatus = true,
             },
           },
-        },
-        rust_analyzer = {},
-        dockerls = {},
-        -- docker_compose_language_service = {},
-        sorbet = {
-          cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' },
-        },
-        volar = {
-          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-          init_options = {
-            vue = {
-              hybridMode = false,
+          gopls = {
+            settings = {
+              gopls = {
+                gofumpt = true,
+                codelenses = {
+                  gc_details = false,
+                  generate = true,
+                  regenerate_cgo = true,
+                  run_govulncheck = true,
+                  test = true,
+                  tidy = true,
+                  upgrade_dependency = true,
+                  vendor = true,
+                },
+                hints = {
+                  assignVariableTypes = true,
+                  compositeLiteralFields = true,
+                  compositeLiteralTypes = true,
+                  constantValues = true,
+                  functionTypeParameters = true,
+                  parameterNames = true,
+                  rangeVariableTypes = true,
+                },
+                analyses = {
+                  fieldalignment = true,
+                  nilness = true,
+                  unusedparams = true,
+                  unusedwrite = true,
+                  useany = true,
+                },
+                usePlaceholders = true,
+                completeUnimported = true,
+                staticcheck = true,
+                directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
+                semanticTokens = true,
+              },
             },
           },
+          rust_analyzer = {},
+          dockerls = {},
+          -- docker_compose_language_service = {},
+          sorbet = {
+            cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' },
+          },
+          volar = {
+            init_options = {
+              vue = {
+                hybridMode = true,
+              },
+            },
+          },
+          svelte = {},
         },
-        svelte = {},
-      },
-      -- you can do any additional lsp server setup here
-      -- return true if you don't want this server to be setup with lspconfig
-      ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
-      setup = {
-        -- example to setup with typescript.nvim
-        -- tsserver = function(_, opts)
-        --   require("tsserver").setup({ server = opts })
-        --   return true
-        -- end,
-        -- Specify * to use this function as a fallback for any server
-        -- ["*"] = function(server, opts) end,
-        gopls = function(_, opts)
-          -- workaround for gopls not supporting semanticTokensProvider
-          -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
-          require("util").lsp.on_attach(function(client, _)
-            if client.name == "gopls" then
+        -- you can do any additional lsp server setup here
+        -- return true if you don't want this server to be setup with lspconfig
+        ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
+        setup = {
+          -- example to setup with typescript.nvim
+          -- tsserver = function(_, opts)
+          --   require("tsserver").setup({ server = opts })
+          --   return true
+          -- end,
+          -- Specify * to use this function as a fallback for any server
+          -- ["*"] = function(server, opts) end,
+          gopls = function(_, opts)
+            -- workaround for gopls not supporting semanticTokensProvider
+            -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
+            require("util").lsp.on_attach(function(client, _)
               if not client.server_capabilities.semanticTokensProvider then
                 local semantic = client.config.capabilities.textDocument.semanticTokens
                 client.server_capabilities.semanticTokensProvider = {
@@ -231,33 +285,42 @@ return {
                   range = true,
                 }
               end
-            end
-          end)
-          -- end workaround
-        end,
-        clangd = function(_, opts)
-          local clangd_ext_opts = require("util").opts("clangd_extensions.nvim")
-          require("clangd_extensions").setup(vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = opts }))
-          return false
-        end,
-        tailwindcss = function(_, opts)
-          local tw = require("lspconfig.server_configurations.tailwindcss")
-          opts.filetypes = opts.filetypes or {}
+            end, "gopls")
+            -- end workaround
+          end,
+          clangd = function(_, opts)
+            local clangd_ext_opts = require("util").opts("clangd_extensions.nvim")
+            require("clangd_extensions").setup(vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = opts }))
+            return false
+          end,
+          tailwindcss = function(_, opts)
+            local tw = require("lspconfig.server_configurations.tailwindcss")
+            opts.filetypes = opts.filetypes or {}
 
-          -- Add default filetypes
-          vim.list_extend(opts.filetypes, tw.default_config.filetypes)
+            -- Add default filetypes
+            vim.list_extend(opts.filetypes, tw.default_config.filetypes)
 
-          -- Remove excluded filetypes
-          --- @param ft string
-          opts.filetypes = vim.tbl_filter(function(ft)
-            return not vim.tbl_contains(opts.filetypes_exclude or {}, ft)
-          end, opts.filetypes)
+            -- Remove excluded filetypes
+            --- @param ft string
+            opts.filetypes = vim.tbl_filter(function(ft)
+              return not vim.tbl_contains(opts.filetypes_exclude or {}, ft)
+            end, opts.filetypes)
 
-          -- Add additional filetypes
-          vim.list_extend(opts.filetypes, opts.filetypes_include or {})
-        end,
-      },
-    },
+            -- Add additional filetypes
+            vim.list_extend(opts.filetypes, opts.filetypes_include or {})
+          end,
+          tsserver = function()
+            -- disable tsserver
+            return true
+          end,
+          vtsls = function(_, opts)
+            -- copy typescript settings to javascript
+            opts.settings.javascript =
+              vim.tbl_deep_extend("force", {}, opts.settings.typescript, opts.settings.javascript or {})
+          end,
+        },
+      }
+    end,
     ---@param opts PluginLspOpts
     config = function(_, opts)
       local Util = require("util")
@@ -365,7 +428,7 @@ return {
         javascript = { 'eslint' },
         typescript = { 'eslint' },
         vue = { 'eslint' },
-        markdown = { 'markdownlint' },
+        markdown = { 'markdownlint-cli2' },
         go = { 'golangcilint' },
         ruby = { 'rubocop', 'ruby' },
         dockerfile = { 'hadolint' },
@@ -438,9 +501,9 @@ return {
         -- typescript = { 'eslint' },
         -- vue = { 'eslint' },
         -- ruby = { 'rubocop' },
-        -- ["markdown"] = { { "prettierd", "prettier" }, "markdownlint", "markdown-toc" },
-        -- ["markdown.mdx"] = { { "prettierd", "prettier" }, "markdownlint", "markdown-toc" },
-        -- go = { 'goimports', 'gofumpt' },
+        -- ["markdown"] = { "prettier", "markdownlint-cli2", "markdown-toc" },
+        -- ["markdown.mdx"] = { "prettier", "markdownlint-cli2", "markdown-toc" },
+        go = { 'goimports', 'gofumpt' },
         -- pgsql = { 'sql_formatter' },
         -- sql = { 'sql_formatter' },
         -- json = { 'jq' },
@@ -487,6 +550,8 @@ return {
         "hadolint",
         "ansible-lint",
         "codelldb",
+        "markdownlint-cli2",
+        "markdown-toc",
       },
     },
     ---@param opts MasonSettings | {ensure_installed: string[]}
@@ -502,19 +567,15 @@ return {
           })
         end, 100)
       end)
-      local function ensure_installed()
+
+      mr.refresh(function()
         for _, tool in ipairs(opts.ensure_installed) do
           local p = mr.get_package(tool)
           if not p:is_installed() then
             p:install()
           end
         end
-      end
-      if mr.refresh then
-        mr.refresh(ensure_installed)
-      else
-        ensure_installed()
-      end
+      end)
     end,
   },
   {
