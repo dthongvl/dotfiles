@@ -8,6 +8,7 @@ global.maplocalleader = " "
 
 -- opt.background = 'light'
 opt.autowrite = true               -- Enable auto write
+opt.laststatus = 3
 opt.clipboard = "unnamedplus"      -- Sync with system clipboard
 opt.completeopt = "menu,menuone,noselect"
 opt.confirm = true                 -- Confirm to save changes before exiting modified buffer

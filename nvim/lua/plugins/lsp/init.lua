@@ -104,6 +104,10 @@ return {
           tsserver = {
             enabled = false,
           },
+          ts_ls = {
+            enabled = false,
+          },
+          denols = {},
           vtsls = {
             -- explicitly add default filetypes, so that we can extend
             -- them in related extras
@@ -294,7 +298,7 @@ return {
             return false
           end,
           tailwindcss = function(_, opts)
-            local tw = require("lspconfig.server_configurations.tailwindcss")
+            local tw = require("lspconfig.configs.tailwindcss")
             opts.filetypes = opts.filetypes or {}
 
             -- Add default filetypes
@@ -414,6 +418,17 @@ return {
           ),
           handlers = { setup },
         })
+      end
+
+      if Util.lsp.is_enabled("denols") and Util.lsp.is_enabled("vtsls") then
+        local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+        Util.lsp.disable("vtsls", is_deno)
+        Util.lsp.disable("denols", function(root_dir, config)
+          if not is_deno(root_dir) then
+            config.settings.deno.enable = false
+          end
+          return false
+        end)
       end
     end,
   },
@@ -596,8 +611,7 @@ return {
   },
   {
     "smjonas/inc-rename.nvim",
-    config = function(_, opts)
-      require("inc_rename").setup(opts)
-    end,
+    cmd = "IncRename",
+    opts = {},
   },
 }

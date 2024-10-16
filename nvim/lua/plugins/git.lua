@@ -80,7 +80,7 @@ return {
   },
   {
     'NeogitOrg/neogit',
-    branch = 'nightly',
+    enabled = false,
     cmd = 'Neogit',
     dependencies = {
       'nvim-lua/plenary.nvim',

@@ -1,15 +1,15 @@
 return {
   -- tokyonight
-  -- {
-  --   "folke/tokyonight.nvim",
-  --   lazy = false,
-  --   priority = 1000,
-  --   opts = { style = "night" },
-  --   config = function(_, opts)
-  --     require("tokyonight").setup(opts)
-  --     vim.cmd.colorscheme("tokyonight")
-  --   end,
-  -- },
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = { style = "night" },
+    config = function(_, opts)
+      require("tokyonight").setup(opts)
+      vim.cmd.colorscheme("tokyonight")
+    end,
+  },
   -- {
   --   "sainnhe/everforest",
   --   lazy = false,
@@ -125,15 +125,15 @@ return {
   --     vim.cmd.colorscheme("ayu")
   --   end,
   -- },
-  {
-    'jesseleite/nvim-noirbuddy',
-    dependencies = {
-      { 'tjdevries/colorbuddy.nvim' }
-    },
-    lazy = false,
-    priority = 1000,
-    opts = {
-      -- All of your `setup(opts)` will go here
-    },
-  }
+  -- {
+  --   'jesseleite/nvim-noirbuddy',
+  --   dependencies = {
+  --     { 'tjdevries/colorbuddy.nvim' }
+  --   },
+  --   lazy = false,
+  --   priority = 1000,
+  --   opts = {
+  --     -- All of your `setup(opts)` will go here
+  --   },
+  -- }
 }
