@@ -113,7 +113,11 @@ return {
       {
         "<leader>b",
         function()
-          require('telescope.builtin').buffers()
+          require('telescope.builtin').buffers({
+            sort_mru = true,
+            sort_lastused = true,
+            ignore_current_buffer = true,
+          })
         end,
         desc = "Buffers",
       },

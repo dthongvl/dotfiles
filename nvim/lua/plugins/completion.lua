@@ -1,4 +1,21 @@
 return {
+  -- codeium
+  {
+    "Exafunction/codeium.nvim",
+    cmd = "Codeium",
+    build = ":Codeium Auth",
+    opts = {
+      enable_cmp_source = true,
+      virtual_text = {
+        enabled = false,
+        key_bindings = {
+          accept = false, -- handled by nvim-cmp / blink.cmp
+          next = "<M-]>",
+          prev = "<M-[>",
+        },
+      },
+    },
+  },
   -- snippets
   {
     "L3MON4D3/LuaSnip",
@@ -42,20 +59,6 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-emoji",
       "saadparwaiz1/cmp_luasnip",
-      -- {
-      --   "sourcegraph/sg.nvim",
-      --   dependencies = { "nvim-lua/plenary.nvim", --[[ "nvim-telescope/telescope.nvim ]] },
-      --   config = function (opts)
-      --     require("sg").setup(opts)
-      --   end
-      -- },
-      -- codeium
-      {
-        "Exafunction/codeium.nvim",
-        cmd = "Codeium",
-        build = ":Codeium Auth",
-        opts = {},
-      },
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
@@ -90,11 +93,6 @@ return {
           end,
         }),
         sources = cmp.config.sources({
-          -- {
-          --   name = "cody",
-          --   group_index = 1,
-          --   priority = 100,
-          -- },
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "buffer" },
@@ -113,6 +111,89 @@ return {
         },
         sorting = defaults.sorting,
       }
+    end,
+  },
+  {
+    "saghen/blink.cmp",
+    enabled = false,
+    version = "*",
+    -- build = vim.g.lazyvim_blink_main and "cargo build --release",
+    opts_extend = {
+      "sources.completion.enabled_providers",
+      "sources.compat",
+    },
+    dependencies = {
+      "rafamadriz/friendly-snippets",
+      "codeium.nvim",
+      -- add blink.compat to dependencies
+      "saghen/blink.compat",
+    },
+    event = "InsertEnter",
+
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      highlight = {
+        -- sets the fallback highlight groups to nvim-cmp's highlight groups
+        -- useful for when your theme doesn't support blink.cmp
+        -- will be removed in a future release, assuming themes add support
+        use_nvim_cmp_as_default = false,
+      },
+      -- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+      -- adjusts spacing to ensure icons are aligned
+      nerd_font_variant = "mono",
+      windows = {
+        autocomplete = {
+          -- draw = "reversed",
+          winblend = vim.o.pumblend,
+        },
+        documentation = {
+          auto_show = true,
+        },
+        ghost_text = {
+          enabled = true, -- ai cmp
+        },
+      },
+
+      -- experimental auto-brackets support
+      accept = { auto_brackets = { enabled = true } },
+
+      -- experimental signature help support
+      -- trigger = { signature_help = { enabled = true } }
+      sources = {
+        providers = {},
+        -- adding any nvim-cmp sources here will enable them
+        -- with blink.compat
+        compat = { "codeium" },
+        completion = {
+          -- remember to enable your providers here
+          enabled_providers = { "lsp", "path", "snippets", "buffer" },
+        },
+      },
+
+      keymap = {
+        preset = "enter",
+        ["<Tab>"] = {
+          require('util').cmp.map({ "snippet_forward", "ai_accept" }),
+          "fallback",
+        },
+      },
+    },
+    ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
+    config = function(_, opts)
+      -- setup compat sources
+      local enabled = opts.sources.completion.enabled_providers
+      for _, source in ipairs(opts.sources.compat or {}) do
+        opts.sources.providers[source] = vim.tbl_deep_extend(
+          "force",
+          { name = source, module = "blink.compat.source" },
+          opts.sources.providers[source] or {}
+        )
+        if type(enabled) == "table" and not vim.tbl_contains(enabled, source) then
+          table.insert(enabled, source)
+        end
+      end
+      require("blink.cmp").setup(opts)
     end,
   },
 }

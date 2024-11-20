@@ -20,9 +20,17 @@ return {
     opts = {
       options = {
         -- stylua: ignore
-        close_command = function(n) require("bufdelete").bufdelete(n, false) end,
+        close_command = function(n)
+          Snacks.bufdelete.delete({
+            buf = n,
+          })
+        end,
         -- stylua: ignore
-        right_mouse_command = function(n) require("bufdelete").bufdelete(n, false) end,
+        right_mouse_command = function(n)
+          Snacks.bufdelete.delete({
+            buf = n,
+          })
+        end,
         diagnostics = "nvim_lsp",
         always_show_bufferline = false,
         offsets = {
@@ -304,6 +312,7 @@ return {
   -- buffer remove
   {
     "famiu/bufdelete.nvim",
+    enabled = false,
     -- stylua: ignore
     keys = {
       {
@@ -318,6 +327,7 @@ return {
   -- Better `vim.notify()`
   {
     "rcarriga/nvim-notify",
+    enabled = false,
     keys = {
       {
         "<leader>un",
@@ -366,7 +376,6 @@ return {
   {
     "folke/noice.nvim",
     event = "VeryLazy",
-    dependencies = { 'MunifTanjim/nui.nvim' },
     opts = {
       lsp = {
         override = {

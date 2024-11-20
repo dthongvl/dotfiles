@@ -6,9 +6,12 @@ return {
     opts = {
       current_line_blame = true,
       signs = {
-        add = { text = "▎" },
-        change = { text = "▎" },
-        delete = { text = "" },
+        -- add = { text = "▎" },
+        add = { text = " " },
+        -- change = { text = "▎" },
+        change = { text = " " },
+        -- delete = { text = "" },
+        delete = { text = "" },
         topdelete = { text = "" },
         changedelete = { text = "▎" },
         untracked = { text = "▎" },
@@ -39,6 +42,7 @@ return {
         map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
         map("n", "<leader>ghd", gs.diffthis, "Diff This")
         map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
+        map('n', '<leader>td', gs.toggle_deleted)
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
       end,
     },
@@ -101,5 +105,13 @@ return {
         diffview = true,
       },
     },
+  },
+  -- jj diff editor
+  {
+    "julienvincent/hunk.nvim",
+    cmd = { "DiffEditor" },
+    config = function()
+      require("hunk").setup()
+    end,
   },
 }

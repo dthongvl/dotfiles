@@ -131,11 +131,11 @@ return {
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
   },
   -- for ruby, lua
-  {
-    "RRethy/nvim-treesitter-endwise",
-    event = "InsertEnter",
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-  },
+  -- {
+  --   "RRethy/nvim-treesitter-endwise",
+  --   event = "InsertEnter",
+  --   dependencies = { 'nvim-treesitter/nvim-treesitter' },
+  -- },
   {
     'nvim-treesitter/nvim-treesitter-context',
     event = 'VeryLazy',
