@@ -12,11 +12,12 @@ end)
 
 -- This is where you actually apply your config choices
 -- For example, changing the color scheme:
--- config.default_prog = { 'zellij' }
-config.color_scheme = 'Catppuccin Frappe'
+config.default_prog = { 'tmux' }
+config.color_scheme = 'Kanagawa (Gogh)'
+config.hide_tab_bar_if_only_one_tab = true
 config.font_size = 16
 config.font = wezterm.font('FantasqueSansM Nerd Font Propo', { stretch = 'Expanded' })
--- config.window_decorations = 'RESIZE'
+config.window_decorations = "TITLE | RESIZE"
 config.window_padding = {
   left = 0,
   right = 0,
