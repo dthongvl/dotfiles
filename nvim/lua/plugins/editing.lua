@@ -1,10 +1,99 @@
 return {
   -- Add/delete/change surrounding pairs
+  -- {
+  --   "kylechui/nvim-surround",
+  --   event = { "BufEnter", "BufNewFile" },
+  --   opts = {
+  --     surrounds = {
+  --       t = {
+  --         -- add = wrap_with_abbreviation,
+  --         add = function()
+  --           local input = vim.fn.input 'Emmet Abbreviation:'
+  --
+  --           if input then
+  --             --- hat_tip to https://github.com/b0o/nvim-conf/blob/363e126f6ae3dff5f190680841e790467a00124d/lua/user/util/wrap.lua#L12
+  --             local bufnr = 0
+  --             local client = unpack(vim.lsp.get_clients{ bufnr = bufnr, name = 'emmet_language_server' })
+  --             if client then
+  --               local splitter =  'BENNYSPECIALSECRETSTRING'
+  --               local response = client.request_sync('emmet/expandAbbreviation', {
+  --                   abbreviation = input,
+  --                   language = vim.opt.filetype,
+  --                   options = {
+  --                     text = splitter,
+  --                   },
+  --                 }, 50, bufnr)
+  --               if response then
+  --                 if response.err then
+  --                   vim.notify(response.err.message)
+  --                 else
+  --                   return (vim.split(response.result, splitter))
+  --                 end
+  --               end
+  --             end
+  --           end
+  --         end,
+  --         find = function()
+  --           return require 'nvim-surround.config'.get_selection { motion = 'at' }
+  --         end,
+  --         delete = '^(%b<>)().-(%b<>)()$',
+  --         change = {
+  --           -- TODO: this is cribbed from the original impl
+  --           -- but doesn't yet actually call emmet
+  --           target = '^<([^%s<>]*)().-([^/]*)()>$',
+  --           replacement = function()
+  --             local input = vim.fn.input'New Emmet Abbreviation:'
+  --             if input then
+  --               local element = input:match '^<?([^%s>]*)'
+  --               local attributes = input:match '^<?[^%s>]*%s+(.-)>?$'
+  --
+  --               local open = attributes and element .. ' ' .. attributes or element
+  --               local close = element
+  --
+  --               return { { open }, { close } }
+  --             end
+  --           end,
+  --         },
+  --       },
+  --     },
+  --   },
+  --   config = function (_, opts)
+  --     require("nvim-surround").setup(opts)
+  --   end,
+  -- },
   {
-    "kylechui/nvim-surround",
-    event = { "BufEnter", "BufNewFile" },
-    config = function ()
-      require("nvim-surround").setup()
+    "echasnovski/mini.surround",
+    version = "*",
+    event = "VeryLazy",
+    enabled = true,
+    opts = {
+      n_lines = 100,
+      mappings = {
+        add = "ys", -- Add surrounding in Normal and Visual modes
+        delete = "ds", -- Delete surrounding
+        find = "sf", -- Find surrounding (to the right)
+        find_left = "sF", -- Find surrounding (to the left)
+        highlight = "sh", -- Highlight surrounding
+        replace = "cs", -- Replace surrounding
+        update_n_lines = "sn", -- Update `n_lines`
+        suffix_last = "l", -- Suffix to search with "prev" method
+        suffix_next = "n", -- Suffix to search with "next" method
+      },
+      custom_surroundings = {
+        t = {
+          input = { "<(%w-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- from https://github.com/echasnovski/mini.surround/blob/14f418209ecf52d1a8de9d091eb6bd63c31a4e01/lua/mini/surround.lua#LL1048C13-L1048C72
+          output = function()
+            local emmet = require("mini.surround").user_input("Emmet")
+            if not emmet then
+              return nil
+            end
+            return require("util.emmet").totag(emmet)
+          end,
+        },
+      },
+    },
+    config = function(_, opts)
+      require("mini.surround").setup(opts)
     end,
   },
   -- Switch between single-line and multiline forms of code
@@ -41,24 +130,6 @@ return {
     end
   },
   {
-    'smoka7/multicursors.nvim',
-    enabled = false,
-    event = 'VeryLazy',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'smoka7/hydra.nvim' },
-    opts = {
-      hint_config = { border = border },
-    },
-    cmd = { 'MCstart', 'MCvisual', 'MCclear', 'MCpattern', 'MCvisualPattern', 'MCunderCursor' },
-    keys = {
-      {
-        '<A-e>',
-        '<cmd>MCstart<cr>',
-        mode = { 'v', 'n' },
-        desc = 'Create a selection for selected text or word under the cursor',
-      },
-    },
-  },
-  {
     "MeanderingProgrammer/render-markdown.nvim",
     opts = {
       file_types = { "markdown", "norg", "rmd", "org" },
@@ -75,51 +146,4 @@ return {
     ft = { "markdown", "norg", "rmd", "org" },
     enabled = true,
   },
-  {
-    "yetone/avante.nvim",
-    enabled = false,
-    event = "VeryLazy",
-    lazy = false,
-    version = false, -- set this if you want to always pull the latest change
-    opts = {
-      -- add any opts here
-    },
-    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-    build = "make",
-    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "stevearc/dressing.nvim",
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      --- The below dependencies are optional,
-      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-      "zbirenbaum/copilot.lua", -- for providers='copilot'
-      {
-        -- support for image pasting
-        "HakonHarnes/img-clip.nvim",
-        event = "VeryLazy",
-        opts = {
-          -- recommended settings
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = {
-              insert_mode = true,
-            },
-            -- required for Windows users
-            use_absolute_path = true,
-          },
-        },
-      },
-      {
-        -- Make sure to set this up properly if you have lazy=true
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = { "markdown", "Avante" },
-        },
-        ft = { "markdown", "Avante" },
-      },
-    },
-  }
 }
