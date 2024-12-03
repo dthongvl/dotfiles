@@ -51,6 +51,7 @@ return {
   -- auto completion
   {
     "hrsh7th/nvim-cmp",
+    enabled = true,
     version = false,
     event = "InsertEnter",
     dependencies = {
@@ -117,6 +118,7 @@ return {
     "saghen/blink.cmp",
     enabled = false,
     version = "*",
+    lazy = false,
     -- build = vim.g.lazyvim_blink_main and "cargo build --release",
     opts_extend = {
       "sources.completion.enabled_providers",
@@ -133,22 +135,23 @@ return {
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
     opts = {
-      highlight = {
+      appearance = {
         -- sets the fallback highlight groups to nvim-cmp's highlight groups
         -- useful for when your theme doesn't support blink.cmp
         -- will be removed in a future release, assuming themes add support
         use_nvim_cmp_as_default = false,
+        -- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+        -- adjusts spacing to ensure icons are aligned
+        nerd_font_variant = "mono",
       },
-      -- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-      -- adjusts spacing to ensure icons are aligned
-      nerd_font_variant = "mono",
-      windows = {
-        autocomplete = {
-          -- draw = "reversed",
+      completion = {
+        menu = {
           winblend = vim.o.pumblend,
+          draw = { treesitter = true },
         },
         documentation = {
           auto_show = true,
+          auto_show_delay_ms = 200,
         },
         ghost_text = {
           enabled = true, -- ai cmp

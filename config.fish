@@ -28,5 +28,6 @@ set fish_greeting 'No Sana No Life'
 
 source ~/.asdf/asdf.fish
 source ~/.config/fish/private_config.fish
+# source ~/.config/fish/themes/kanagawa.fish
 
 fish_config theme choose "Rosé Pine Dawn"

@@ -502,4 +502,5 @@ return {
       require 'nvim-highlight-colors'.setup(opts)
     end
   },
+  { "alexghergh/nvim-tmux-navigation" }
 }

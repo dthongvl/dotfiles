@@ -29,17 +29,18 @@ return {
         },
         -- options for vim.diagnostic.config()
         diagnostics = {
-          underline = false,
+          underline = true,
           update_in_insert = false,
           severity_sort = true,
-          virtual_text = {
-            spacing = 2,
-            source = "if_many",
-            prefix = "●",
-            -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
-            -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
-            -- prefix = "icons",
-          },
+          virtual_text = false,
+          -- virtual_text = {
+          --   spacing = 2,
+          --   source = "if_many",
+          --   prefix = "●",
+          --   -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
+          --   -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
+          --   -- prefix = "icons",
+          -- },
           float = {
             source = 'always',
             border = 'rounded',
@@ -613,7 +614,16 @@ return {
   },
   {
     "smjonas/inc-rename.nvim",
-    cmd = "IncRename",
-    opts = {},
+    config = function()
+      require("inc_rename").setup()
+    end,
   },
+  {
+    "rachartier/tiny-inline-diagnostic.nvim",
+    event = "VeryLazy", -- Or `LspAttach`
+    priority = 1000, -- needs to be loaded in first
+    config = function()
+        require('tiny-inline-diagnostic').setup()
+    end
+}
 }
