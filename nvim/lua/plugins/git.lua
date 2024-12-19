@@ -88,30 +88,6 @@ return {
       },
     },
   },
-  {
-    'NeogitOrg/neogit',
-    enabled = false,
-    cmd = 'Neogit',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-    },
-    keys = {
-      { '<localleader>gs', function() require('neogit').open() end, desc = 'open status buffer' },
-      { '<localleader>gc', function() require('neogit').open({ 'commit' }) end, desc = 'open commit buffer' },
-      { '<localleader>gl', function() require('neogit').popups.pull.create() end, desc = 'open pull popup' },
-      { '<localleader>gp', function() require('neogit').popups.push.create() end, desc = 'open push popup' },
-    },
-    opts = {
-      signs = {
-        section = { '', '󰘕' }, -- "󰁙", "󰁊"
-        item = { '▸', '▾' },
-        hunk = { '󰐕', '󰍴' },
-      },
-      integrations = {
-        diffview = true,
-      },
-    },
-  },
   -- jj diff editor
   {
     "julienvincent/hunk.nvim",

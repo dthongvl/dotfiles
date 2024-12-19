@@ -17,10 +17,14 @@ return {
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
-      bigfile = { enabled = true },
+      indent = { enabled = true },
+      input = { enabled = true },
       notifier = { enabled = true },
-      quickfile = { enabled = true },
+      scope = { enabled = true },
+      scroll = { enabled = true },
       statuscolumn = { enabled = false },
+      bigfile = { enabled = true },
+      quickfile = { enabled = true },
       words = { enabled = true },
       terminal = {
         win = {
@@ -53,5 +57,21 @@ return {
         vim.notify = notify
       end
     end,
-  }
+  },
+  -- Session management. This saves your session in the background,
+  -- keeping track of open buffers, window arrangement, and more.
+  -- You can restore sessions when returning through the dashboard.
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    opts = { options = vim.opt.sessionoptions:get() },
+    -- stylua: ignore
+    keys = {
+      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+    },
+  },
+  -- library used by other plugins
+  { "nvim-lua/plenary.nvim", lazy = true },
 }

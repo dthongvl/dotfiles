@@ -20,27 +20,24 @@ return {
       },
       "mason.nvim",
       "williamboman/mason-lspconfig.nvim",
-      { "hrsh7th/cmp-nvim-lsp" },
+      -- { "hrsh7th/cmp-nvim-lsp" },
     },
     ---@class PluginLspOpts
     opts = function ()
       return {
-        capabilities = {
-        },
         -- options for vim.diagnostic.config()
         diagnostics = {
-          underline = true,
+          underline = false,
           update_in_insert = false,
           severity_sort = true,
-          virtual_text = false,
-          -- virtual_text = {
-          --   spacing = 2,
-          --   source = "if_many",
-          --   prefix = "●",
-          --   -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
-          --   -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
-          --   -- prefix = "icons",
-          -- },
+          virtual_text = {
+            spacing = 2,
+            source = "if_many",
+            prefix = "●",
+            -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
+            -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
+            -- prefix = "icons",
+          },
           float = {
             source = 'always',
             border = 'rounded',
@@ -58,7 +55,8 @@ return {
         -- Be aware that you also will need to properly configure your LSP server to
         -- provide the inlay hints.
         inlay_hints = {
-          enabled = false
+          enabled = true,
+          exclude = { "vue" }, -- filetypes for which you don't want to enable inlay hints
         },
         -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
         -- Be aware that you also will need to properly configure your LSP server to
@@ -66,9 +64,14 @@ return {
         codelens = {
           enabled = false,
         },
-        -- Enable lsp cursor word highlighting
-        document_highlight = {
-          enabled = false,
+        -- add any global capabilities here
+        capabilities = {
+          workspace = {
+            fileOperations = {
+              didRename = true,
+              willRename = true,
+            },
+          },
         },
         -- LSP Server Settings
         ---@type lspconfig.options
@@ -127,6 +130,7 @@ return {
                 enableMoveToFileCodeAction = true,
                 autoUseWorkspaceTsdk = true,
                 experimental = {
+                  maxInlayHintLength = 30,
                   completion = {
                     enableServerSideFuzzyMatch = true,
                   },
@@ -143,6 +147,11 @@ return {
                     {
                       name = "typescript-svelte-plugin",
                       location = require('util').get_pkg_path("svelte-language-server", "/node_modules/typescript-svelte-plugin"),
+                      enableForWorkspaceTypeScriptVersions = true,
+                    },
+                    {
+                      name = "@astrojs/ts-plugin",
+                      location = require('util').get_pkg_path("astro-language-server", "/node_modules/@astrojs/ts-plugin"),
                       enableForWorkspaceTypeScriptVersions = true,
                     },
                   }
@@ -167,7 +176,7 @@ return {
           eslint = {},
           html = {},
           cssls = {},
-          -- astro = {},
+          astro = {},
           ansiblels = {},
           tailwindcss = {
             filetypes_exclude = { "markdown" },
@@ -341,12 +350,17 @@ return {
 
       Util.lsp.setup()
       Util.lsp.on_dynamic_capability(require("plugins.lsp.keymaps").on_attach)
-      Util.lsp.words.setup(opts.document_highlight)
 
       -- inlay hints
       if opts.inlay_hints.enabled then
         Util.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
-          Util.inlay_hints(buffer, true);
+          if
+            vim.api.nvim_buf_is_valid(buffer)
+            and vim.bo[buffer].buftype == ""
+            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
+          then
+            vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
+          end
         end)
       end
 
@@ -379,6 +393,9 @@ return {
         local server_opts = vim.tbl_deep_extend("force", {
           capabilities = vim.deepcopy(capabilities),
         }, servers[server] or {})
+        if server_opts.enabled == false then
+          return
+        end
 
         if opts.setup[server] then
           if opts.setup[server](server, server_opts) then
@@ -392,7 +409,7 @@ return {
         require("lspconfig")[server].setup(server_opts)
       end
 
-      -- get all the servers that are available thourgh mason-lspconfig
+      -- get all the servers that are available through mason-lspconfig
       local have_mason, mlsp = pcall(require, "mason-lspconfig")
       local all_mslp_servers = {}
       if have_mason then
@@ -403,11 +420,13 @@ return {
       for server, server_opts in pairs(servers) do
         if server_opts then
           server_opts = server_opts == true and {} or server_opts
-          -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
-          if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
-            setup(server)
-          elseif server_opts.enabled ~= false then
-            ensure_installed[#ensure_installed + 1] = server
+          if server_opts.enabled ~= false then
+            -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
+            if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
+              setup(server)
+            else
+              ensure_installed[#ensure_installed + 1] = server
+            end
           end
         end
       end
@@ -451,16 +470,28 @@ return {
         ruby = { 'rubocop', 'ruby' },
         dockerfile = { 'hadolint' },
         bash = { 'shellcheck' },
-      }
+      },
+      linters = {},
     },
     config = function(_, opts)
       local M = {}
 
-      local lint = require('lint')
+      local lint = require("lint")
+      for name, linter in pairs(opts.linters) do
+        if type(linter) == "table" and type(lint.linters[name]) == "table" then
+          lint.linters[name] = vim.tbl_deep_extend("force", lint.linters[name], linter)
+          if type(linter.prepend_args) == "table" then
+            lint.linters[name].args = lint.linters[name].args or {}
+            vim.list_extend(lint.linters[name].args, linter.prepend_args)
+          end
+        else
+          lint.linters[name] = linter
+        end
+      end
       lint.linters_by_ft = opts.linters_by_ft
 
       function M.debounce(ms, fn)
-        local timer = vim.loop.new_timer()
+        local timer = vim.uv.new_timer()
         return function(...)
           local argv = { ... }
           timer:start(ms, 0, function()
@@ -476,6 +507,9 @@ return {
         -- * otherwise will split filetype by "." and add all those linters
         -- * this differs from conform.nvim which only uses the first filetype that has a formatter
         local names = lint._resolve_linter_by_ft(vim.bo.filetype)
+
+        -- Create a copy of the names table to avoid modifying the original.
+        names = vim.list_extend({}, names)
 
         -- Add fallback linters.
         if #names == 0 then
@@ -513,6 +547,25 @@ return {
     'stevearc/conform.nvim',
     event = 'BufReadPre',
     opts = {
+      formatters = {
+        ["markdown-toc"] = {
+          condition = function(_, ctx)
+            for _, line in ipairs(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false)) do
+              if line:find("<!%-%- toc %-%->") then
+                return true
+              end
+            end
+          end,
+        },
+        ["markdownlint-cli2"] = {
+          condition = function(_, ctx)
+            local diag = vim.tbl_filter(function(d)
+              return d.source == "markdownlint"
+            end, vim.diagnostic.get(ctx.buf))
+            return #diag > 0
+          end,
+        },
+      },
       formatters_by_ft = {
         -- lua = { 'stylua' },
         -- javascript = { 'eslint' },
@@ -522,6 +575,8 @@ return {
         -- ["markdown"] = { "prettier", "markdownlint-cli2", "markdown-toc" },
         -- ["markdown.mdx"] = { "prettier", "markdownlint-cli2", "markdown-toc" },
         go = { 'goimports', 'gofumpt' },
+        astro = { 'prettier' },
+        svelte = { 'prettier' },
         -- pgsql = { 'sql_formatter' },
         -- sql = { 'sql_formatter' },
         -- json = { 'jq' },
@@ -618,12 +673,4 @@ return {
       require("inc_rename").setup()
     end,
   },
-  {
-    "rachartier/tiny-inline-diagnostic.nvim",
-    event = "VeryLazy", -- Or `LspAttach`
-    priority = 1000, -- needs to be loaded in first
-    config = function()
-        require('tiny-inline-diagnostic').setup()
-    end
-}
 }

@@ -1,13 +1,13 @@
 local M = {}
 
----@alias LazyKeysLspSpec LazyKeysSpec|{has?:string, cond?:fun():boolean}
----@alias LazyKeysLsp LazyKeys|{has?:string, cond?:fun():boolean}
+---@alias LazyKeysLspSpec LazyKeysSpec|{has?:string|string[], cond?:fun():boolean}
+---@alias LazyKeysLsp LazyKeys|{has?:string|string[], cond?:fun():boolean}
 
 ---@return LazyKeysLspSpec[]
 function M.get()
   return {
-    { "<leader>cd", vim.diagnostic.open_float,          desc = "Line Diagnostics" },
     { "<leader>cl", "<cmd>LspInfo<cr>",                 desc = "Lsp Info" },
+    { "<leader>cd", vim.diagnostic.open_float,          desc = "Line Diagnostics" },
     { "gd",         "<cmd>Glance definitions<cr>",      desc = "Goto Definition",     has = "definition" },
     { "gr",         "<cmd>Glance references<cr>",       desc = "References" },
     { "gD",         vim.lsp.buf.declaration,            desc = "Goto Declaration" },
@@ -39,10 +39,18 @@ function M.get()
   }
 end
 
----@param method string
+---@param method string|string[]
 function M.has(buffer, method)
+  if type(method) == "table" then
+    for _, m in ipairs(method) do
+      if M.has(buffer, m) then
+        return true
+      end
+    end
+    return false
+  end
   method = method:find("/") and method or "textDocument/" .. method
-  local clients = vim.lsp.get_clients({ bufnr = buffer })
+  local clients = require('util').lsp.get_clients({ bufnr = buffer })
   for _, client in ipairs(clients) do
     if client.supports_method(method) then
       return true
@@ -58,8 +66,8 @@ function M.resolve(buffer)
     return {}
   end
   local spec = vim.tbl_extend("force", {}, M.get())
-  local opts = require("util").opts("nvim-lspconfig")
-  local clients = vim.lsp.get_clients({ bufnr = buffer })
+  local opts = require('util').opts("nvim-lspconfig")
+  local clients = require('util').lsp.get_clients({ bufnr = buffer })
   for _, client in ipairs(clients) do
     local maps = opts.servers[client.name] and opts.servers[client.name].keys or {}
     vim.list_extend(spec, maps)

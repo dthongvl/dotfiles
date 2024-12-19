@@ -1,13 +1,3 @@
-local highlight = {
-  "RainbowRed",
-  "RainbowYellow",
-  "RainbowBlue",
-  "RainbowOrange",
-  "RainbowGreen",
-  "RainbowViolet",
-  "RainbowCyan",
-}
-
 return {
   -- bufferline
   {
@@ -71,18 +61,18 @@ return {
             {
               function() return require("noice").api.status.command.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-              color = Util.fg("Statement")
+              color = function() return { fg = Snacks.util.color("Statement") } end,
             },
             -- stylua: ignore
             {
               function() return require("noice").api.status.mode.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-              color = Util.fg("Constant"),
+              color = function() return { fg = Snacks.util.color("Constant") } end,
             },
             {
               require("lazy.status").updates,
               cond = require("lazy.status").has_updates,
-              color = Util.fg("Special"),
+              color = function() return { fg = Snacks.util.color("Special") } end,
             },
             {
               "searchcount",
@@ -136,48 +126,6 @@ return {
     },
     config = true,
   },
-  -- indent guides for Neovim
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      indent = {
-        char = "│",
-        tab_char = "│",
-      },
-      scope = {
-        char = "│",
-        highlight = highlight,
-        show_start = true,
-      },
-      exclude = {
-        filetypes = {
-          'dbout', 'neo-tree-popup', 'log', 'gitcommit',
-          'txt', 'help', 'NvimTree', 'git', 'flutterToolsOutline',
-          'undotree', 'markdown', 'norg', 'org', 'orgagenda',
-        },
-      },
-    },
-    config = function(_, opts)
-      local hooks = require "ibl.hooks"
-      -- create the highlight groups in the highlight setup hook, so they are reset
-      -- every time the colorscheme changes
-      hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-        vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
-        vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
-        vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
-        vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
-        vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
-        vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
-        vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
-      end)
-
-      vim.g.rainbow_delimiters = vim.list_extend(vim.g.rainbow_delimiters or {}, { highlight = highlight })
-      require("ibl").setup(opts)
-
-      hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
-    end
-  },
   -- folding
   {
     'kevinhwang91/nvim-ufo',
@@ -218,158 +166,6 @@ return {
       package.preload["nvim-web-devicons"] = function()
         require("mini.icons").mock_nvim_web_devicons()
         return package.loaded["nvim-web-devicons"]
-      end
-    end,
-  },
-  -- brackets color
-  {
-    'HiPhish/rainbow-delimiters.nvim',
-    enabled = false,
-    url = 'https://gitlab.com/HiPhish/rainbow-delimiters.nvim',
-    event = 'VeryLazy',
-    config = function()
-      local rainbow_delimiters = require('rainbow-delimiters')
-
-      vim.g.rainbow_delimiters = vim.list_extend(vim.g.rainbow_delimiters or {}, {
-        strategy = {
-          [''] = rainbow_delimiters.strategy['global'],
-        },
-        query = {
-          [''] = 'rainbow-delimiters',
-        },
-      })
-    end,
-  },
-  -- references
-  {
-    "RRethy/vim-illuminate",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      delay = 200,
-      large_file_cutoff = 2000,
-      large_file_overrides = {
-        providers = { "lsp" },
-      },
-    },
-    config = function(_, opts)
-      require("illuminate").configure(opts)
-
-      local function map(key, dir, buffer)
-        vim.keymap.set("n", key, function()
-          require("illuminate")["goto_" .. dir .. "_reference"](false)
-        end, { desc = dir:sub(1, 1):upper() .. dir:sub(2) .. " Reference", buffer = buffer })
-      end
-
-      map("]]", "next")
-      map("[[", "prev")
-
-      -- also set it after loading ftplugins, since a lot overwrite [[ and ]]
-      vim.api.nvim_create_autocmd("FileType", {
-        callback = function()
-          local buffer = vim.api.nvim_get_current_buf()
-          map("]]", "next", buffer)
-          map("[[", "prev", buffer)
-        end,
-      })
-    end,
-    keys = {
-      { "]]", desc = "Next Reference" },
-      { "[[", desc = "Prev Reference" },
-    },
-  },
-  -- lsp context in winbar
-  {
-    "Bekaboo/dropbar.nvim",
-    enabled = false,
-    event = 'VeryLazy',
-    opts = {
-      bar = {
-        sources = function(_, _)
-          local sources = require('dropbar.sources')
-          return {
-            {
-              get_symbols = function(buf, win, cursor)
-                if vim.bo[buf].ft == 'markdown' then
-                  return sources.markdown.get_symbols(buf, win, cursor)
-                end
-                for _, source in ipairs({
-                  sources.lsp,
-                  sources.treesitter,
-                }) do
-                  local symbols = source.get_symbols(buf, win, cursor)
-                  if not vim.tbl_isempty(symbols) then
-                    return symbols
-                  end
-                end
-                return {}
-              end,
-            },
-          }
-        end
-      },
-    },
-  },
-  -- buffer remove
-  {
-    "famiu/bufdelete.nvim",
-    enabled = false,
-    -- stylua: ignore
-    keys = {
-      {
-        "<leader>wq",
-        function()
-          require("bufdelete").bufdelete(0, false)
-        end,
-        desc = "Delete Buffer",
-      },
-    },
-  },
-  -- Better `vim.notify()`
-  {
-    "rcarriga/nvim-notify",
-    enabled = false,
-    keys = {
-      {
-        "<leader>un",
-        function()
-          require("notify").dismiss({ silent = true, pending = true })
-        end,
-        desc = "Dismiss all Notifications",
-      },
-    },
-    opts = {
-      timeout = 3000,
-      max_height = function()
-        return math.floor(vim.o.lines * 0.75)
-      end,
-      max_width = function()
-        return math.floor(vim.o.columns * 0.75)
-      end,
-      render = "compact",
-    },
-    init = function()
-      -- when noice is not enabled, install notify on VeryLazy
-      local Util = require("util")
-      if not Util.has("noice.nvim") then
-        Util.on_very_lazy(function()
-          vim.notify = require("notify")
-        end)
-      end
-    end,
-  },
-  -- better vim.ui
-  {
-    "stevearc/dressing.nvim",
-    init = function()
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.select = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.select(...)
-      end
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.input = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.input(...)
       end
     end,
   },
@@ -467,6 +263,32 @@ return {
     },
   },
   {
+    "brenoprata10/nvim-highlight-colors",
+    opts = {
+      enable_tailwind = true,
+    },
+    config = function(_, opts)
+      require 'nvim-highlight-colors'.setup(opts)
+    end
+  },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      file_types = { "markdown", "norg", "rmd", "org" },
+      code = {
+        sign = false,
+        width = "block",
+        right_pad = 1,
+      },
+      heading = {
+        sign = false,
+        icons = {},
+      },
+    },
+    ft = { "markdown", "norg", "rmd", "org" },
+    enabled = true,
+  },
+  {
     'folke/flash.nvim',
     event = "VeryLazy",
     vscode = true,
@@ -493,14 +315,4 @@ return {
       },
     },
   },
-  {
-    "brenoprata10/nvim-highlight-colors",
-    opts = {
-      enable_tailwind = true,
-    },
-    config = function(_, opts)
-      require 'nvim-highlight-colors'.setup(opts)
-    end
-  },
-  { "alexghergh/nvim-tmux-navigation" }
 }

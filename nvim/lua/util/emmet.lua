@@ -63,7 +63,7 @@ local function opentag(x)
 	if x.child then
 		res = res .. opentag(x.child)
 	end
-	return res
+	return res .. "\n"
 end
 
 local function closetag(x)
@@ -71,7 +71,7 @@ local function closetag(x)
 	if x.child then
 		res = closetag(x.child) .. res
 	end
-	res = res .. "</" .. x.tag .. ">"
+	res = res .. "\n</" .. x.tag .. ">"
 	return res
 end
 

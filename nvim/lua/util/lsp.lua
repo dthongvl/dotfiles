@@ -1,5 +1,25 @@
----@class util.lsp
+---@class lazyvim.util.lsp
 local M = {}
+
+---@alias lsp.Client.filter {id?: number, bufnr?: number, name?: string, method?: string, filter?:fun(client: lsp.Client):boolean}
+
+---@param opts? lsp.Client.filter
+function M.get_clients(opts)
+  local ret = {} ---@type vim.lsp.Client[]
+  if vim.lsp.get_clients then
+    ret = vim.lsp.get_clients(opts)
+  else
+    ---@diagnostic disable-next-line: deprecated
+    ret = vim.lsp.get_active_clients(opts)
+    if opts and opts.method then
+      ---@param client vim.lsp.Client
+      ret = vim.tbl_filter(function(client)
+        return client.supports_method(opts.method, { bufnr = opts.bufnr })
+      end, ret)
+    end
+  end
+  return opts and opts.filter and vim.tbl_filter(opts.filter, ret) or ret
+end
 
 ---@param on_attach fun(client:vim.lsp.Client, buffer)
 ---@param name? string
@@ -36,30 +56,6 @@ function M.setup()
   end
   M.on_attach(M._check_methods)
   M.on_dynamic_capability(M._check_methods)
-end
-
----@param server string
----@param cond fun( root_dir, config): boolean
-function M.disable(server, cond)
-  local util = require("lspconfig.util")
-  local def = M.get_config(server)
-  ---@diagnostic disable-next-line: undefined-field
-  def.document_config.on_new_config = util.add_hook_before(def.document_config.on_new_config, function(config, root_dir)
-    if cond(root_dir, config) then
-      config.enabled = false
-    end
-  end)
-end
-
----@return _.lspconfig.options
-function M.get_config(server)
-  local configs = require("lspconfig.configs")
-  return rawget(configs, server)
-end
-
-function M.is_enabled(server)
-  local c = M.get_config(server)
-  return c and c.enabled ~= false
 end
 
 ---@param client vim.lsp.Client
@@ -122,80 +118,37 @@ function M.on_supports_method(method, fn)
   })
 end
 
----@alias LspWord {from:{[1]:number, [2]:number}, to:{[1]:number, [2]:number}} 1-0 indexed
-M.words = {}
-M.words.enabled = false
-M.words.ns = vim.api.nvim_create_namespace("vim_lsp_references")
+---@return _.lspconfig.options
+function M.get_config(server)
+  local configs = require("lspconfig.configs")
+  return rawget(configs, server)
+end
 
----@param opts? {enabled?: boolean}
-function M.words.setup(opts)
-  opts = opts or {}
-  if not opts.enabled then
-    return
+---@return {default_config:lspconfig.Config}
+function M.get_raw_config(server)
+  local ok, ret = pcall(require, "lspconfig.configs." .. server)
+  if ok then
+    return ret
   end
-  M.words.enabled = true
-  local handler = vim.lsp.handlers["textDocument/documentHighlight"]
-  vim.lsp.handlers["textDocument/documentHighlight"] = function(err, result, ctx, config)
-    if not vim.api.nvim_buf_is_loaded(ctx.bufnr) then
-      return
+  return require("lspconfig.server_configurations." .. server)
+end
+
+function M.is_enabled(server)
+  local c = M.get_config(server)
+  return c and c.enabled ~= false
+end
+
+---@param server string
+---@param cond fun( root_dir, config): boolean
+function M.disable(server, cond)
+  local util = require("lspconfig.util")
+  local def = M.get_config(server)
+  ---@diagnostic disable-next-line: undefined-field
+  def.document_config.on_new_config = util.add_hook_before(def.document_config.on_new_config, function(config, root_dir)
+    if cond(root_dir, config) then
+      config.enabled = false
     end
-    vim.lsp.buf.clear_references()
-    return handler(err, result, ctx, config)
-  end
-
-  M.on_supports_method("textDocument/documentHighlight", function(_, buf)
-    vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI", "CursorMoved", "CursorMovedI" }, {
-      group = vim.api.nvim_create_augroup("lsp_word_" .. buf, { clear = true }),
-      buffer = buf,
-      callback = function(ev)
-        if not require("lazyvim.plugins.lsp.keymaps").has(buf, "documentHighlight") then
-          return false
-        end
-
-        if not ({ M.words.get() })[2] then
-          if ev.event:find("CursorMoved") then
-            vim.lsp.buf.clear_references()
-          elseif not LazyVim.cmp.visible() then
-            vim.lsp.buf.document_highlight()
-          end
-        end
-      end,
-    })
   end)
-end
-
----@return LspWord[] words, number? current
-function M.words.get()
-  local cursor = vim.api.nvim_win_get_cursor(0)
-  local current, ret = nil, {} ---@type number?, LspWord[]
-  for _, extmark in ipairs(vim.api.nvim_buf_get_extmarks(0, M.words.ns, 0, -1, { details = true })) do
-    local w = {
-      from = { extmark[2] + 1, extmark[3] },
-      to = { extmark[4].end_row + 1, extmark[4].end_col },
-    }
-    ret[#ret + 1] = w
-    if cursor[1] >= w.from[1] and cursor[1] <= w.to[1] and cursor[2] >= w.from[2] and cursor[2] <= w.to[2] then
-      current = #ret
-    end
-  end
-  return ret, current
-end
-
----@param count number
----@param cycle? boolean
-function M.words.jump(count, cycle)
-  local words, idx = M.words.get()
-  if not idx then
-    return
-  end
-  idx = idx + count
-  if cycle then
-    idx = (idx - 1) % #words + 1
-  end
-  local target = words[idx]
-  if target then
-    vim.api.nvim_win_set_cursor(0, target.from)
-  end
 end
 
 return M

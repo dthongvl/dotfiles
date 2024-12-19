@@ -9,20 +9,44 @@ setmetatable(M, {
     if LazyUtil[k] then
       return LazyUtil[k]
     end
+
     ---@diagnostic disable-next-line: no-unknown
     t[k] = require("util." .. k)
     return t[k]
   end,
 })
 
+---@param name string
+function M.get_plugin(name)
+  return require("lazy.core.config").plugins[name]
+end
+
+---@param name string
+---@param path string?
+function M.get_plugin_path(name, path)
+  local plugin = M.get_plugin(name)
+  path = path and "/" .. path or ""
+  return plugin and (plugin.dir .. path)
+end
+
 ---@param plugin string
 function M.has(plugin)
-  return require("lazy.core.config").plugins[plugin] ~= nil
+  return M.get_plugin(plugin) ~= nil
+end
+
+---@param fn fun()
+function M.on_very_lazy(fn)
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "VeryLazy",
+    callback = function()
+      fn()
+    end,
+  })
 end
 
 ---@param name string
 function M.opts(name)
-  local plugin = require("lazy.core.config").plugins[name]
+  local plugin = M.get_plugin(name)
   if not plugin then
     return {}
   end
@@ -30,25 +54,13 @@ function M.opts(name)
   return Plugin.values(plugin, "opts", false)
 end
 
-function M.fg(name)
-  ---@type {foreground?:number}?
-  local hl = vim.api.nvim_get_hl and vim.api.nvim_get_hl(0, { name = name })
-  local fg = hl and hl.fg or hl.foreground
-  return fg and { fg = string.format("#%06x", fg) }
-end
-
----@param buf? number
----@param value? boolean
-function M.inlay_hints(buf, value)
-  local ih = vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint
-  if type(ih) == "function" then
-    ih(buf, value)
-  elseif type(ih) == "table" and ih.enable then
-    if value == nil then
-      value = not ih.is_enabled({ bufnr = buf or 0 })
-    end
-    ih.enable(value, { bufnr = buf })
-  end
+function M.deprecate(old, new)
+  M.warn(("`%s` is deprecated. Please use `%s` instead"):format(old, new), {
+    title = "LazyVim",
+    once = true,
+    stacktrace = true,
+    stacklevel = 6,
+  })
 end
 
 M.CREATE_UNDO = vim.api.nvim_replace_termcodes("<c-G>u", true, true, true)
@@ -77,6 +89,15 @@ function M.get_pkg_path(pkg, path, opts)
     )
   end
   return ret
+end
+
+--- Override the default title for notifications.
+for _, level in ipairs({ "info", "warn", "error" }) do
+  M[level] = function(msg, opts)
+    opts = opts or {}
+    opts.title = opts.title or "LazyVim"
+    return LazyUtil[level](msg, opts)
+  end
 end
 
 return M
