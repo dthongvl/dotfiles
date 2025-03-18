@@ -30,6 +30,7 @@ return {
           underline = false,
           update_in_insert = false,
           severity_sort = true,
+          virtual_lines = false,
           virtual_text = {
             spacing = 2,
             source = "if_many",
@@ -77,8 +78,10 @@ return {
         ---@type lspconfig.options
         servers = {
           ruby_lsp = {
-            cmd = { 'old-ruby-lsp' }
+            mason = false,
+            -- cmd = { vim.fn.expand("~/.asdf/shims/ruby-lsp") },
           },
+          rubocop = {},
           lua_ls = {
             settings = {
               Lua = {
@@ -617,7 +620,7 @@ return {
         "stylua",
         "shfmt",
         -- "solargraph",
-        "ruby-lsp",
+        -- "ruby-lsp",
         "goimports",
         "gofumpt",
         "hadolint",

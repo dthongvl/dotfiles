@@ -3,6 +3,29 @@ return {
   {
     'nvim-neo-tree/neo-tree.nvim',
     cmd = { 'Neotree' },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      {
+        's1n7ax/nvim-window-picker',
+        version = '2.*',
+        config = function()
+          require 'window-picker'.setup({
+            filter_rules = {
+              include_current_win = false,
+              autoselect_one = true,
+              -- filter using buffer options
+              bo = {
+                -- if the file type is one of following, the window will be ignored
+                filetype = { 'neo-tree', "neo-tree-popup", "notify" },
+                -- if the buffer type is one of following, the window will be ignored
+                buftype = { 'terminal', "quickfix" },
+              },
+          },
+        })
+        end,
+      },
+    },
     keys = {
       {
         '<leader>e',
@@ -76,12 +99,12 @@ return {
         },
       },
       default_component_configs = {
-        indent = {
-          with_expanders = true, -- if nil and file nesting is enabled, will enable expanders
-          expander_collapsed = "",
-          expander_expanded = "",
-          expander_highlight = "NeoTreeExpander",
-        },
+        -- indent = {
+        --   with_expanders = true, -- if nil and file nesting is enabled, will enable expanders
+        --   expander_collapsed = "",
+        --   expander_expanded = "",
+        --   expander_highlight = "NeoTreeExpander",
+        -- },
         git_status = {
           symbols = {
             unstaged = "󰄱",
@@ -118,9 +141,6 @@ return {
     opts = {
       'default-title',
       fzf_colors = true,
-      -- fzf_opts = {
-      --   ["--no-scrollbar"] = true,
-      -- },
       defaults = {
         -- formatter = "path.filename_first",
         formatter = "path.dirname_first",
@@ -160,10 +180,10 @@ return {
         })
       end,
       winopts = {
-        width = 0.8,
-        height = 0.8,
-        row = 0.5,
-        col = 0.5,
+        width = 1,
+        height = 0.85,
+        row = 1,
+        col = 0,
         preview = {
           scrollchars = { "┃", "" },
         },

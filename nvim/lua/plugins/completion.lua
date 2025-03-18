@@ -4,6 +4,7 @@ return {
     "Exafunction/codeium.nvim",
     enabled = true,
     cmd = "Codeium",
+    event = "InsertEnter",
     build = ":Codeium Auth",
     opts = {
       enable_cmp_source = true,
@@ -79,13 +80,15 @@ return {
 
       -- experimental signature help support
       -- trigger = { signature_help = { enabled = true } }
+      cmdline = {
+        enabled = false,
+      },
 
       sources = {
         -- adding any nvim-cmp sources here will enable them
         -- with blink.compat
         default = { 'lsp', 'path', 'snippets', 'buffer' },
-        cmdline = {},
-        compat = { "codeium" },
+        compat = { "codeium", "obsidian", "obsidian_new", "obsidian_tags" },
         providers = {
           codeium = {
             kind = 'Codeium',

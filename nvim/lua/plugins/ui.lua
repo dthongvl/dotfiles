@@ -38,9 +38,7 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
-    opts = function(plugin)
-      local Util = require("util")
-
+    opts = function()
       return {
         options = {
           theme = "auto",
@@ -54,7 +52,16 @@ return {
               "diagnostics",
             },
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-            { "filename", path = 0, symbols = { modified = "  ", readonly = "", unnamed = "" } },
+            {
+              "filename",
+              path = 0,
+              symbols = {
+                modified = "  ",
+                readonly = "[Readonly]",
+                unnamed = "[No name]",
+                newfile = "[New]",
+              },
+            },
           },
           lualine_x = {
             -- stylua: ignore
@@ -79,9 +86,6 @@ return {
             },
           },
           lualine_y = {
-            -- {
-            --   function() return vim.fn['codeium#GetStatusString']() end,
-            -- },
             {
               -- lsp server name
               function()
@@ -106,11 +110,23 @@ return {
             },
           },
           lualine_z = {
-            { "progress", separator = " ",                  padding = { left = 1, right = 0 } },
-            { "location", padding = { left = 0, right = 1 } },
+            {
+              function ()
+                local line = vim.fn.line('.')
+                local line_total = vim.fn.line('$')
+                return string.format('%3d|%3d', line, line_total)
+              end
+            },
+            {
+              function ()
+                local col = vim.fn.charcol('.')
+                local col_total = vim.fn.charcol('$') - 1
+                return string.format('%-2d|%-2d', col, col_total)
+              end
+            }
           },
         },
-        extensions = { "nvim-tree", "lazy", "neo-tree" },
+        extensions = { "nvim-tree", "lazy", "neo-tree", "fzf" },
       }
     end,
   },
