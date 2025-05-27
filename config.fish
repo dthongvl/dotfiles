@@ -16,7 +16,6 @@ set -x TERM xterm-256color
 set -x EDITOR nvim
 set -x HELIX_RUNTIME ~/workspace/helix/runtime
 set -x PNPM_HOME ~/.local/share/pnpm
-set -x ASDF_FORCE_PREPEND yes
 
 fish_add_path (yarn global bin)
 fish_add_path $HOME/.local/bin

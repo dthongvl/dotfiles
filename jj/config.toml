@@ -1,0 +1,68 @@
+"$schema" = "https://jj-vcs.github.io/jj/prerelease/config-schema.json"
+
+[user]
+name = "Thong Nguyen"
+email = "matong.mz@gmail.com"
+
+[ui]
+# diff.format = "git"
+default-command = "l"
+# pager = "delta"
+# diff.tool = ["delta", "--diff-so-fancy", "--color-only", "$left", "$right"]
+diff.tool = ["difft", "--color=always", "$left", "$right"]
+# pager = { command = ["less", "-FRX"], env = { LESSCHARSET = "utf-8" } }
+diff-editor = ["nvim", "-c", "DiffEditor $left $right $output"]
+
+[template-aliases]
+"format_timestamp(timestamp)" = "timestamp.ago()"
+
+# For the change ID, I never care about anything but the actual shortest ID.
+'format_short_id(id)' = 'id.shortest()'
+
+# For a Git revision, on the other hand, I always want 8 so I can quickly copy
+# it to the clipboard for access in e.g. GitHub.
+'format_short_commit_id(id)' = 'id.shortest(8)'
+
+[revsets]
+# log = '@ | ancestors(trunk()..(visible_heads() & mine()), 2) | trunk()'
+
+[revset-aliases]
+'immutable_heads()' = 'present(trunk()) | tags()'
+# stack(x, n) is the set of mutable commits reachable from 'x', with 'n'
+# parents. 'n' is often useful to customize the display and return set for
+# certain operations. 'x' can be used to target the set of 'roots' to traverse,
+# e.g. @ is the current stack.
+'stack()' = 'ancestors(reachable(@, mutable()), 2)'
+'stack(x)' = 'ancestors(reachable(x, mutable()), 2)'
+'stack(x, n)' = 'ancestors(reachable(x, mutable()), n)'
+
+[aliases]
+c = ["commit"]
+ci = ["commit", "--interactive"]
+d = ["diff"]
+l = ["log", "-r", "ancestors(reachable(@, mutable()), 2)"]
+e = ["edit"]
+nb = ["bookmark", "create", "-r @-"] # "new bookmark"
+pull = ["git", "fetch"]
+push = ["git", "push", "--allow-new"]
+# s = ["show"]
+ll = ["log", "-T", "builtin_log_detailed"]
+nt = ["new", "trunk()"]
+r = ["rebase"]
+s = ["squash"]
+si = ["squash", "--interactive"]
+# https://gist.github.com/thoughtpolice/8f2fd36ae17cd11b8e7bd93a70e31ad6#file-jjconfig-toml
+# Find the closest ancestor with a bookmark pointing at it, and move it to the
+# parent of the working copy.
+tug = ["bookmark", "move", "--from", "heads(::@- & bookmarks())", "--to", "@-"]
+# Retrunk a series. Typically used as `jj retrunk -s ...`, and notably can be
+# used with open:
+# - jj retrunk -s 'all:roots(open())'
+retrunk = ["rebase", "-d", "trunk()"]
+
+# Retrunk the current stack of work.
+reheat = ["rebase", "-d", "trunk()", "-s", "all:roots(trunk()..stack(@))"]
+
+[git]
+colocate = true
+push-new-bookmarks = true
