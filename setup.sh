@@ -14,7 +14,6 @@ fisher install rose-pine/fish
 
 # Packages
 sudo apt install alacritty flameshot peek tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip
-yarn global add typescript rustywind
 
 # Key bindings fzf
 mkdir -p ~/.config/fish/functions/
@@ -22,6 +21,8 @@ echo fzf_key_bindings > ~/.config/fish/functions/fish_user_key_bindings.fish
 
 # Config files
 ln -s -f ~/workspace/dotfiles/nvim ~/.config
+
+ln -s -f ~/workspace/dotfiles/jj ~/.config
 
 ln -s -f ~/workspace/dotfiles/.tmux.conf ~/.tmux.conf
 
@@ -33,15 +34,13 @@ ln -s -f ~/workspace/dotfiles/config.fish ~/.config/fish/config.fish
 mkdir -p ~/.config/alacritty
 ln -s -f ~/workspace/dotfiles/alacritty.yml ~/.config/alacritty/alacritty.yml
 
-# Asdf
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.1
-mkdir -p ~/.config/fish/completions; and ln -s ~/.asdf/completions/asdf.fish ~/.config/fish/completions
-
-asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
+# Mise
+curl https://mise.run | sh
+mise install --global go node ruby
 
 # Install yarn
 npm install -g yarn
+yarn global add typescript
 
 # Neovim
 git clone https://github.com/neovim/neovim ~/workspace/neovim
