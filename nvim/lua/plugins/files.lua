@@ -243,57 +243,6 @@ return {
       },
     }
   },
-  {
-    'nvim-telescope/telescope.nvim',
-    enabled = false,
-    cmd = "Telescope",
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      { "nvim-telescope/telescope-fzf-native.nvim", enabled = vim.fn.executable "make" == 1, build = "make" },
-    },
-    keys = {
-      {
-        "<leader>/",
-        function()
-          require('telescope.builtin').live_grep()
-        end,
-        desc = "Find in Files (Grep)",
-      },
-      {
-        "<leader>f",
-        function()
-          require('telescope.builtin').find_files()
-        end,
-        desc = "Find Files (root dir)",
-      },
-      {
-        "<leader>b",
-        function()
-          require('telescope.builtin').buffers({
-            sort_mru = true,
-            sort_lastused = true,
-            ignore_current_buffer = true,
-          })
-        end,
-        desc = "Buffers",
-      },
-    },
-    opts = {
-      pickers = {
-        find_files = {
-          theme = "ivy",
-        },
-      },
-      -- defaults = {
-      --   sorting_strategy = "ascending",
-      -- },
-    },
-    config = function(_, opts)
-      local telescope = require('telescope')
-      telescope.setup(opts)
-      telescope.load_extension('fzf')
-    end
-  },
   -- search/replace in multiple files
   {
     "MagicDuck/grug-far.nvim",

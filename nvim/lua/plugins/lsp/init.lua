@@ -3,6 +3,21 @@ local function augroup(name)
 end
 
 return {
+	{
+		"mason-org/mason.nvim",
+    cmd = "Mason",
+    build = ":MasonUpdate",
+    keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
+		opts = {},
+	},
+  {
+    "mason-org/mason-lspconfig.nvim",
+    opts = {},
+    dependencies = {
+      { "mason-org/mason.nvim", opts = {} },
+      "neovim/nvim-lspconfig",
+    },
+  },
   -- lspconfig
   {
     "neovim/nvim-lspconfig",
@@ -18,9 +33,7 @@ return {
         "folke/neodev.nvim",
         opts = {},
       },
-      "mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-      -- { "hrsh7th/cmp-nvim-lsp" },
+      "yioneko/nvim-vtsls",
     },
     ---@class PluginLspOpts
     opts = function ()
@@ -368,13 +381,11 @@ return {
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
       local servers = opts.servers
-      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       local has_blink, blink = pcall(require, "blink.cmp")
       local capabilities = vim.tbl_deep_extend(
         "force",
         {},
         vim.lsp.protocol.make_client_capabilities(),
-        has_cmp and cmp_nvim_lsp.default_capabilities() or {},
         has_blink and blink.get_lsp_capabilities() or {},
         opts.capabilities or {}
       )
@@ -396,7 +407,8 @@ return {
             return
           end
         end
-        require("lspconfig")[server].setup(server_opts)
+        vim.lsp.config(server, server_opts)
+        vim.lsp.enable(server)
       end
 
       -- get all the servers that are available through mason-lspconfig
@@ -411,10 +423,9 @@ return {
         if server_opts then
           server_opts = server_opts == true and {} or server_opts
           if server_opts.enabled ~= false then
+            setup(server)
             -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
             if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
-              setup(server)
-            else
               ensure_installed[#ensure_installed + 1] = server
             end
           end
@@ -594,52 +605,6 @@ return {
         if vim.uv.fs_stat(config_path) then return { '--config', config_path } end
         return { '--language', 'postgresql' }
       end
-    end,
-  },
-  -- cmdline tools and lsp servers
-  {
-    "williamboman/mason.nvim",
-    enabled = true,
-    cmd = "Mason",
-    build = ":MasonUpdate",
-    keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
-    opts = {
-      ensure_installed = {
-        "stylua",
-        "shfmt",
-        -- "solargraph",
-        -- "ruby-lsp",
-        "goimports",
-        "gofumpt",
-        "hadolint",
-        "ansible-lint",
-        "codelldb",
-        "markdownlint-cli2",
-        "markdown-toc",
-      },
-    },
-    ---@param opts MasonSettings | {ensure_installed: string[]}
-    config = function(_, opts)
-      require("mason").setup(opts)
-      local mr = require("mason-registry")
-      mr:on("package:install:success", function()
-        vim.defer_fn(function()
-          -- trigger FileType event to possibly load this newly installed LSP server
-          require("lazy.core.handler.event").trigger({
-            event = "FileType",
-            buf = vim.api.nvim_get_current_buf(),
-          })
-        end, 100)
-      end)
-
-      mr.refresh(function()
-        for _, tool in ipairs(opts.ensure_installed) do
-          local p = mr.get_package(tool)
-          if not p:is_installed() then
-            p:install()
-          end
-        end
-      end)
     end,
   },
   {
