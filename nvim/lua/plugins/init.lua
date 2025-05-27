@@ -19,6 +19,7 @@ return {
       -- refer to the configuration section below
       indent = { enabled = true },
       input = { enabled = true },
+      image = { enabled = true },
       notifier = { enabled = true },
       scope = { enabled = true },
       scroll = { enabled = true },
@@ -46,7 +47,6 @@ return {
       { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse" },
       { "<leader>gl", function() Snacks.lazygit.log() end, desc = "Lazygit Log (cwd)" },
       { "<c-/>",      function() Snacks.terminal() end, desc = "Toggle Terminal" },
-      { "<c-_>",      function() Snacks.terminal() end, desc = "which_key_ignore" },
     },
     config = function(_, opts)
       local notify = vim.notify

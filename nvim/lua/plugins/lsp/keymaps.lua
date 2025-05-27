@@ -8,18 +8,16 @@ function M.get()
   return {
     { "<leader>cl", "<cmd>LspInfo<cr>",                 desc = "Lsp Info" },
     { "<leader>cd", vim.diagnostic.open_float,          desc = "Line Diagnostics" },
-    { "gd",         "<cmd>Glance definitions<cr>",      desc = "Goto Definition",     has = "definition" },
-    { "gr",         "<cmd>Glance references<cr>",       desc = "References" },
-    { "gD",         vim.lsp.buf.declaration,            desc = "Goto Declaration" },
-    { "gi",         "<cmd>Glance implementations<cr>",  desc = "Goto Implementation" },
-    { "gt",         "<cmd>Glance type_definitions<cr>", desc = "Goto Type Definition" },
+    { "grd",         "<cmd>Glance definitions<cr>",      desc = "Goto Definition",     has = "definition" },
+    { "grr",         "<cmd>Glance references<cr>",       desc = "References" },
+    { "gri",         "<cmd>Glance implementations<cr>",  desc = "Goto Implementation" },
+    { "grt",         "<cmd>Glance type_definitions<cr>", desc = "Goto Type Definition" },
     { "K", function() return vim.lsp.buf.hover() end, desc = "Hover" },
-    { "gK", function() return vim.lsp.buf.signature_help() end,         desc = "Signature Help",      has = "signatureHelp" },
     { "<leader>cc", vim.lsp.codelens.run, desc = "Run Codelens", mode = { "n", "v" }, has = "codeLens" },
     { "<leader>cC", vim.lsp.codelens.refresh, desc = "Refresh & Display Codelens", mode = { "n" }, has = "codeLens" },
     -- { "<leader>cf", require("conform").format(),        desc = "Format Document",     has = "documentFormatting" },
     {
-      "<leader>ca",
+      "gra",
       vim.lsp.buf.code_action,
       desc = "Code Action",
       mode = { "n", "v" },
@@ -27,7 +25,7 @@ function M.get()
       "codeAction"
     },
     {
-      "<leader>cr",
+      "grn",
       function()
         local inc_rename = require("inc_rename")
         return ":" .. inc_rename.config.cmd_name .. " " .. vim.fn.expand("<cword>")

@@ -108,13 +108,10 @@ return {
               },
             },
           },
-          tsserver = {
-            enabled = false,
-          },
           ts_ls = {
             enabled = false,
           },
-          denols = {},
+          -- denols = {},
           vtsls = {
             -- explicitly add default filetypes, so that we can extend
             -- them in related extras
@@ -267,13 +264,7 @@ return {
           sorbet = {
             cmd = { 'srb', 'tc', '--lsp', '--disable-watchman' },
           },
-          volar = {
-            init_options = {
-              vue = {
-                hybridMode = true,
-              },
-            },
-          },
+          vue_ls = {},
           svelte = {},
         },
         -- you can do any additional lsp server setup here
@@ -325,10 +316,6 @@ return {
 
             -- Add additional filetypes
             vim.list_extend(opts.filetypes, opts.filetypes_include or {})
-          end,
-          tsserver = function()
-            -- disable tsserver
-            return true
           end,
           vtsls = function(_, opts)
             -- copy typescript settings to javascript
@@ -416,7 +403,7 @@ return {
       local have_mason, mlsp = pcall(require, "mason-lspconfig")
       local all_mslp_servers = {}
       if have_mason then
-        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig").get_mappings().lspconfig_to_package)
       end
 
       local ensure_installed = {} ---@type string[]
@@ -445,16 +432,16 @@ return {
         })
       end
 
-      if Util.lsp.is_enabled("denols") and Util.lsp.is_enabled("vtsls") then
-        local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-        Util.lsp.disable("vtsls", is_deno)
-        Util.lsp.disable("denols", function(root_dir, config)
-          if not is_deno(root_dir) then
-            config.settings.deno.enable = false
-          end
-          return false
-        end)
-      end
+      -- if Util.lsp.is_enabled("denols") and Util.lsp.is_enabled("vtsls") then
+      --   local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+      --   Util.lsp.disable("vtsls", is_deno)
+      --   Util.lsp.disable("denols", function(root_dir, config)
+      --     if not is_deno(root_dir) then
+      --       config.settings.deno.enable = false
+      --     end
+      --     return false
+      --   end)
+      -- end
     end,
   },
   -- linters
@@ -612,6 +599,7 @@ return {
   -- cmdline tools and lsp servers
   {
     "williamboman/mason.nvim",
+    enabled = true,
     cmd = "Mason",
     build = ":MasonUpdate",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },

@@ -1,7 +1,7 @@
 return {
   -- codeium
   {
-    "Exafunction/codeium.nvim",
+    "Exafunction/windsurf.nvim",
     enabled = true,
     cmd = "Codeium",
     event = "InsertEnter",
@@ -17,6 +17,9 @@ return {
         },
       },
     },
+    config = function (_, opts)
+      require('codeium').setup(opts)
+    end,
   },
   {
     "saghen/blink.cmp",
@@ -29,7 +32,7 @@ return {
     },
     dependencies = {
       "rafamadriz/friendly-snippets",
-      "codeium.nvim",
+      "windsurf.nvim",
       -- add blink.compat to dependencies
       {
         "saghen/blink.compat",
@@ -87,17 +90,18 @@ return {
       sources = {
         -- adding any nvim-cmp sources here will enable them
         -- with blink.compat
-        default = { 'lsp', 'path', 'snippets', 'buffer' },
-        compat = { "codeium", "obsidian", "obsidian_new", "obsidian_tags" },
+        default = { 'lsp', 'path', 'snippets', 'buffer', 'codeium' },
+        compat = { "obsidian", "obsidian_new", "obsidian_tags" },
         providers = {
           codeium = {
-            kind = 'Codeium',
+            name = 'Codeium',
             score_offset = 100,
+            module = 'codeium.blink',
             async = true,
           },
         },
       },
-
+      fuzzy = { implementation = "prefer_rust_with_warning" },
       keymap = {
         preset = "enter",
         ["<C-y>"] = { "select_and_accept" },
