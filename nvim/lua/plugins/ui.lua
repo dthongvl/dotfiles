@@ -152,16 +152,25 @@ return {
       { 'zM', function() require('ufo').closeAllFolds() end,              'close all folds' },
       { 'zP', function() require('ufo').peekFoldedLinesUnderCursor() end, 'preview fold' },
     },
-    opts = function()
-      local ft_map = { rust = 'lsp' }
+    config = function()
+      local ft_map = {
+        rust = 'lsp',
+      }
+
       require('ufo').setup({
         open_fold_hl_timeout = 0,
-        preview = { win_config = { winhighlight = 'Normal:Normal,FloatBorder:Normal' } },
+        preview = {
+          win_config = {
+            winhighlight = 'Normal:Normal,FloatBorder:Normal',
+          },
+        },
         enable_get_fold_virt_text = true,
         close_fold_kinds_for_ft = {
           default = {'imports', 'comment'},
         },
-        provider_selector = function(_, ft) return ft_map[ft] or { 'treesitter', 'indent' } end,
+        provider_selector = function(_, ft)
+          return ft_map[ft] or { 'treesitter', 'indent' }
+        end,
       })
     end,
   },

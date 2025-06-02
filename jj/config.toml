@@ -9,9 +9,16 @@ email = "matong.mz@gmail.com"
 default-command = "l"
 # pager = "delta"
 # diff.tool = ["delta", "--diff-so-fancy", "--color-only", "$left", "$right"]
-diff.tool = ["difft", "--color=always", "$left", "$right"]
+diff-formatter = ["difft", "--color=always", "$left", "$right"]
 # pager = { command = ["less", "-FRX"], env = { LESSCHARSET = "utf-8" } }
 diff-editor = ["nvim", "-c", "DiffEditor $left $right $output"]
+# merge-editor = "meld"
+
+[merge-tools.mergiraf]
+program = "mergiraf"
+merge-args = ["merge", "$base", "$left", "$right", "-o", "$output", "--fast"]
+merge-conflict-exit-codes = [1]
+conflict-marker-style = "git"
 
 [template-aliases]
 "format_timestamp(timestamp)" = "timestamp.ago()"

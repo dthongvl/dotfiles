@@ -9,6 +9,7 @@ abbr -a gs 'git status'
 abbr -a gd 'git diff'
 abbr -a gcm 'git commit -m "'
 abbr -a ber 'bundle exec rspec'
+abbr -a yolo 'claude --dangerously-skip-permissions'
 
 set -x ORACLE_HOME /opt/oracle/
 set -x LD_LIBRARY_PATH /opt/oracle/instantclient
@@ -27,8 +28,10 @@ set fish_greeting 'No Sana No Life'
 
 # source ~/.asdf/asdf.fish
 fzf --fish | source
-source ~/.config/fish/mise.fish
+mise activate fish | source
 source ~/.config/fish/private_config.fish
 # source ~/.config/fish/themes/kanagawa.fish
 
 fish_config theme choose "Rosé Pine Dawn"
+
+alias claude="/home/dthongvl/.claude/local/claude"
