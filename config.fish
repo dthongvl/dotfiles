@@ -1,3 +1,5 @@
+set fish_greeting 'No Sana No Life'
+
 abbr -a e nvim
 abbr -a o xdg-open
 abbr -a g git
@@ -18,15 +20,6 @@ set -x EDITOR nvim
 set -x HELIX_RUNTIME ~/workspace/helix/runtime
 set -x PNPM_HOME ~/.local/share/pnpm
 
-fish_add_path (yarn global bin)
-fish_add_path $HOME/.local/bin
-fish_add_path $HOME/.cargo/bin
-fish_add_path $HOME/workspace/diff-so-fancy
-fish_add_path $PNPM_HOME
-
-set fish_greeting 'No Sana No Life'
-
-# source ~/.asdf/asdf.fish
 fzf --fish | source
 mise activate fish | source
 source ~/.config/fish/private_config.fish
@@ -35,3 +28,9 @@ source ~/.config/fish/private_config.fish
 fish_config theme choose "Rosé Pine Dawn"
 
 alias claude="/home/dthongvl/.claude/local/claude"
+
+fish_add_path (yarn global bin)
+fish_add_path $HOME/.local/bin
+fish_add_path $HOME/.cargo/bin
+fish_add_path $HOME/workspace/diff-so-fancy
+fish_add_path $PNPM_HOME

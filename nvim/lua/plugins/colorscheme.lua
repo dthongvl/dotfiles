@@ -1,15 +1,15 @@
 return {
   -- tokyonight
-  -- {
-  --   "folke/tokyonight.nvim",
-  --   lazy = false,
-  --   priority = 1000,
-  --   opts = { style = "night" },
-  --   config = function(_, opts)
-  --     require("tokyonight").setup(opts)
-  --     vim.cmd.colorscheme("tokyonight")
-  --   end,
-  -- },
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = { style = "night" },
+    config = function(_, opts)
+      require("tokyonight").setup(opts)
+      vim.cmd.colorscheme("tokyonight")
+    end,
+  },
   -- kanagawa
   -- {
   --   "rebelot/kanagawa.nvim",
@@ -29,19 +29,19 @@ return {
   --     vim.cmd.colorscheme("everforest")
   --   end,
   -- },
-  {
-    'ribru17/bamboo.nvim',
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require('bamboo').setup {
-        -- optional configuration here
-      }
-      require('bamboo').load()
-
-      -- vim.cmd.colorscheme("bamboo")
-    end,
-  },
+  -- {
+  --   'ribru17/bamboo.nvim',
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require('bamboo').setup {
+  --       -- optional configuration here
+  --     }
+  --     require('bamboo').load()
+  --
+  --     -- vim.cmd.colorscheme("bamboo")
+  --   end,
+  -- },
   -- {
   --   "catppuccin/nvim",
   --   name = "catppuccin",

@@ -2,8 +2,9 @@
 set -eo pipefail
 
 # Fishshell
+sudo add-apt-repository ppa:fish-shell/release-4
 sudo apt update
-sudo apt install fish
+sudo apt install fish git
 
 # Set fishshell to default shell
 chsh -s /usr/bin/fish
@@ -13,17 +14,27 @@ curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fi
 fisher install rose-pine/fish
 
 # Packages
+sudo apt install flatpak
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak install flathub org.wezfurlong.wezterm
+flatpak install flathub app.zen_browser.zen
+flatpak install flathub md.obsidian.Obsidian
+
 sudo apt install alacritty flameshot peek tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip
 
-# Key bindings fzf
-mkdir -p ~/.config/fish/functions/
-echo fzf_key_bindings > ~/.config/fish/functions/fish_user_key_bindings.fish
+# Mise
+curl https://mise.run | sh
+mise install --global go node ruby python rust pnpm
 
 # Config files
 ln -s -f ~/workspace/dotfiles/nvim ~/.config
 
+curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+cargo binstall --strategies crate-meta-data jj-cli
+cargo install --locked difftastic
 ln -s -f ~/workspace/dotfiles/jj ~/.config
 
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ln -s -f ~/workspace/dotfiles/.tmux.conf ~/.tmux.conf
 
 ln -s -f ~/workspace/dotfiles/.wezterm.lua ~/.wezterm.lua
@@ -33,10 +44,6 @@ ln -s -f ~/workspace/dotfiles/config.fish ~/.config/fish/config.fish
 
 mkdir -p ~/.config/alacritty
 ln -s -f ~/workspace/dotfiles/alacritty.yml ~/.config/alacritty/alacritty.yml
-
-# Mise
-curl https://mise.run | sh
-mise install --global go node ruby
 
 # Install yarn
 npm install -g yarn
@@ -48,6 +55,24 @@ git clone https://github.com/neovim/neovim ~/workspace/neovim
 
 # Tmux Plugin Manager
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+# Install with Prefix + Shift I
+
+
+# GNOME extensions:
+# Astra Monitor
+# Auto move windows
+# Dash to dock
+# - Disable switch app number
+# GNOME Tweaks
+# - map Caplock <-> Ctrl
+# - disable middle click paste
+#
+# Ubuntu keyboard configs
+# - switch/move workspace Super + number
+# - close app Super + Q
+# - open Terminal with Super + T
+# https://www.nerdfonts.com/font-downloads
+# Fantasque Sans Mono
 
 # Git
 git clone https://github.com/so-fancy/diff-so-fancy ~/workspace/diff-so-fancy
