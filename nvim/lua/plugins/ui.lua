@@ -39,6 +39,13 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     opts = function()
+      local icons = {
+        Error = { " ", "DiagnosticError" },
+        Inactive = { " ", "MsgArea" },
+        Warning = { " ", "DiagnosticWarn" },
+        Normal = { " ", "Special" },
+      }
+
       return {
         options = {
           theme = "auto",
@@ -64,6 +71,20 @@ return {
             },
           },
           lualine_x = {
+            {
+              function()
+                local status = require("sidekick.status").get()
+                return status and vim.tbl_get(icons, status.kind, 1)
+              end,
+              cond = function()
+                return require("sidekick.status").get() ~= nil
+              end,
+              color = function()
+                local status = require("sidekick.status").get()
+                local hl = status and (status.busy and "DiagnosticWarn" or vim.tbl_get(icons, status.kind, 2))
+                return { fg = Snacks.util.color(hl) }
+              end,
+            },
             -- stylua: ignore
             {
               function() return require("noice").api.status.command.get() end,
@@ -299,7 +320,6 @@ return {
   {
     "MeanderingProgrammer/render-markdown.nvim",
     opts = {
-      file_types = { "markdown", "norg", "rmd", "org" },
       code = {
         sign = false,
         width = "block",
@@ -309,8 +329,11 @@ return {
         sign = false,
         icons = {},
       },
+      checkbox = {
+        enabled = false,
+      },
     },
-    ft = { "markdown", "norg", "rmd", "org" },
+    ft = { "markdown", "norg", "rmd", "org", "codecompanion" },
     enabled = true,
   },
   {
@@ -338,6 +361,16 @@ return {
         desc =
         "Toggle Flash Search"
       },
+      -- Simulate nvim-treesitter incremental selection
+      { "<c-space>", mode = { "n", "o", "x" },
+        function()
+          require("flash").treesitter({
+            actions = {
+              ["<c-space>"] = "next",
+              ["<BS>"] = "prev"
+            }
+          })
+        end, desc = "Treesitter Incremental Selection" },
     },
   },
 }

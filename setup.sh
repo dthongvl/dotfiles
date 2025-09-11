@@ -16,13 +16,20 @@ fisher install rose-pine/fish
 # Packages
 sudo apt install flatpak
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+# or ghostty
 flatpak install flathub org.wezfurlong.wezterm
 flatpak install flathub app.zen_browser.zen
 flatpak install flathub md.obsidian.Obsidian
 
 sudo apt install alacritty flameshot peek tmux curl jq fzf ripgrep ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip
 
-# Mise
+# install zoxide
+curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+
+# install fd
+sudo apt install fd-find
+
+# install Mise
 curl https://mise.run | sh
 mise install --global go node ruby python rust pnpm
 
@@ -55,7 +62,7 @@ git clone https://github.com/neovim/neovim ~/workspace/neovim
 
 # Tmux Plugin Manager
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-# Install with Prefix + Shift I
+# Install plugins with Prefix + Shift I
 
 
 # GNOME extensions:
@@ -73,6 +80,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # - open Terminal with Super + T
 # https://www.nerdfonts.com/font-downloads
 # Fantasque Sans Mono
+# Fixed number of workspace
 
 # Git
 git clone https://github.com/so-fancy/diff-so-fancy ~/workspace/diff-so-fancy

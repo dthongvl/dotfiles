@@ -13,13 +13,11 @@ M.actions = {
       return true
     end
   end,
-  ai_accept = function()
-    if require("codeium.virtual_text").get_current_completion_item() then
-      require('util').create_undo()
-      vim.api.nvim_input(require("codeium.virtual_text").accept())
-      return true
+  snippet_stop = function()
+    if vim.snippet then
+      vim.snippet.stop()
     end
-  end
+  end,
 }
 
 ---@param actions string[]

@@ -1,29 +1,7 @@
 return {
-  -- codeium
-  {
-    "Exafunction/windsurf.nvim",
-    enabled = true,
-    cmd = "Codeium",
-    event = "InsertEnter",
-    build = ":Codeium Auth",
-    opts = {
-      enable_cmp_source = true,
-      virtual_text = {
-        enabled = false,
-        key_bindings = {
-          accept = false, -- handled by nvim-cmp / blink.cmp
-          next = "<M-]>",
-          prev = "<M-[>",
-        },
-      },
-    },
-    config = function (_, opts)
-      require('codeium').setup(opts)
-    end,
-  },
   {
     "saghen/blink.cmp",
-    version = "1.*",
+    version = "*",
     opts_extend = {
       "sources.completion.enabled_providers",
       "sources.compat",
@@ -31,7 +9,6 @@ return {
     },
     dependencies = {
       "rafamadriz/friendly-snippets",
-      "windsurf.nvim",
       -- add blink.compat to dependencies
       {
         "saghen/blink.compat",
@@ -39,7 +16,7 @@ return {
         version = "*",
       },
     },
-    event = "InsertEnter",
+    event = { "InsertEnter", "CmdlineEnter" },
 
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
@@ -80,25 +57,26 @@ return {
         },
       },
 
-      -- experimental signature help support
-      -- trigger = { signature_help = { enabled = true } }
       cmdline = {
-        enabled = false,
+        enabled = true,
+        keymap = { preset = "cmdline" },
+        completion = {
+          list = { selection = { preselect = false } },
+          menu = {
+            auto_show = function(ctx)
+              return vim.fn.getcmdtype() == ":"
+            end,
+          },
+          ghost_text = { enabled = true },
+        },
       },
 
       sources = {
         -- adding any nvim-cmp sources here will enable them
         -- with blink.compat
-        default = { 'lsp', 'path', 'snippets', 'buffer', 'codeium' },
-        compat = { "obsidian", "obsidian_new", "obsidian_tags" },
-        providers = {
-          codeium = {
-            name = 'Codeium',
-            score_offset = 100,
-            module = 'codeium.blink',
-            async = true,
-          },
-        },
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+        -- compat = { "obsidian", "obsidian_new", "obsidian_tags" },
+        providers = {},
       },
       fuzzy = { implementation = "prefer_rust_with_warning" },
       keymap = {
@@ -125,13 +103,13 @@ return {
       if not opts.keymap["<Tab>"] then
         if opts.keymap.preset == "super-tab" then -- super-tab
           opts.keymap["<Tab>"] = {
-            require("blink.cmp.keymap.presets")["super-tab"]["<Tab>"][1],
-            require('util').cmp.map({ "snippet_forward", "ai_accept" }),
+            require("blink.cmp.keymap.presets").get("super-tab")["<Tab>"][1],
+            require("util").cmp.map({ "snippet_forward", "ai_nes", "ai_accept" }),
             "fallback",
           }
         else -- other presets
           opts.keymap["<Tab>"] = {
-            require('util').cmp.map({ "snippet_forward", "ai_accept" }),
+            require("util").cmp.map({ "snippet_forward", "ai_nes", "ai_accept" }),
             "fallback",
           }
         end
@@ -159,6 +137,7 @@ return {
             items = transform_items and transform_items(ctx, items) or items
             for _, item in ipairs(items) do
               item.kind = kind_idx or item.kind
+              -- item.kind_icon = LazyVim.config.icons.kinds[item.kind_name] or item.kind_icon or nil
             end
             return items
           end

@@ -7,6 +7,7 @@ email = "matong.mz@gmail.com"
 [ui]
 # diff.format = "git"
 default-command = "l"
+graph.style = 'square'
 # pager = "delta"
 # diff.tool = ["delta", "--diff-so-fancy", "--color-only", "$left", "$right"]
 diff-formatter = ["difft", "--color=always", "$left", "$right"]
@@ -34,7 +35,7 @@ conflict-marker-style = "git"
 # log = '@ | ancestors(trunk()..(visible_heads() & mine()), 2) | trunk()'
 
 [revset-aliases]
-'immutable_heads()' = 'present(trunk()) | tags()'
+'immutable_heads()' = 'present(trunk()) | tags() | untracked_remote_bookmarks()'
 # stack(x, n) is the set of mutable commits reachable from 'x', with 'n'
 # parents. 'n' is often useful to customize the display and return set for
 # certain operations. 'x' can be used to target the set of 'roots' to traverse,
@@ -48,12 +49,13 @@ c = ["commit"]
 ci = ["commit", "--interactive"]
 d = ["diff"]
 l = ["log", "-r", "ancestors(reachable(@, mutable()), 3) | present(trunk())"]
+la = ["log", "-r", "..@"]
+ll = ["log", "-T", "builtin_log_detailed"]
 e = ["edit"]
 nb = ["bookmark", "create", "-r @-"] # "new bookmark"
 pull = ["git", "fetch"]
 push = ["git", "push", "--allow-new"]
 # s = ["show"]
-ll = ["log", "-T", "builtin_log_detailed"]
 nt = ["new", "trunk()"]
 r = ["rebase"]
 s = ["squash"]
@@ -69,6 +71,14 @@ retrunk = ["rebase", "-d", "trunk()"]
 
 # Retrunk the current stack of work.
 reheat = ["rebase", "-d", "trunk()", "-s", "all:roots(trunk()..stack(@))"]
+
+# Eject content from @ into any other change.
+# - jj eject xyz --interactive
+eject = ["squash", "--from", "@", "--into"]
+
+# Take content from any change, and move it into @.
+# - jj consume xyz path/to/file`
+consume = ["squash", "--into", "@", "--from"]
 
 [git]
 colocate = true

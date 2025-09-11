@@ -8,7 +8,20 @@ return {
     cmd = "Mason",
     build = ":MasonUpdate",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
-		opts = {},
+		opts = {
+      ensure_installed = {
+        'golangci-lint',
+        'goimports',
+        'gofumpt',
+        'markdownlint-cli2',
+        'markdown-toc',
+        'hadolint',
+        'shellcheck',
+        'rubocop',
+        'tflint',
+        'sqlfluff',
+      },
+    },
 	},
   {
     "mason-org/mason-lspconfig.nvim",
@@ -21,7 +34,7 @@ return {
   -- lspconfig
   {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
+    event = { "BufReadPre", "BufNewFile", "BufWritePre" },
     dependencies = {
       {
         "folke/neoconf.nvim",
@@ -78,6 +91,12 @@ return {
         codelens = {
           enabled = false,
         },
+        -- Enable this to enable the builtin LSP folding on Neovim.
+        -- Be aware that you also will need to properly configure your LSP server to
+        -- provide the folds.
+        folds = {
+          enabled = true,
+        },
         -- add any global capabilities here
         capabilities = {
           workspace = {
@@ -90,6 +109,26 @@ return {
         -- LSP Server Settings
         ---@type lspconfig.options
         servers = {
+          copilot = {
+            -- stylua: ignore
+            keys = {
+              {
+                "<M-]>",
+                function() vim.lsp.inline_completion.select({ count = 1 }) end,
+                desc = "Next Copilot Suggestion",
+                mode = { "i", "n" },
+              },
+              {
+                "<M-[>",
+                function() vim.lsp.inline_completion.select({ count = -1 }) end,
+                desc = "Prev Copilot Suggestion",
+                mode = { "i", "n" },
+              },
+            },
+          },
+          zls = {},
+          terraformls = {},
+          taplo = {},
           ruby_lsp = {
             mason = false,
             -- cmd = { vim.fn.expand("~/.asdf/shims/ruby-lsp") },
@@ -191,6 +230,7 @@ return {
           cssls = {},
           astro = {},
           ansiblels = {},
+          marksman = {},
           tailwindcss = {
             filetypes_exclude = { "markdown" },
           },
@@ -284,6 +324,15 @@ return {
         -- return true if you don't want this server to be setup with lspconfig
         ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
         setup = {
+          copilot = function()
+            vim.schedule(function()
+              vim.lsp.inline_completion.enable()
+            end)
+            -- Accept inline suggestions or next edits
+            require("util").cmp.actions.ai_accept = function()
+              return vim.lsp.inline_completion.get()
+            end
+          end,
           -- example to setup with typescript.nvim
           -- tsserver = function(_, opts)
           --   require("tsserver").setup({ server = opts })
@@ -331,6 +380,27 @@ return {
             vim.list_extend(opts.filetypes, opts.filetypes_include or {})
           end,
           vtsls = function(_, opts)
+            if vim.lsp.config.denols and vim.lsp.config.vtsls then
+              ---@param server string
+              local resolve = function(server)
+                local markers, root_dir = vim.lsp.config[server].root_markers, vim.lsp.config[server].root_dir
+                vim.lsp.config(server, {
+                  root_dir = function(bufnr, on_dir)
+                    local is_deno = vim.fs.root(bufnr, { "deno.json", "deno.jsonc" }) ~= nil
+                    if is_deno == (server == "denols") then
+                      if root_dir then
+                        return root_dir(bufnr, on_dir)
+                      elseif type(markers) == "table" then
+                        local root = vim.fs.root(bufnr, markers)
+                        return root and on_dir(root)
+                      end
+                    end
+                  end,
+                })
+              end
+              resolve("denols")
+              resolve("vtsls")
+            end
             -- copy typescript settings to javascript
             opts.settings.javascript =
               vim.tbl_deep_extend("force", {}, opts.settings.typescript, opts.settings.javascript or {})
@@ -339,7 +409,7 @@ return {
       }
     end,
     ---@param opts PluginLspOpts
-    config = function(_, opts)
+    config = vim.schedule_wrap(function(_, opts)
       local Util = require("util")
 
       if Util.has("neoconf.nvim") then
@@ -367,6 +437,14 @@ return {
         end)
       end
 
+      -- folds
+      if opts.folds.enabled then
+        Util.lsp.on_supports_method("textDocument/foldingRange", function(client, buffer)
+          vim.api.nvim_set_option_value("foldmethod", "expr", { scope = "local" })
+          vim.api.nvim_set_option_value("foldexpr", "v:lua.vim.lsp.foldexpr()", { scope = "local" })
+        end)
+      end
+
       -- code lens
       if opts.codelens.enabled and vim.lsp.codelens then
         Util.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
@@ -380,80 +458,48 @@ return {
 
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
-      local servers = opts.servers
-      local has_blink, blink = pcall(require, "blink.cmp")
-      local capabilities = vim.tbl_deep_extend(
-        "force",
-        {},
-        vim.lsp.protocol.make_client_capabilities(),
-        has_blink and blink.get_lsp_capabilities() or {},
-        opts.capabilities or {}
-      )
-
-      local function setup(server)
-        local server_opts = vim.tbl_deep_extend("force", {
-          capabilities = vim.deepcopy(capabilities),
-        }, servers[server] or {})
-        if server_opts.enabled == false then
-          return
-        end
-
-        if opts.setup[server] then
-          if opts.setup[server](server, server_opts) then
-            return
-          end
-        elseif opts.setup["*"] then
-          if opts.setup["*"](server, server_opts) then
-            return
-          end
-        end
-        vim.lsp.config(server, server_opts)
-        vim.lsp.enable(server)
+      if opts.capabilities then
+        vim.lsp.config("*", { capabilities = opts.capabilities })
       end
 
       -- get all the servers that are available through mason-lspconfig
-      local have_mason, mlsp = pcall(require, "mason-lspconfig")
-      local all_mslp_servers = {}
-      if have_mason then
-        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig").get_mappings().lspconfig_to_package)
-      end
+      local have_mason = pcall(require, "mason-lspconfig.nvim")
+      local mason_all = have_mason
+          and vim.tbl_keys(require("mason-lspconfig.mappings").get_mason_map().lspconfig_to_package)
+        or {} --[[ @as string[] ]]
+      local mason_exclude = {} ---@type string[]
 
-      local ensure_installed = {} ---@type string[]
-      for server, server_opts in pairs(servers) do
-        if server_opts then
-          server_opts = server_opts == true and {} or server_opts
-          if server_opts.enabled ~= false then
-            setup(server)
-            -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
-            if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
-              ensure_installed[#ensure_installed + 1] = server
-            end
+      ---@return boolean? exclude automatic setup
+      local function configure(server)
+        local sopts = opts.servers[server]
+        sopts = sopts == true and {} or (not sopts) and { enabled = false } or sopts --[[@as lazyvim.lsp.Config]]
+
+        if sopts.enabled == false then
+          mason_exclude[#mason_exclude + 1] = server
+          return
+        end
+
+        local use_mason = sopts.mason ~= false and vim.tbl_contains(mason_all, server)
+        local setup = opts.setup[server] or opts.setup["*"]
+        if setup and setup(server, sopts) then
+          mason_exclude[#mason_exclude + 1] = server
+        else
+          vim.lsp.config(server, sopts) -- configure the server
+          if not use_mason then
+            vim.lsp.enable(server)
           end
         end
+        return use_mason
       end
 
+      local install = vim.tbl_filter(configure, vim.tbl_keys(opts.servers))
       if have_mason then
-        mlsp.setup({
-          ensure_installed = vim.tbl_deep_extend(
-            "force",
-            ensure_installed,
-            Util.opts("mason-lspconfig.nvim").ensure_installed or {}
-          ),
-          handlers = { setup },
+        require("mason-lspconfig").setup({
+          ensure_installed = vim.list_extend(install, Util.opts("mason-lspconfig.nvim").ensure_installed or {}),
+          automatic_enable = { exclude = mason_exclude },
         })
       end
-
-      -- if Util.lsp.is_enabled("denols") and Util.lsp.is_enabled("vtsls") then
-      --   local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-      --   Util.lsp.disable("vtsls", is_deno)
-      --   Util.lsp.disable("denols", function(root_dir, config)
-      --     if not is_deno(root_dir) then
-      --       config.settings.deno.enable = false
-      --     end
-      --     return false
-      --   end)
-      -- end
-    end,
+    end),
   },
   -- linters
   {
@@ -467,10 +513,15 @@ return {
         typescript = { 'eslint' },
         vue = { 'eslint' },
         markdown = { 'markdownlint-cli2' },
-        go = { 'golangcilint' },
+        go = { 'golangci-lint' },
         ruby = { 'rubocop', 'ruby' },
         dockerfile = { 'hadolint' },
         bash = { 'shellcheck' },
+        terraform = { "terraform_validate" },
+        tf = { "terraform_validate" },
+        sql = { "sqlfluff" },
+        mysql = { "sqlfluff" },
+        plsql = { "sqlfluff" },
       },
       linters = {},
     },
@@ -578,8 +629,13 @@ return {
         go = { 'goimports', 'gofumpt' },
         astro = { 'prettier' },
         svelte = { 'prettier' },
-        -- pgsql = { 'sql_formatter' },
-        -- sql = { 'sql_formatter' },
+        hcl = { "packer_fmt" },
+        terraform = { "terraform_fmt" },
+        tf = { "terraform_fmt" },
+        ["terraform-vars"] = { "terraform_fmt" },
+        plsql = { 'sqlfluff' },
+        mysql = { 'sqlfluff' },
+        sql = { 'sqlfluff' },
         -- json = { 'jq' },
         ['_'] = { 'trim_whitespace' },
       },
@@ -600,11 +656,6 @@ return {
     },
     config = function(_, opts)
       require('conform').setup(opts)
-      require('conform.formatters.sql_formatter').args = function(ctx)
-        local config_path = ctx.dirname .. '/.sql-formatter.json'
-        if vim.uv.fs_stat(config_path) then return { '--config', config_path } end
-        return { '--language', 'postgresql' }
-      end
     end,
   },
   {
