@@ -1,0 +1,89 @@
+return {
+  "nvim-treesitter/nvim-treesitter",
+  branch = 'master',
+  lazy = false,
+  build = ":TSUpdate",
+  dependencies = {
+    {
+      'nvim-treesitter/nvim-treesitter-context',
+      opts = {
+        -- Avoid the sticky context from growing a lot.
+        max_lines = 3,
+        -- Match the context lines to the source code.
+        multiline_threshold = 1,
+        -- Disable it when the window is too small.
+        min_window_height = 20,
+      },
+    }
+  },
+  opts = {
+    auto_install = true,
+    highlight = {
+      enable = true,
+    },
+    folds = {
+      enable = true,
+    },
+    indent = {
+      enable = true,
+      disable = { "python" },
+    },
+    autopairs = {
+      enable = true,
+    },
+    endwise = {
+      enable = true,
+    },
+    autotag = {
+      enable = true,
+    },
+    ensure_installed = {
+      'astro',
+      'bash',
+      'c',
+      'comment',
+      'cpp',
+      'css',
+      'dockerfile',
+      'fish',
+      'git_config',
+      'git_rebase',
+      'gitattributes',
+      'gitcommit',
+      'gitignore',
+      'go',
+      'gomod',
+      'gosum',
+      'gowork',
+      'html',
+      'javascript',
+      'jsdoc',
+      'json',
+      'json5',
+      'jsonc',
+      'lua',
+      'luadoc',
+      'markdown',
+      'markdown_inline',
+      'python',
+      'regex',
+      'ron',
+      'ruby',
+      'rust',
+      'scss',
+      'sql',
+      'svelte',
+      'terraform',
+      'hcl',
+      'toml',
+      'tsx',
+      'typescript',
+      'vim',
+      'vimdoc',
+      'vue',
+      'xml',
+      'yaml',
+      'zig',
+    },
+  },
+}
