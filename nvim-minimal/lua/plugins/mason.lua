@@ -1,35 +1,46 @@
 return {
   "mason-org/mason.nvim",
+  cmd = "Mason",
+  keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
   build = ":MasonUpdate",
-  lazy = false,
-  keys = {
-    { '<leader>tm', ':Mason<CR>', desc = '[M]ason' },
-  },
+  opts_extend = { "ensure_installed" },
   opts = {
     ensure_installed = {
-      -- 'golangci-lint',
-      -- 'goimports',
-      -- 'gofumpt',
-      -- 'markdownlint-cli2',
-      -- 'markdown-toc',
-      -- 'hadolint',
-      -- 'shellcheck',
-      -- 'rubocop',
-      -- 'tflint',
-      -- 'sqlfluff',
+      'stylua',
+      'shfmt',
+      'golangci-lint',
+      'goimports',
+      'gofumpt',
+      'markdownlint-cli2',
+      'markdown-toc',
+      'hadolint',
+      'shellcheck',
+      'rubocop',
+      'tflint',
+      'sqlfluff',
     },
   },
+  ---@param opts MasonSettings | {ensure_installed: string[]}
   config = function(_, opts)
-    local mason = require("mason")
-    local mason_lspconfig = require("mason-lspconfig")
+    require("mason").setup(opts)
+    local mr = require("mason-registry")
+    mr:on("package:install:success", function()
+      vim.defer_fn(function()
+        -- trigger FileType event to possibly load this newly installed LSP server
+        require("lazy.core.handler.event").trigger({
+          event = "FileType",
+          buf = vim.api.nvim_get_current_buf(),
+        })
+      end, 100)
+    end)
 
-    mason.setup()
-    mason_lspconfig.setup({
-      ensure_installed = opts.ensure_installed
-    });
+    mr.refresh(function()
+      for _, tool in ipairs(opts.ensure_installed) do
+        local p = mr.get_package(tool)
+        if not p:is_installed() then
+          p:install()
+        end
+      end
+    end)
   end,
-  dependencies = {
-    "williamboman/mason-lspconfig.nvim",
-    "neovim/nvim-lspconfig",
-  },
 }

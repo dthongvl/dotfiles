@@ -42,7 +42,11 @@ vim.schedule(function()
   map('i', '<C-t>', '<Esc>b~lea', { desc = 'Turn into title case' })
 
   -- Save file
-  map({ "n" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save file" })
+  map({ 's', 'i', 'n', 'v' }, '<C-s>', '<esc>:w<cr>', { desc = 'Exit insert mode and save changes' })
+  map({ 's', 'i', 'n', 'v' }, '<C-S-s>', function()
+    vim.g.skip_formatting = true
+    return '<esc>:w<cr>'
+  end, { desc = 'Exit insert mode and save changes (without formatting)', expr = true })
 
   -- Quit
   map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
