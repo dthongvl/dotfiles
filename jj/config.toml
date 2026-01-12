@@ -35,7 +35,7 @@ conflict-marker-style = "git"
 # log = '@ | ancestors(trunk()..(visible_heads() & mine()), 2) | trunk()'
 
 [revset-aliases]
-'immutable_heads()' = 'present(trunk()) | tags() | untracked_remote_bookmarks()'
+'immutable_heads()' = 'present(trunk())'
 # stack(x, n) is the set of mutable commits reachable from 'x', with 'n'
 # parents. 'n' is often useful to customize the display and return set for
 # certain operations. 'x' can be used to target the set of 'roots' to traverse,
@@ -54,7 +54,7 @@ ll = ["log", "-T", "builtin_log_detailed"]
 e = ["edit"]
 nb = ["bookmark", "create", "-r @-"] # "new bookmark"
 pull = ["git", "fetch"]
-push = ["git", "push", "--allow-new"]
+push = ["git", "push"]
 # s = ["show"]
 nt = ["new", "trunk()"]
 r = ["rebase"]
@@ -82,4 +82,6 @@ consume = ["squash", "--into", "@", "--from"]
 
 [git]
 colocate = true
-push-new-bookmarks = true
+
+[remotes.origin]
+auto-track-bookmarks = "*"
