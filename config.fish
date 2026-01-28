@@ -15,25 +15,22 @@ abbr -a yolo 'claude --dangerously-skip-permissions'
 
 set -x ORACLE_HOME /opt/oracle/
 set -x LD_LIBRARY_PATH /opt/oracle/instantclient
-set -x TERM xterm-256color
+set -x TERM xterm-ghostty
 set -x EDITOR nvim
 set -x HELIX_RUNTIME ~/workspace/helix/runtime
 set -x PNPM_HOME ~/.local/share/pnpm
 
-fzf --fish | source
-zoxide init fish | source
 mise activate fish | source
+zoxide init fish | source
+fzf --fish | source
 source ~/.config/fish/private_config.fish
 # source ~/.config/fish/themes/kanagawa.fish
 
 fish_config theme choose "Rosé Pine Dawn"
 
 alias ls="eza -lah"
-# alias claude="/home/dthongvl/.claude/local/claude"
 
-fish_add_path (yarn global bin)
 fish_add_path $HOME/.local/bin
 fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/workspace/diff-so-fancy
 fish_add_path $PNPM_HOME
-fish_add_path $HOME/.claude/local
