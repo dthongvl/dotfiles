@@ -1,0 +1,71 @@
+{
+  "lastChangelogVersion": "0.70.2",
+  "enabledModels": [
+    "google/gemini-3.1-flash-lite-preview",
+    "google/gemini-3.1-pro-preview-customtools",
+    "openai-codex/gpt-5.4",
+    "openai-codex/gpt-5.3-codex",
+    "opencode-go/kimi-k2.6",
+    "opencode-go/qwen3.6-plus",
+    "opencode-go/mimo-v2.5-pro",
+    "opencode-go/deepseek-v4-pro",
+    "opencode-go/glm-5.1",
+    "opencode-go/deepseek-v4-flash"
+  ],
+  "defaultProvider": "opencode-go",
+  "defaultModel": "deepseek-v4-flash",
+  "packages": [
+    "https://github.com/davebcn87/pi-autoresearch",
+    "npm:pi-subagents",
+    "npm:pi-web-providers",
+    "npm:pi-mcp-adapter",
+    "npm:@ifi/oh-pi-themes",
+    "npm:pi-btw",
+    "git:github.com/earendil-works/pi-review",
+    "npm:pi-ask-user",
+    "npm:@ff-labs/pi-fff",
+    {
+      "source": "https://github.com/mitsuhiko/agent-stuff",
+      "extensions": [
+        "extensions/context.ts",
+        "extensions/control.ts",
+        "extensions/multi-edit.ts",
+        "extensions/notify.ts",
+        "extensions/prompt-editor.ts",
+        "extensions/session-breakdown.ts",
+        "extensions/uv.ts",
+        "extensions/whimsical.ts"
+      ],
+      "skills": [
+        "skills/github",
+        "skills/librarian",
+        "skills/mermaid",
+        "skills/native-web-search",
+        "skills/summarize",
+        "skills/web-browser"
+      ],
+      "prompts": [],
+      "themes": [
+        "themes/nightowl.json",
+        "themes/modern-dark.json"
+      ]
+    }
+  ],
+  "hideThinkingBlock": false,
+  "defaultThinkingLevel": "high",
+  "theme": "modern-dark",
+  "editorPaddingX": 1,
+  "treeFilterMode": "all",
+  "doubleEscapeAction": "tree",
+  "showHardwareCursor": true,
+  "npmCommand": [
+    "mise",
+    "exec",
+    "node",
+    "--",
+    "npm"
+  ],
+  "images": {
+    "blockImages": false
+  }
+}

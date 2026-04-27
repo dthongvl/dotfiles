@@ -1,0 +1,22 @@
+{
+  "tools": {
+    "search": "parallel",
+    "contents": "parallel",
+    "answer": "gemini",
+    "research": "gemini"
+  },
+  "providers": {
+    "codex": {
+      "options": {
+        "model": "gpt-5.4",
+        "modelReasoningEffort": "high"
+      }
+    },
+    "gemini": {
+      "apiKey": "GEMINI_API_KEY"
+    },
+    "parallel": {
+      "apiKey": "PARALLEL_API_KEY"
+    }
+  }
+}

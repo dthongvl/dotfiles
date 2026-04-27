@@ -15,7 +15,7 @@ abbr -a yolo 'claude --dangerously-skip-permissions'
 
 set -x ORACLE_HOME /opt/oracle/
 set -x LD_LIBRARY_PATH /opt/oracle/instantclient
-set -x TERM xterm-ghostty
+set -x TERM xterm-256color
 set -x EDITOR nvim
 set -x HELIX_RUNTIME ~/workspace/helix/runtime
 set -x PNPM_HOME ~/.local/share/pnpm

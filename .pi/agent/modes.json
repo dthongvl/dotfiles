@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "currentMode": "default",
+  "modes": {
+    "default": {
+      "provider": "openai-codex",
+      "modelId": "gpt-5.4",
+      "thinkingLevel": "high"
+    },
+    "fast": {
+      "provider": "google",
+      "modelId": "gemini-3.1-flash-lite-preview",
+      "thinkingLevel": "high"
+    },
+    "testing": {
+      "provider": "opencode-go",
+      "modelId": "kimi-k2.6",
+      "thinkingLevel": "high"
+    }
+  }
+}
