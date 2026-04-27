@@ -21,6 +21,11 @@ merge-args = ["merge", "$base", "$left", "$right", "-o", "$output", "--fast"]
 merge-conflict-exit-codes = [1]
 conflict-marker-style = "git"
 
+[fsmonitor]
+# Use Watchman for faster working copy snapshots in large repos
+# Requires: brew install watchman
+backend = "watchman"
+
 [template-aliases]
 "format_timestamp(timestamp)" = "timestamp.ago()"
 
@@ -52,12 +57,12 @@ l = ["log", "-r", "ancestors(reachable(@, mutable()), 3) | present(trunk())"]
 la = ["log", "-r", "..@"]
 ll = ["log", "-T", "builtin_log_detailed"]
 e = ["edit"]
-nb = ["bookmark", "create", "-r @-"] # "new bookmark"
-pull = ["git", "fetch"]
-push = ["git", "push"]
-# s = ["show"]
+nb = ["bookmark", "create", "-r @-"]                                          # "new bookmark"
+gf = ["git", "fetch"]
+gp = ["git", "push"]
 nt = ["new", "trunk()"]
 r = ["rebase"]
+bm = ["bookmark"]
 s = ["squash"]
 si = ["squash", "--interactive"]
 # https://gist.github.com/thoughtpolice/8f2fd36ae17cd11b8e7bd93a70e31ad6#file-jjconfig-toml

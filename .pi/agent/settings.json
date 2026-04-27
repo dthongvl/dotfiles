@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.70.2",
+  "lastChangelogVersion": "0.70.6",
   "enabledModels": [
     "google/gemini-3.1-flash-lite-preview",
     "google/gemini-3.1-pro-preview-customtools",
@@ -13,13 +13,10 @@
     "opencode-go/deepseek-v4-flash"
   ],
   "defaultProvider": "opencode-go",
-  "defaultModel": "deepseek-v4-flash",
+  "defaultModel": "kimi-k2.6",
   "packages": [
-    "https://github.com/davebcn87/pi-autoresearch",
-    "npm:pi-subagents",
     "npm:pi-web-providers",
     "npm:pi-mcp-adapter",
-    "npm:@ifi/oh-pi-themes",
     "npm:pi-btw",
     "git:github.com/earendil-works/pi-review",
     "npm:pi-ask-user",
@@ -49,7 +46,9 @@
         "themes/nightowl.json",
         "themes/modern-dark.json"
       ]
-    }
+    },
+    "npm:pi-autoresearch",
+    "https://github.com/nicobailon/pi-subagents"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "high",

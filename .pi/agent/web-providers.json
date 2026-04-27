@@ -13,10 +13,14 @@
       }
     },
     "gemini": {
-      "apiKey": "GEMINI_API_KEY"
+      "credentials": {
+        "api": "GEMINI_API_KEY"
+      }
     },
     "parallel": {
-      "apiKey": "PARALLEL_API_KEY"
+      "credentials": {
+        "api": "PARALLEL_API_KEY"
+      }
     }
   }
 }
