@@ -1,15 +1,20 @@
 {
   "tools": {
-    "search": "parallel",
-    "contents": "parallel",
     "answer": "gemini",
-    "research": "gemini"
+    "research": "gemini",
+    "contents": "exa",
+    "search": "gemini"
   },
   "providers": {
     "codex": {
       "options": {
         "model": "gpt-5.4",
         "modelReasoningEffort": "high"
+      }
+    },
+    "exa": {
+      "credentials": {
+        "api": "EXA_API_KEY"
       }
     },
     "gemini": {

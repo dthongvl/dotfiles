@@ -1,19 +1,16 @@
 {
-  "lastChangelogVersion": "0.70.6",
+  "lastChangelogVersion": "0.80.6",
   "enabledModels": [
-    "google/gemini-3.1-flash-lite-preview",
-    "google/gemini-3.1-pro-preview-customtools",
-    "openai-codex/gpt-5.4",
-    "openai-codex/gpt-5.3-codex",
-    "opencode-go/kimi-k2.6",
-    "opencode-go/qwen3.6-plus",
-    "opencode-go/mimo-v2.5-pro",
     "opencode-go/deepseek-v4-pro",
-    "opencode-go/glm-5.1",
-    "opencode-go/deepseek-v4-flash"
+    "opencode-go/deepseek-v4-flash",
+    "google/gemini-3.5-flash",
+    "opencode/deepseek-v4-flash-free",
+    "openai-codex/gpt-5.6-sol",
+    "cursor/glm-5.2",
+    "cursor/opus-4.8@1m"
   ],
-  "defaultProvider": "opencode-go",
-  "defaultModel": "kimi-k2.6",
+  "defaultProvider": "opencode",
+  "defaultModel": "deepseek-v4-flash-free",
   "packages": [
     "npm:pi-web-providers",
     "npm:pi-mcp-adapter",
@@ -48,7 +45,11 @@
       ]
     },
     "npm:pi-autoresearch",
-    "https://github.com/nicobailon/pi-subagents"
+    "https://github.com/nicobailon/pi-subagents",
+    "npm:pi-intercom",
+    "npm:pi-prompt-template-model",
+    "git:github.com/EveryInc/compound-engineering-plugin",
+    "npm:pi-cursor-sdk"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "high",

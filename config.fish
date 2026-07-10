@@ -22,7 +22,6 @@ set -x PNPM_HOME ~/.local/share/pnpm
 
 mise activate fish | source
 zoxide init fish | source
-fzf --fish | source
 source ~/.config/fish/private_config.fish
 # source ~/.config/fish/themes/kanagawa.fish
 
