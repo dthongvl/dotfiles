@@ -18,7 +18,6 @@ set -x LD_LIBRARY_PATH /opt/oracle/instantclient
 set -x TERM xterm-256color
 set -x EDITOR nvim
 set -x HELIX_RUNTIME ~/workspace/helix/runtime
-set -x PNPM_HOME ~/.local/share/pnpm
 
 mise activate fish | source
 zoxide init fish | source
@@ -32,4 +31,10 @@ alias ls="eza -lah"
 fish_add_path $HOME/.local/bin
 fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/workspace/diff-so-fancy
-fish_add_path $PNPM_HOME
+
+# pnpm
+set -gx PNPM_HOME "/home/dthongvl/.local/share/pnpm"
+if not string match -q -- "$PNPM_HOME/bin" $PATH
+    set -gx PATH "$PNPM_HOME/bin" $PATH
+end
+# pnpm end

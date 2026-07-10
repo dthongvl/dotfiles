@@ -1,16 +1,16 @@
 {
   "lastChangelogVersion": "0.80.6",
   "enabledModels": [
-    "opencode-go/deepseek-v4-pro",
-    "opencode-go/deepseek-v4-flash",
     "google/gemini-3.5-flash",
     "opencode/deepseek-v4-flash-free",
     "openai-codex/gpt-5.6-sol",
     "cursor/glm-5.2",
-    "cursor/opus-4.8@1m"
+    "cursor/opus-4.8@1m",
+    "deepseek/deepseek-v4-flash",
+    "deepseek/deepseek-v4-pro"
   ],
-  "defaultProvider": "opencode",
-  "defaultModel": "deepseek-v4-flash-free",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
   "packages": [
     "npm:pi-web-providers",
     "npm:pi-mcp-adapter",
@@ -21,11 +21,9 @@
     {
       "source": "https://github.com/mitsuhiko/agent-stuff",
       "extensions": [
-        "extensions/context.ts",
         "extensions/control.ts",
-        "extensions/multi-edit.ts",
+        "extensions/unified-edit.ts",
         "extensions/notify.ts",
-        "extensions/prompt-editor.ts",
         "extensions/session-breakdown.ts",
         "extensions/uv.ts",
         "extensions/whimsical.ts"
@@ -33,7 +31,6 @@
       "skills": [
         "skills/github",
         "skills/librarian",
-        "skills/mermaid",
         "skills/native-web-search",
         "skills/summarize",
         "skills/web-browser"
@@ -41,6 +38,7 @@
       "prompts": [],
       "themes": [
         "themes/nightowl.json",
+        "themes/dayowl.json",
         "themes/modern-dark.json"
       ]
     },
@@ -49,15 +47,17 @@
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
     "git:github.com/EveryInc/compound-engineering-plugin",
-    "npm:pi-cursor-sdk"
+    "npm:pi-cursor-sdk",
+    "npm:@firstpick/pi-themes-bundle",
+    "npm:pi-zentui"
   ],
   "hideThinkingBlock": false,
-  "defaultThinkingLevel": "high",
-  "theme": "modern-dark",
+  "defaultThinkingLevel": "medium",
+  "theme": "matrix",
   "editorPaddingX": 1,
   "treeFilterMode": "all",
   "doubleEscapeAction": "tree",
-  "showHardwareCursor": true,
+  "showHardwareCursor": false,
   "npmCommand": [
     "mise",
     "exec",
@@ -67,5 +67,8 @@
   ],
   "images": {
     "blockImages": false
+  },
+  "terminal": {
+    "showTerminalProgress": true
   }
 }
