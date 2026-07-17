@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.80.6",
+  "lastChangelogVersion": "0.80.10",
   "enabledModels": [
     "google/gemini-3.5-flash",
     "opencode/deepseek-v4-flash-free",
@@ -7,10 +7,11 @@
     "cursor/glm-5.2",
     "cursor/opus-4.8@1m",
     "deepseek/deepseek-v4-flash",
-    "deepseek/deepseek-v4-pro"
+    "deepseek/deepseek-v4-pro",
+    "cursor/gpt-5.6-sol@272k"
   ],
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-sol",
+  "defaultProvider": "deepseek",
+  "defaultModel": "deepseek-v4-flash",
   "packages": [
     "npm:pi-web-providers",
     "npm:pi-mcp-adapter",
@@ -48,12 +49,11 @@
     "npm:pi-prompt-template-model",
     "git:github.com/EveryInc/compound-engineering-plugin",
     "npm:pi-cursor-sdk",
-    "npm:@firstpick/pi-themes-bundle",
-    "npm:pi-zentui"
+    "npm:@firstpick/pi-themes-bundle"
   ],
   "hideThinkingBlock": false,
-  "defaultThinkingLevel": "medium",
-  "theme": "matrix",
+  "defaultThinkingLevel": "max",
+  "theme": "tokyo-night",
   "editorPaddingX": 1,
   "treeFilterMode": "all",
   "doubleEscapeAction": "tree",

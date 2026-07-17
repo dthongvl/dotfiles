@@ -1,9 +1,9 @@
 {
   "tools": {
-    "answer": "gemini",
-    "research": "gemini",
-    "contents": "exa",
-    "search": "gemini"
+    "search": "parallel",
+    "contents": "parallel",
+    "answer": "exa",
+    "research": "exa"
   },
   "providers": {
     "codex": {

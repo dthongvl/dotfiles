@@ -1,7 +1,7 @@
 ---
 name: finder
 description: Fast, parallel, read-only code search agent that locates code by behavior or concept and returns filenames with line ranges (Ampcode-style finder)
-tools: read, grep, find, ls, bash
+tools: read, grep, find, ffgrep, fffind, ls, bash
 model: google/gemini-3.5-flash
 thinking: low
 systemPromptMode: replace
