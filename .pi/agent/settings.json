@@ -10,8 +10,8 @@
     "deepseek/deepseek-v4-pro",
     "cursor/gpt-5.6-sol@272k"
   ],
-  "defaultProvider": "deepseek",
-  "defaultModel": "deepseek-v4-flash",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
   "packages": [
     "npm:pi-web-providers",
     "npm:pi-mcp-adapter",
@@ -32,9 +32,7 @@
       "skills": [
         "skills/github",
         "skills/librarian",
-        "skills/native-web-search",
-        "skills/summarize",
-        "skills/web-browser"
+        "skills/summarize"
       ],
       "prompts": [],
       "themes": [
@@ -47,12 +45,11 @@
     "https://github.com/nicobailon/pi-subagents",
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
-    "git:github.com/EveryInc/compound-engineering-plugin",
     "npm:pi-cursor-sdk",
     "npm:@firstpick/pi-themes-bundle"
   ],
   "hideThinkingBlock": false,
-  "defaultThinkingLevel": "max",
+  "defaultThinkingLevel": "medium",
   "theme": "tokyo-night",
   "editorPaddingX": 1,
   "treeFilterMode": "all",
