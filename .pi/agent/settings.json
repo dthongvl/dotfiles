@@ -1,21 +1,20 @@
 {
-  "lastChangelogVersion": "0.80.10",
+  "lastChangelogVersion": "0.82.1",
   "enabledModels": [
-    "google/gemini-3.5-flash",
-    "opencode/deepseek-v4-flash-free",
+    "google/gemini-3.6-flash",
     "openai-codex/gpt-5.6-sol",
     "cursor/glm-5.2",
     "cursor/opus-4.8@1m",
     "deepseek/deepseek-v4-flash",
     "deepseek/deepseek-v4-pro",
-    "cursor/gpt-5.6-sol@272k"
+    "cursor/gpt-5.6-sol@272k",
+    "cursor/grok-4.5",
+    "cursor/composer-2.5"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "packages": [
-    "npm:pi-web-providers",
     "npm:pi-mcp-adapter",
-    "npm:pi-btw",
     "git:github.com/earendil-works/pi-review",
     "npm:pi-ask-user",
     "npm:@ff-labs/pi-fff",
@@ -27,7 +26,8 @@
         "extensions/notify.ts",
         "extensions/session-breakdown.ts",
         "extensions/uv.ts",
-        "extensions/whimsical.ts"
+        "extensions/whimsical.ts",
+        "extensions/btw.ts"
       ],
       "skills": [
         "skills/github",
@@ -41,16 +41,16 @@
         "themes/modern-dark.json"
       ]
     },
-    "npm:pi-autoresearch",
     "https://github.com/nicobailon/pi-subagents",
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
     "npm:pi-cursor-sdk",
-    "npm:@firstpick/pi-themes-bundle"
+    "npm:@plannotator/pi-extension",
+    "npm:pi-web-providers"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "medium",
-  "theme": "tokyo-night",
+  "theme": "catppuccin-macchiato",
   "editorPaddingX": 1,
   "treeFilterMode": "all",
   "doubleEscapeAction": "tree",
