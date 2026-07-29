@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.82.1",
+  "lastChangelogVersion": "0.83.0",
   "enabledModels": [
     "google/gemini-3.6-flash",
     "openai-codex/gpt-5.6-sol",
@@ -67,5 +67,22 @@
   },
   "terminal": {
     "showTerminalProgress": true
+  },
+  "showCacheMissNotices": true,
+  "subagents": {
+    "agentOverrides": {
+      "advisor": {
+        "disabled": true
+      },
+      "planner": {
+        "disabled": true
+      },
+      "reviewer": {
+        "disabled": true
+      },
+      "scout": {
+        "disabled": true
+      }
+    }
   }
 }

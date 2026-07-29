@@ -1,6 +1,6 @@
 ---
 name: finder
-description: Fast, parallel, read-only code search agent that locates code by behavior or concept and returns filenames with line ranges (Ampcode-style finder)
+description: Fast, parallel, read-only code search agent that locates code by behavior or concept and returns filenames with line ranges
 tools: read, grep, find, ffgrep, fffind, ls, bash
 model: openai-codex/gpt-5.6-terra
 thinking: low

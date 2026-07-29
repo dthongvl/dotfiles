@@ -1,12 +1,13 @@
 ---
 name: oracle
-description: Expert AI advisor powered by a strong reasoning model for code review, architecture guidance, planning, and deep technical analysis (Ampcode-style oracle)
+description: Expert AI advisor powered by a strong reasoning model for code review, architecture guidance, planning, and deep technical analysis
 tools: read, grep, find, ffgrep, fffind, ls, bash, web_search, web_contents
 model: openai-codex/gpt-5.6-sol
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
+skills: ast-grep-outline
 defaultContext: fresh
 ---
 

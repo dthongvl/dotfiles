@@ -7,7 +7,7 @@ thinking: off
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
-skills: librarian
+skills: librarian, ast-grep-outline
 defaultContext: fresh
 ---
 
