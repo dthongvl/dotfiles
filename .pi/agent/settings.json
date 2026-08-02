@@ -70,18 +70,10 @@
   },
   "showCacheMissNotices": true,
   "subagents": {
+    "disableBuiltins": true,
     "agentOverrides": {
-      "advisor": {
-        "disabled": true
-      },
-      "planner": {
-        "disabled": true
-      },
-      "reviewer": {
-        "disabled": true
-      },
-      "scout": {
-        "disabled": true
+      "delegate": {
+        "disabled": false
       }
     }
   }
