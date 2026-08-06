@@ -189,6 +189,15 @@ export default function (pi: ExtensionAPI) {
       "Do not use librarian for the current local workspace, code modifications, simple lookups, or unrelated questions.",
       "Give librarian a specific repository-focused query and relevant background context; return its answer in full.",
     ],
+    renderCall(args, theme, context) {
+      let output = theme.fg("toolTitle", theme.bold("Librarian"));
+      if (context.expanded) {
+        const prompt = args.query?.trim() || "...";
+        output += `\n${theme.fg("muted", "Prompt:")}\n${theme.fg("toolOutput", prompt)}`;
+      }
+      return new Text(output, 0, 0);
+    },
+
     renderResult(result, { expanded, isPartial }, theme, context) {
       const output = result.content
         .filter((item): item is Extract<typeof item, { type: "text" }> => item.type === "text")

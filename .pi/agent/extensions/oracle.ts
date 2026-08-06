@@ -148,6 +148,15 @@ export default function (pi: ExtensionAPI) {
 			"Pass oracle a specific task, useful context, and every known relevant file; treat its result as advisory rather than delegating implementation ownership.",
 			"Oracle automatically receives the invoking parent session ID. When a different prior Pi conversation matters, include its session ID or JSONL path and say exactly what oracle should extract with read_thread.",
 		],
+		renderCall(args, theme, context) {
+			let output = theme.fg("toolTitle", theme.bold("Oracle"));
+			if (context.expanded) {
+				const prompt = args.task?.trim() || "...";
+				output += `\n${theme.fg("muted", "Prompt:")}\n${theme.fg("toolOutput", prompt)}`;
+			}
+			return new Text(output, 0, 0);
+		},
+
 		renderResult(result, { expanded, isPartial }, theme, context) {
 			const output = result.content
 				.filter((item): item is Extract<typeof item, { type: "text" }> => item.type === "text")

@@ -180,6 +180,15 @@ export default function (pi: ExtensionAPI) {
 			"For direct path, symbol, or exact-string lookups, use read, grep, or find instead of finder.",
 			"Give finder a precise query with likely directories, file types, keywords, and explicit success criteria; run independent finder queries in parallel.",
 		],
+		renderCall(args, theme, context) {
+			let output = theme.fg("toolTitle", theme.bold("Finder"));
+			if (context.expanded) {
+				const prompt = args.query?.trim() || "...";
+				output += `\n${theme.fg("muted", "Prompt:")}\n${theme.fg("toolOutput", prompt)}`;
+			}
+			return new Text(output, 0, 0);
+		},
+
 		renderResult(result, { expanded, isPartial }, theme, context) {
 			const output = result.content
 				.filter((item): item is Extract<typeof item, { type: "text" }> => item.type === "text")
@@ -225,16 +234,11 @@ export default function (pi: ExtensionAPI) {
 
 			try {
 				const spawn = await rpc<SpawnData>(pi, "spawn", {
-					tasks: [{
-						agent: AGENT,
-						task: query,
-						cwd: ctx.cwd,
-						model: MODEL,
-						acceptance: false,
-					}],
-					concurrency: 1,
-					context: "fresh",
+					agent: AGENT,
+					task: query,
 					cwd: ctx.cwd,
+					model: MODEL,
+					context: "fresh",
 					artifacts: false,
 					async: true,
 					timeoutMs: RUN_TIMEOUT_MS,

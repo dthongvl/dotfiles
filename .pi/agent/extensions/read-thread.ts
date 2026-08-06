@@ -311,6 +311,15 @@ export default function (pi: ExtensionAPI) {
 			"Use read_thread when the user references another Pi session and the current task depends on its plan, decisions, implementation details, or fixes.",
 			"Give read_thread the referenced session ID or JSONL path and a precise extraction goal; do not use it for the current conversation.",
 		],
+		renderCall(args, theme, context) {
+			let output = theme.fg("toolTitle", theme.bold("Read Thread"));
+			if (context.expanded) {
+				const prompt = args.goal?.trim() || "...";
+				output += `\n${theme.fg("muted", "Prompt:")}\n${theme.fg("toolOutput", prompt)}`;
+			}
+			return new Text(output, 0, 0);
+		},
+
 		renderResult(result, { expanded, isPartial }, theme, context) {
 			const output = result.content
 				.filter((item): item is Extract<typeof item, { type: "text" }> => item.type === "text")

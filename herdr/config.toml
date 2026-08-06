@@ -3,6 +3,7 @@ onboarding = false
 [ui]
 agent_panel_sort = "priority"
 
+show_agent_labels_on_pane_borders = true
 [terminal]
 # Use Fish while preserving macOS login shell behavior.
 default_shell = "fish"
@@ -45,3 +46,6 @@ key = "ctrl+l"
 type = "plugin_action"
 command = "vim-herdr-navigation.right"
 description = "navigate right (vim/herdr)"
+
+[ui.toast]
+delivery = "terminal"
