@@ -67,7 +67,6 @@ type TaskDetails = {
 };
 
 type DelegationUpdate = {
-	version: 2;
 	requestId: string;
 	ownerRunId: string;
 	nodeId: string;
@@ -82,7 +81,6 @@ type DelegationUpdate = {
 };
 
 type DelegationResponse = {
-	version: 2;
 	requestId: string;
 	ownerRunId?: string;
 	nodeId?: string;
@@ -94,11 +92,10 @@ type DelegationResponse = {
 };
 
 function matchesAttempt(
-	payload: { version?: number; requestId?: string; ownerRunId?: string; nodeId?: string },
+	payload: { requestId?: string; ownerRunId?: string; nodeId?: string },
 	identity: { requestId: string; ownerRunId: string; nodeId: string },
 ): boolean {
-	return payload.version === 2
-		&& payload.requestId === identity.requestId
+	return payload.requestId === identity.requestId
 		&& (payload.ownerRunId === undefined || payload.ownerRunId === identity.ownerRunId)
 		&& (payload.nodeId === undefined || payload.nodeId === identity.nodeId);
 }
@@ -170,15 +167,15 @@ export default function taskExtension(pi: ExtensionAPI): void {
 					resolve(value);
 				};
 				const cancel = () => {
-					pi.events.emit(CANCEL_EVENT, { version: 2, ...identity });
+					pi.events.emit(CANCEL_EVENT, identity);
 				};
 				const timeout = setTimeout(() => {
 					cancel();
-					finish({ version: 2, ...identity, status: "timed_out", error: "Task timed out after 30 minutes." });
+					finish({ ...identity, status: "timed_out", error: "Task timed out after 30 minutes." });
 				}, RUN_TIMEOUT_MS + 30_000);
 
 				unsubscribers.push(pi.events.on(STARTED_EVENT, (raw) => {
-					const started = raw as typeof identity & { version?: number };
+					const started = raw as typeof identity;
 					if (matchesAttempt(started, identity)) publish();
 				}));
 				unsubscribers.push(pi.events.on(UPDATE_EVENT, (raw) => {
@@ -219,7 +216,6 @@ export default function taskExtension(pi: ExtensionAPI): void {
 				if (signal?.aborted) cancel();
 
 				pi.events.emit(REQUEST_EVENT, {
-					version: 2,
 					...identity,
 					agent: TASK_AGENT,
 					task: params.prompt,

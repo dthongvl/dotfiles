@@ -210,16 +210,15 @@ export default function (pi: ExtensionAPI) {
 			try {
 				// RPC spawn is intentionally async-only. Do not abort the reply wait: if the
 				// caller cancels during launch, we still need the returned id to stop the child.
+				const launch = {
+					agent: AGENT,
+					task: buildTask(params.task, params.context, files, parentThreadID),
+					reads: files,
+					model: MODEL,
+					acceptance: false,
+				};
 				const spawn = await rpc<SpawnData>(pi, "spawn", {
-					tasks: [{
-						agent: AGENT,
-						task: buildTask(params.task, params.context, files, parentThreadID),
-						cwd: ctx.cwd,
-						reads: files,
-						model: MODEL,
-						acceptance: false,
-					}],
-					concurrency: 1,
+					workflowScript: `return runs.run("oracle", ${JSON.stringify(launch)})`,
 					context: "fresh",
 					cwd: ctx.cwd,
 					artifacts: false,

@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.83.0",
+  "lastChangelogVersion": "0.84.1",
   "enabledModels": [
     "google/gemini-3.6-flash",
     "openai-codex/gpt-5.6-sol",
@@ -11,8 +11,8 @@
     "cursor/grok-4.5",
     "cursor/composer-2.5"
   ],
-  "defaultProvider": "cursor",
-  "defaultModel": "grok-4.5",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
   "packages": [
     "npm:pi-mcp-adapter",
     "git:github.com/earendil-works/pi-review",
@@ -49,7 +49,7 @@
     "npm:pi-web-providers"
   ],
   "hideThinkingBlock": false,
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "medium",
   "theme": "catppuccin-macchiato",
   "editorPaddingX": 1,
   "treeFilterMode": "all",
@@ -76,5 +76,6 @@
         "disabled": false
       }
     }
-  }
+  },
+  "tuiMode": "fullscreen"
 }

@@ -400,11 +400,14 @@ export default function (pi: ExtensionAPI) {
 			signal?.addEventListener("abort", onAbort, { once: true });
 
 			try {
-				const spawn = await rpc<SpawnData>(pi, "spawn", {
+				const launch = {
 					agent: AGENT,
 					task: buildTask(goal, markdown),
 					model: MODEL,
 					acceptance: false,
+				};
+				const spawn = await rpc<SpawnData>(pi, "spawn", {
+					workflowScript: `return runs.run("read-thread", ${JSON.stringify(launch)})`,
 					context: "fresh",
 					cwd: ctx.cwd,
 					artifacts: false,

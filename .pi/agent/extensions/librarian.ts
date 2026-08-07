@@ -245,14 +245,14 @@ export default function (pi: ExtensionAPI) {
       signal?.addEventListener("abort", onAbort, { once: true });
 
       try {
+        const launch = {
+          agent: AGENT,
+          task: buildTask(query, params.context),
+          model: MODEL,
+          acceptance: false,
+        };
         const spawn = await rpc<SpawnData>(pi, "spawn", {
-          tasks: [{
-            agent: AGENT,
-            task: buildTask(query, params.context),
-            model: MODEL,
-            acceptance: false,
-          }],
-          concurrency: 1,
+          workflowScript: `return runs.run("librarian", ${JSON.stringify(launch)})`,
           context: "fresh",
           cwd: ctx.cwd,
           artifacts: false,

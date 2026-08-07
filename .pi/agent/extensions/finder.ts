@@ -233,11 +233,14 @@ export default function (pi: ExtensionAPI) {
 			signal?.addEventListener("abort", onAbort, { once: true });
 
 			try {
-				const spawn = await rpc<SpawnData>(pi, "spawn", {
+				const launch = {
 					agent: AGENT,
 					task: query,
-					cwd: ctx.cwd,
 					model: MODEL,
+				};
+				const spawn = await rpc<SpawnData>(pi, "spawn", {
+					workflowScript: `return runs.run("finder", ${JSON.stringify(launch)})`,
+					cwd: ctx.cwd,
 					context: "fresh",
 					artifacts: false,
 					async: true,
