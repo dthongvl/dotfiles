@@ -3,8 +3,12 @@ name: oracle
 package: dthongvl
 description: Read-only expert advisor for architecture, code review, planning, and difficult debugging
 tools: read, grep, find, ffgrep, fffind, ls, bash, web_search, web_contents, read_thread
+subagentOnlyExtensions:
+  - ~/.pi/agent/npm/node_modules/@ff-labs/pi-fff/src/index.ts
+  - ~/.pi/agent/npm/node_modules/pi-web-providers/dist/index.js
+  - ~/.pi/agent/extensions/read-thread.ts
 model: openai-codex/gpt-5.6-sol
-thinking: high
+thinking: xhigh
 systemPromptMode: replace
 inheritProjectContext: false
 inheritSkills: false

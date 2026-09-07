@@ -7,6 +7,7 @@ inheritProjectContext: true
 inheritSkills: true
 defaultContext: fresh
 tools: fffind, ffgrep, subagent, read, grep, find, ls, bash, edit, write
+subagentOnlyExtensions: ~/.pi/agent/npm/node_modules/@ff-labs/pi-fff/src/index.ts
 maxSubagentDepth: 2
 completionGuard: false
 ---

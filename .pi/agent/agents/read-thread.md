@@ -3,7 +3,7 @@ name: read-thread
 package: dthongvl
 description: Extract goal-relevant information from a saved Pi conversation while preserving technical fidelity
 tools:
-model: cursor/grok-4.5
+model: openai-codex/gpt-5.6-terra
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: false

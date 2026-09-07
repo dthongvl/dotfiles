@@ -1,18 +1,11 @@
 {
-  "lastChangelogVersion": "0.84.1",
+  "lastChangelogVersion": "0.85.1",
   "enabledModels": [
-    "google/gemini-3.6-flash",
     "openai-codex/gpt-5.6-sol",
-    "cursor/glm-5.2",
-    "cursor/opus-4.8@1m",
+    "openai-codex/gpt-6-astra",
     "deepseek/deepseek-v4-flash",
-    "deepseek/deepseek-v4-pro",
-    "cursor/gpt-5.6-sol@272k",
-    "cursor/grok-4.5",
-    "cursor/composer-2.5"
+    "google/gemini-3.8-flash"
   ],
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-sol",
   "packages": [
     "npm:pi-mcp-adapter",
     "git:github.com/earendil-works/pi-review",
@@ -25,14 +18,12 @@
         "extensions/unified-edit.ts",
         "extensions/notify.ts",
         "extensions/session-breakdown.ts",
-        "extensions/uv.ts",
         "extensions/whimsical.ts",
         "extensions/btw.ts"
       ],
       "skills": [
         "skills/github",
-        "skills/librarian",
-        "skills/summarize"
+        "skills/librarian"
       ],
       "prompts": [],
       "themes": [
@@ -41,12 +32,12 @@
         "themes/modern-dark.json"
       ]
     },
-    "https://github.com/nicobailon/pi-subagents",
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
     "npm:pi-cursor-sdk",
     "npm:@plannotator/pi-extension",
-    "npm:pi-web-providers"
+    "npm:pi-web-providers",
+    "npm:pi-subagents"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "medium",

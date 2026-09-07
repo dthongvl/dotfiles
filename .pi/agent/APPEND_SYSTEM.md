@@ -31,6 +31,7 @@
 ## Pragmatism and Scope
 
 - The best change is often the smallest correct change.
+- Tautological tests considered harmful.
 - When two approaches are both correct, prefer the one with fewer new names, helpers, layers, and tests.
 - Keep obvious single-use logic inline. Do not extract a helper unless it is reused, hides meaningful complexity, or names a real domain concept.
 - A small amount of duplication is better than speculative abstraction.

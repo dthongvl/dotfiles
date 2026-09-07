@@ -3,6 +3,7 @@ name: finder
 package: dthongvl
 description: Fast, parallel, read-only code search agent that locates code by behavior or concept and returns filenames with line ranges
 tools: read, grep, find, ffgrep, fffind, ls, bash
+subagentOnlyExtensions: ~/.pi/agent/npm/node_modules/@ff-labs/pi-fff/src/index.ts
 model: openai-codex/gpt-5.6-terra
 thinking: low
 systemPromptMode: replace
