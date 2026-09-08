@@ -4,6 +4,7 @@ onboarding = false
 agent_panel_sort = "priority"
 
 show_agent_labels_on_pane_borders = true
+status_indicators = "symbols"
 [terminal]
 # Use Fish while preserving macOS login shell behavior.
 default_shell = "fish"
