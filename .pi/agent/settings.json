@@ -4,7 +4,8 @@
     "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-6-astra",
     "deepseek/deepseek-v4-flash",
-    "google/gemini-3.8-flash"
+    "google/gemini-3.8-flash",
+    "cursor/gpt-5.6-sol@272k"
   ],
   "packages": [
     "npm:pi-mcp-adapter",
