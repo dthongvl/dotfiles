@@ -20,6 +20,7 @@ auto_switch = false
 prefix = "ctrl+q"
 split_horizontal = "prefix+v"
 split_vertical = "prefix+s"
+focus_agent = "prefix+alt+1..9"
 
 navigate_workspace_down = "j"
 navigate_workspace_up = "k"
@@ -50,3 +51,6 @@ description = "navigate right (vim/herdr)"
 
 [ui.toast]
 delivery = "terminal"
+
+[experimental]
+kitty_graphics = true

@@ -1,0 +1,15 @@
+$schema: https://unpkg.com/webfox@latest/dist/config.schema.json
+defaults:
+  search:
+    provider: parallel
+  contents:
+    provider: parallel
+providers:
+  exa:
+    credentials:
+      api:
+        env: EXA_API_KEY
+  parallel:
+    credentials:
+      api:
+        env: PARALLEL_API_KEY

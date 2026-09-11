@@ -4,6 +4,7 @@ import { open } from "node:fs/promises";
 import { Type, type ImageContent, type TextContent, type UserMessage } from "@earendil-works/pi-ai";
 import { defineTool, formatSize, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { truncateToolOutput } from "../lib/delegation.ts";
+import { resolveSubagentModel, findRegistryModel } from "../lib/subagent-model.ts";
 
 const MODEL_PROVIDER = "google";
 const MODEL_ID = "gemini-3.8-flash";
@@ -83,7 +84,12 @@ function resolveInputPath(input: string, cwd: string): string {
 
 function detectMime(path: string, data: Buffer, contentType?: string | null): string | undefined {
   const responseMime = contentType?.split(";", 1)[0]?.trim().toLowerCase();
-  if (responseMime?.startsWith("image/") || responseMime === "application/pdf" || responseMime?.startsWith("audio/") || responseMime?.startsWith("video/"))
+  if (
+    responseMime?.startsWith("image/") ||
+    responseMime === "application/pdf" ||
+    responseMime?.startsWith("audio/") ||
+    responseMime?.startsWith("video/")
+  )
     return responseMime;
 
   const extensionMime = MIME_BY_EXTENSION[extname(path).toLowerCase()];
@@ -93,12 +99,21 @@ function detectMime(path: string, data: Buffer, contentType?: string | null): st
   if (data.subarray(0, 8).toString("hex") === "89504e470d0a1a0a") return "image/png";
   if (data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff) return "image/jpeg";
   if (data.subarray(0, 4).toString("ascii") === "GIF8") return "image/gif";
-  if (data.subarray(0, 4).toString("ascii") === "RIFF" && data.subarray(8, 12).toString("ascii") === "WEBP")
+  if (
+    data.subarray(0, 4).toString("ascii") === "RIFF" &&
+    data.subarray(8, 12).toString("ascii") === "WEBP"
+  )
     return "image/webp";
   if (data.subarray(4, 8).toString("ascii") === "ftyp") return "video/mp4";
-  if (data.subarray(0, 4).toString("ascii") === "RIFF" && data.subarray(8, 12).toString("ascii") === "WAVE")
+  if (
+    data.subarray(0, 4).toString("ascii") === "RIFF" &&
+    data.subarray(8, 12).toString("ascii") === "WAVE"
+  )
     return "audio/wav";
-  if (data.subarray(0, 3).toString("ascii") === "ID3" || (data[0] === 0xff && (data[1] & 0xe0) === 0xe0))
+  if (
+    data.subarray(0, 3).toString("ascii") === "ID3" ||
+    (data[0] === 0xff && (data[1] & 0xe0) === 0xe0)
+  )
     return "audio/mpeg";
   return undefined;
 }
@@ -125,7 +140,9 @@ async function fileParts(
     const fileStat = await handle.stat();
     if (!fileStat.isFile()) throw new Error(`Path is not a file: ${path}`);
     if (fileStat.size > maxBytes)
-      throw new Error(`File is too large (${formatSize(fileStat.size)}; limit ${formatSize(maxBytes)})`);
+      throw new Error(
+        `File is too large (${formatSize(fileStat.size)}; limit ${formatSize(maxBytes)})`,
+      );
 
     const header = Buffer.alloc(Math.min(32, fileStat.size));
     const headerRead = (await handle.read(header, 0, header.length, 0)).bytesRead;
@@ -136,14 +153,19 @@ async function fileParts(
     let offset = 0;
     while (offset < length) {
       signal?.throwIfAborted();
-      const bytesRead = (await handle.read(data, offset, Math.min(1024 * 1024, length - offset), offset)).bytesRead;
+      const bytesRead = (
+        await handle.read(data, offset, Math.min(1024 * 1024, length - offset), offset)
+      ).bytesRead;
       if (bytesRead === 0) break;
       offset += bytesRead;
     }
     signal?.throwIfAborted();
     const boundedData = data.subarray(0, offset);
     if (!mimeType) {
-      return { parts: [textFilePart(path, boundedData, label, fileStat.size > length)], size: fileStat.size };
+      return {
+        parts: [textFilePart(path, boundedData, label, fileStat.size > length)],
+        size: fileStat.size,
+      };
     }
     return {
       parts: [
@@ -165,11 +187,14 @@ async function urlParts(
   signal?: AbortSignal,
 ): Promise<{ parts: (TextContent | ImageContent)[]; size: number; mimeType?: string }> {
   const response = await fetch(url, { signal, redirect: "follow" });
-  if (!response.ok) throw new Error(`Failed to fetch media (${response.status} ${response.statusText}): ${url}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch media (${response.status} ${response.statusText}): ${url}`);
 
   const declaredSize = Number(response.headers.get("content-length"));
   if (Number.isFinite(declaredSize) && declaredSize > maxBytes)
-    throw new Error(`File is too large (${formatSize(declaredSize)}; limit ${formatSize(maxBytes)})`);
+    throw new Error(
+      `File is too large (${formatSize(declaredSize)}; limit ${formatSize(maxBytes)})`,
+    );
 
   const chunks: Buffer[] = [];
   let size = 0;
@@ -178,15 +203,23 @@ async function urlParts(
     signal?.throwIfAborted();
     const buffer = Buffer.from(chunk);
     size += buffer.length;
-    if (size > maxBytes) throw new Error(`File is too large (limit ${formatSize(maxBytes)}): ${url}`);
+    if (size > maxBytes)
+      throw new Error(`File is too large (limit ${formatSize(maxBytes)}): ${url}`);
     chunks.push(buffer);
   }
 
   const data = Buffer.concat(chunks);
-  const mimeType = detectMime(new URL(response.url).pathname, data.subarray(0, 32), response.headers.get("content-type"));
+  const mimeType = detectMime(
+    new URL(response.url).pathname,
+    data.subarray(0, 32),
+    response.headers.get("content-type"),
+  );
   if (!mimeType) {
     const boundedData = data.subarray(0, MAX_TEXT_BYTES);
-    return { parts: [textFilePart(url, boundedData, label, data.length > boundedData.length)], size };
+    return {
+      parts: [textFilePart(url, boundedData, label, data.length > boundedData.length)],
+      size,
+    };
   }
   return {
     parts: [
@@ -200,8 +233,7 @@ async function urlParts(
 
 const parameters = Type.Object({
   path: Type.String({
-    description:
-      "Absolute path to a local media file or a public HTTP(S) media URL.",
+    description: "Absolute path to a local media file or a public HTTP(S) media URL.",
   }),
   objective: Type.Optional(
     Type.String({
@@ -227,12 +259,19 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
   async execute(_toolCallId, params, signal, onUpdate, ctx) {
     const path = isHttpUrl(params.path) ? params.path : resolveInputPath(params.path, ctx.cwd);
 
+    const resolved = resolveSubagentModel("view_media", ctx.model, {
+      defaultModel: `${MODEL_PROVIDER}/${MODEL_ID}`,
+      defaultThinking: "medium",
+      cwd: ctx.cwd,
+    });
+    const targetModelStr = resolved.model ?? `${MODEL_PROVIDER}/${MODEL_ID}`;
+
     onUpdate?.({
       content: [
         {
           type: "text",
           text: params.objective
-            ? `Analyzing ${path} with ${MODEL_PROVIDER}/${MODEL_ID}...`
+            ? `Analyzing ${path} with ${targetModelStr}...`
             : `Loading ${path}...`,
         },
       ],
@@ -253,8 +292,13 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
 
     if (!params.objective) {
       const image = loaded.parts.find((part): part is ImageContent => part.type === "image");
-      if (!image || !["image/png", "image/jpeg", "image/gif", "image/webp"].includes(image.mimeType)) {
-        throw new Error("An objective is required unless the media is a PNG, JPEG, GIF, or WebP image");
+      if (
+        !image ||
+        !["image/png", "image/jpeg", "image/gif", "image/webp"].includes(image.mimeType)
+      ) {
+        throw new Error(
+          "An objective is required unless the media is a PNG, JPEG, GIF, or WebP image",
+        );
       }
       return {
         content: [image],
@@ -262,8 +306,8 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
       };
     }
 
-    const model = ctx.modelRegistry.find(MODEL_PROVIDER, MODEL_ID);
-    if (!model) throw new Error(`Model not found: ${MODEL_PROVIDER}/${MODEL_ID}`);
+    const model = findRegistryModel(ctx.modelRegistry, targetModelStr, MODEL_PROVIDER);
+    if (!model) throw new Error(`Model not found: ${targetModelStr}`);
 
     const content: (TextContent | ImageContent)[] = [...loaded.parts];
     content.push({
@@ -289,14 +333,17 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
       {
         maxTokens: 65_535,
         temperature: 1,
-        reasoningEffort: "medium",
+        ...(resolved.thinking && resolved.thinking !== "off"
+          ? { reasoningEffort: resolved.thinking as "low" | "medium" | "high" | "xhigh" }
+          : {}),
         signal,
         cacheRetention: "none",
       },
     );
 
     if (response.stopReason === "aborted") throw new Error("Media analysis was cancelled");
-    if (response.stopReason === "error") throw new Error(response.errorMessage ?? "Media analysis failed");
+    if (response.stopReason === "error")
+      throw new Error(response.errorMessage ?? "Media analysis failed");
 
     let result = response.content
       .filter((part): part is TextContent => part.type === "text")
@@ -313,7 +360,7 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
         status: "done",
         path,
         mimeType: loaded.mimeType,
-        model: `${MODEL_PROVIDER}/${MODEL_ID}`,
+        model: `${model.provider}/${model.id}`,
         fullOutputPath: output.fullOutputPath,
       },
       usage: response.usage,

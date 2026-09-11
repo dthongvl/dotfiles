@@ -5,6 +5,7 @@ import {
   installDelegationFailureAccounting,
   truncateToolOutput,
 } from "../lib/delegation.ts";
+import { resolveSubagentModel } from "../lib/subagent-model.ts";
 import { Text } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 
@@ -86,7 +87,8 @@ export default function (pi: ExtensionAPI) {
     parameters: Type.Object(
       {
         query: Type.String({
-          description: "Your question about the codebase. Be specific about what you want understood or explored",
+          description:
+            "Your question about the codebase. Be specific about what you want understood or explored",
           minLength: 1,
         }),
         context: Type.Optional(
@@ -101,6 +103,11 @@ export default function (pi: ExtensionAPI) {
     async execute(toolCallId, params, signal, onUpdate, ctx) {
       const query = params.query.trim();
       if (!query) throw new Error("Librarian query must not be empty.");
+      const { model, thinking } = resolveSubagentModel("librarian", ctx.model, {
+        defaultModel: MODEL,
+        defaultThinking: THINKING,
+        cwd: ctx.cwd,
+      });
 
       const response = await delegate(
         pi,
@@ -109,8 +116,8 @@ export default function (pi: ExtensionAPI) {
           task: buildTask(query, params.context),
           context: "fresh",
           cwd: ctx.cwd,
-          model: MODEL,
-          thinking: THINKING,
+          model,
+          thinking,
           timeoutMs: RUN_TIMEOUT_MS,
           artifacts: false,
           result: { kind: "text" },
@@ -128,8 +135,8 @@ export default function (pi: ExtensionAPI) {
               ],
               details: {
                 status: "in-progress",
-                model: MODEL,
-                thinking: THINKING,
+                model,
+                thinking,
                 query,
               },
             }),
@@ -148,8 +155,8 @@ export default function (pi: ExtensionAPI) {
               details: {
                 status: "in-progress",
                 runId: update.runId,
-                model: update.model ?? MODEL,
-                thinking: THINKING,
+                model: update.model ?? model,
+                thinking,
                 query,
               },
             }),
@@ -157,7 +164,8 @@ export default function (pi: ExtensionAPI) {
       );
       if (response.status !== "completed" || response.result?.kind !== "text") {
         const failure = await truncateToolOutput(
-          (response.result?.kind === "text" ? response.result.text : response.error) ?? "No text result",
+          (response.result?.kind === "text" ? response.result.text : response.error) ??
+          "No text result",
           "Librarian failure",
           "pi-librarian-",
         );
@@ -170,14 +178,18 @@ export default function (pi: ExtensionAPI) {
 
         throw new Error(`Librarian failed (${response.status}): ${failure.text}`);
       }
-      const output = await truncateToolOutput(response.result.text, "Librarian output", "pi-librarian-");
+      const output = await truncateToolOutput(
+        response.result.text,
+        "Librarian output",
+        "pi-librarian-",
+      );
       return {
         content: [{ type: "text", text: output.text }],
         details: {
           status: "done",
           runId: response.runId,
-          model: response.model ?? MODEL,
-          thinking: THINKING,
+          model: response.model ?? model,
+          thinking,
           query,
           fullOutputPath: output.fullOutputPath,
         },

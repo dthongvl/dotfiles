@@ -8,6 +8,7 @@ import {
   installDelegationFailureAccounting,
   truncateToolOutput,
 } from "../lib/delegation.ts";
+import { resolveSubagentModel } from "../lib/subagent-model.ts";
 import { SessionManager, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 
@@ -73,7 +74,9 @@ async function resolveSession(input: string, cwd: string): Promise<SessionRef> {
   }
 
   const sessions = await SessionManager.listAll();
-  const exact = sessions.find((session) => session.id === raw || session.path === raw || session.path === candidate);
+  const exact = sessions.find(
+    (session) => session.id === raw || session.path === raw || session.path === candidate,
+  );
   if (exact) return { id: exact.id, path: exact.path, name: exact.name, cwd: exact.cwd };
 
   const matches = sessions.filter(
@@ -117,10 +120,15 @@ function renderContent(content: unknown): string {
     .map((part) => {
       if (!part || typeof part !== "object") return "";
       const block = part as Record<string, unknown>;
-      if (block.type === "text") return typeof block.text === "string" ? truncateContent(block.text) : "";
-      if (block.type === "image") return `[Image: ${String(block.mimeType ?? "unknown media type")}]`;
+      if (block.type === "text")
+        return typeof block.text === "string" ? truncateContent(block.text) : "";
+      if (block.type === "image")
+        return `[Image: ${String(block.mimeType ?? "unknown media type")}]`;
       if (block.type === "toolCall") {
-        const args = truncateContent(JSON.stringify(block.arguments ?? {}, null, 2), "Tool arguments");
+        const args = truncateContent(
+          JSON.stringify(block.arguments ?? {}, null, 2),
+          "Tool arguments",
+        );
         return `Tool call: ${String(block.name ?? "unknown")}\n\n\`\`\`json\n${args}\n\`\`\``;
       }
       // Deliberately omit hidden model reasoning/thinking blocks.
@@ -158,7 +166,9 @@ function renderThread(manager: SessionManager, session: SessionRef): string {
         .join(", ");
       heading = `Bash Execution (${status})`;
       const fullOutput =
-        typeof message.fullOutputPath === "string" ? `\n\nFull saved output: ${message.fullOutputPath}` : "";
+        typeof message.fullOutputPath === "string"
+          ? `\n\nFull saved output: ${message.fullOutputPath}`
+          : "";
       body = `Command: ${truncateContent(String(message.command ?? ""), "Command")}\n\n\`\`\`text\n${truncateContent(String(message.output ?? ""), "Bash output")}\n\`\`\`${fullOutput}`;
     } else if (role === "compactionSummary") {
       heading = "Compaction Summary";
@@ -184,7 +194,9 @@ function renderThread(manager: SessionManager, session: SessionRef): string {
   const omitted = rendered.length - recent.length;
   return [
     header,
-    omitted > 0 ? `[Omitted ${omitted} older active-context messages to fit the transcript limit.]` : "",
+    omitted > 0
+      ? `[Omitted ${omitted} older active-context messages to fit the transcript limit.]`
+      : "",
     ...recent,
   ]
     .filter(Boolean)
@@ -199,7 +211,9 @@ async function loadThread(
   const sourceStat = await stat(sessionRef.path);
   if (!sourceStat.isFile()) throw new Error(`Thread path is not a file: ${sessionRef.path}`);
   if (sourceStat.size > MAX_SESSION_BYTES)
-    throw new Error(`Thread file is too large (${sourceStat.size} bytes; maximum ${MAX_SESSION_BYTES}).`);
+    throw new Error(
+      `Thread file is too large (${sourceStat.size} bytes; maximum ${MAX_SESSION_BYTES}).`,
+    );
   const tempDir = await mkdtemp(join(tmpdir(), "pi-read-thread-session-"));
   const snapshotPath = join(tempDir, "session.jsonl");
   try {
@@ -212,16 +226,19 @@ async function loadThread(
         let copied = 0;
         while (true) {
           signal?.throwIfAborted();
-          const bytesRead = (await source.read(buffer, 0, Math.min(buffer.length, MAX_SESSION_BYTES + 1 - copied)))
-            .bytesRead;
+          const bytesRead = (
+            await source.read(buffer, 0, Math.min(buffer.length, MAX_SESSION_BYTES + 1 - copied))
+          ).bytesRead;
           if (bytesRead === 0) break;
           copied += bytesRead;
-          if (copied > MAX_SESSION_BYTES) throw new Error("Thread snapshot exceeded the maximum accepted size.");
+          if (copied > MAX_SESSION_BYTES)
+            throw new Error("Thread snapshot exceeded the maximum accepted size.");
           const chunk = buffer.toString("latin1", 0, bytesRead);
           let bytesWritten = 0;
           while (bytesWritten < chunk.length) {
             const write = await target.write(chunk.slice(bytesWritten), undefined, "latin1");
-            if (write.bytesWritten === 0) throw new Error("Thread snapshot write made no progress.");
+            if (write.bytesWritten === 0)
+              throw new Error("Thread snapshot write made no progress.");
             bytesWritten += write.bytesWritten;
           }
         }
@@ -287,8 +304,7 @@ export default function (pi: ExtensionAPI) {
           minLength: 1,
         }),
         goal: Type.String({
-          description:
-            "The question you want the thread to answer. Be clear and specific.",
+          description: "The question you want the thread to answer. Be clear and specific.",
           minLength: 1,
         }),
       },
@@ -340,6 +356,11 @@ export default function (pi: ExtensionAPI) {
           },
         };
       }
+      const { model, thinking } = resolveSubagentModel("read_thread", ctx.model, {
+        defaultModel: MODEL,
+        defaultThinking: THINKING,
+        cwd: ctx.cwd,
+      });
 
       const response = await delegate(
         pi,
@@ -348,8 +369,8 @@ export default function (pi: ExtensionAPI) {
           task: buildTask(goal, markdown),
           context: "fresh",
           cwd: ctx.cwd,
-          model: MODEL,
-          thinking: THINKING,
+          model,
+          thinking,
           timeoutMs: RUN_TIMEOUT_MS,
           artifacts: false,
           result: { kind: "text" },
@@ -365,8 +386,8 @@ export default function (pi: ExtensionAPI) {
                 status: "in-progress",
                 threadID: session.id,
                 goal,
-                model: MODEL,
-                thinking: THINKING,
+                model,
+                thinking,
               },
             }),
           onUpdate: (update) =>
@@ -387,15 +408,16 @@ export default function (pi: ExtensionAPI) {
                 threadID: session.id,
                 goal,
                 runId: update.runId,
-                model: update.model ?? MODEL,
-                thinking: THINKING,
+                model: update.model ?? model,
+                thinking,
               },
             }),
         },
       );
       if (response.status !== "completed" || response.result?.kind !== "text") {
         const failure = await truncateToolOutput(
-          (response.result?.kind === "text" ? response.result.text : response.error) ?? "No text result",
+          (response.result?.kind === "text" ? response.result.text : response.error) ??
+          "No text result",
           "Thread extraction failure",
           "pi-read-thread-",
         );
@@ -408,7 +430,11 @@ export default function (pi: ExtensionAPI) {
 
         throw new Error(`Thread extraction failed (${response.status}): ${failure.text}`);
       }
-      const output = await truncateToolOutput(response.result.text, "Thread extraction", "pi-read-thread-");
+      const output = await truncateToolOutput(
+        response.result.text,
+        "Thread extraction",
+        "pi-read-thread-",
+      );
       return {
         content: [{ type: "text", text: output.text }],
         details: {
@@ -418,8 +444,8 @@ export default function (pi: ExtensionAPI) {
           sessionPath: session.path,
           goal,
           runId: response.runId,
-          model: response.model ?? MODEL,
-          thinking: THINKING,
+          model: response.model ?? model,
+          thinking,
           fullOutputPath: output.fullOutputPath,
         },
         usage: delegationUsage(response.usage),

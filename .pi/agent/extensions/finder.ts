@@ -5,6 +5,7 @@ import {
   installDelegationFailureAccounting,
   truncateToolOutput,
 } from "../lib/delegation.ts";
+import { resolveSubagentModel } from "../lib/subagent-model.ts";
 import { Text } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 
@@ -82,6 +83,11 @@ export default function (pi: ExtensionAPI) {
     async execute(toolCallId, params, signal, onUpdate, ctx) {
       const query = params.query.trim();
       if (!query) throw new Error("Finder query must not be empty.");
+      const { model, thinking } = resolveSubagentModel("finder", ctx.model, {
+        defaultModel: MODEL,
+        defaultThinking: THINKING,
+        cwd: ctx.cwd,
+      });
 
       const response = await delegate(
         pi,
@@ -90,8 +96,8 @@ export default function (pi: ExtensionAPI) {
           task: query,
           context: "fresh",
           cwd: ctx.cwd,
-          model: MODEL,
-          thinking: THINKING,
+          model,
+          thinking,
           timeoutMs: RUN_TIMEOUT_MS,
           artifacts: false,
           result: { kind: "text" },
@@ -104,8 +110,8 @@ export default function (pi: ExtensionAPI) {
               content: [{ type: "text", text: "Searching codebase..." }],
               details: {
                 status: "in-progress",
-                model: MODEL,
-                thinking: THINKING,
+                model,
+                thinking,
                 query,
               },
             }),
@@ -124,8 +130,8 @@ export default function (pi: ExtensionAPI) {
               details: {
                 status: "in-progress",
                 runId: update.runId,
-                model: update.model ?? MODEL,
-                thinking: THINKING,
+                model: update.model ?? model,
+                thinking,
                 query,
               },
             }),
@@ -133,7 +139,8 @@ export default function (pi: ExtensionAPI) {
       );
       if (response.status !== "completed" || response.result?.kind !== "text") {
         const failure = await truncateToolOutput(
-          (response.result?.kind === "text" ? response.result.text : response.error) ?? "No text result",
+          (response.result?.kind === "text" ? response.result.text : response.error) ??
+          "No text result",
           "Finder failure",
           "pi-finder-",
         );
@@ -152,8 +159,8 @@ export default function (pi: ExtensionAPI) {
         details: {
           status: "done",
           runId: response.runId,
-          model: response.model ?? MODEL,
-          thinking: THINKING,
+          model: response.model ?? model,
+          thinking,
           query,
           fullOutputPath: output.fullOutputPath,
         },

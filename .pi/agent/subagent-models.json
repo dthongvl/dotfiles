@@ -1,0 +1,16 @@
+{
+  "openai-codex/gpt-5.6-sol": {
+    "oracle": "openai-codex/gpt-6-astra:xhigh",
+    "finder": "openai-codex/gpt-5.6-terra:low",
+    "librarian": "openai-codex/gpt-5.6-sol:off",
+    "task": "openai-codex/gpt-5.6-sol:medium"
+  },
+  "default": {
+    "oracle": "cursor/gpt-5.6-sol@272k:xhigh",
+    "finder": "cursor/gpt-5.6-terra@272k:low",
+    "librarian": "cursor/gpt-5.6-sol@272k:off",
+    "task": "cursor/grok-4.6:xhigh",
+    "read_thread": "google/gemini-3.8-flash:medium",
+    "view_media": "google/gemini-3.8-flash:medium"
+  }
+}

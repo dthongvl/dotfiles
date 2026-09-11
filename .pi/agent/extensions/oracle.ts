@@ -5,6 +5,7 @@ import {
   installDelegationFailureAccounting,
   truncateToolOutput,
 } from "../lib/delegation.ts";
+import { resolveSubagentModel } from "../lib/subagent-model.ts";
 import { Text } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 
@@ -96,7 +97,14 @@ export default function (pi: ExtensionAPI) {
     ),
 
     async execute(toolCallId, params, signal, onUpdate, ctx) {
-      const parentThreadID = ctx.sessionManager.getSessionFile() ? ctx.sessionManager.getSessionId() : undefined;
+      const parentThreadID = ctx.sessionManager.getSessionFile()
+        ? ctx.sessionManager.getSessionId()
+        : undefined;
+      const { model, thinking } = resolveSubagentModel("oracle", ctx.model, {
+        defaultModel: MODEL,
+        defaultThinking: THINKING,
+        cwd: ctx.cwd,
+      });
       const response = await delegate(
         pi,
         {
@@ -104,8 +112,8 @@ export default function (pi: ExtensionAPI) {
           task: buildTask(params.task, parentThreadID),
           context: "fresh",
           cwd: ctx.cwd,
-          model: MODEL,
-          thinking: THINKING,
+          model,
+          thinking,
           timeoutMs: RUN_TIMEOUT_MS,
           artifacts: false,
           result: { kind: "text" },
@@ -118,8 +126,8 @@ export default function (pi: ExtensionAPI) {
               content: [{ type: "text", text: "Oracle is consulting the codebase..." }],
               details: {
                 status: "in-progress",
-                model: MODEL,
-                thinking: THINKING,
+                model,
+                thinking,
               },
             }),
           onUpdate: (update) =>
@@ -137,15 +145,16 @@ export default function (pi: ExtensionAPI) {
               details: {
                 status: "in-progress",
                 runId: update.runId,
-                model: update.model ?? MODEL,
-                thinking: THINKING,
+                model: update.model ?? model,
+                thinking,
               },
             }),
         },
       );
       if (response.status !== "completed" || response.result?.kind !== "text") {
         const failure = await truncateToolOutput(
-          (response.result?.kind === "text" ? response.result.text : response.error) ?? "No text result",
+          (response.result?.kind === "text" ? response.result.text : response.error) ??
+          "No text result",
           "Oracle failure",
           "pi-oracle-",
         );
@@ -164,8 +173,8 @@ export default function (pi: ExtensionAPI) {
         details: {
           status: "done",
           runId: response.runId,
-          model: response.model ?? MODEL,
-          thinking: THINKING,
+          model: response.model ?? model,
+          thinking,
           fullOutputPath: output.fullOutputPath,
         },
         usage: delegationUsage(response.usage),

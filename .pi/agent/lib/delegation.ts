@@ -1,3 +1,4 @@
+export { resolveSubagentModel, type ResolvedSubagentModel, type ResolveSubagentModelOptions } from "./subagent-model.ts";
 import { randomUUID } from "node:crypto";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -73,6 +74,18 @@ export interface DelegationIdentity {
 	ownerRunId: string;
 	nodeId: string;
 }
+export interface DelegationIntercomBridge {
+	mode?: "always" | "fork-only" | "off";
+	instructionFile?: string;
+	resultDelivery?: boolean;
+}
+/**
+ * Delegation wrappers cannot answer a blocking contact_supervisor ask: the
+ * parent stays blocked inside the calling tool until the child finishes, so the
+ * ask only stalls until the 10-minute timeout. Delegated spawns therefore
+ * default to the bridge off; pass intercomBridge to opt a spawn back in.
+ */
+const DEFAULT_INTERCOM_BRIDGE: DelegationIntercomBridge = { mode: "off" };
 export interface DelegationRequest extends DelegationIdentity {
 	agent: string;
 	task: string;
@@ -82,6 +95,8 @@ export interface DelegationRequest extends DelegationIdentity {
 	thinking?: DelegationThinking;
 	timeoutMs?: number;
 	artifacts?: boolean;
+	/** Override the delegation default of { mode: "off" }. */
+	intercomBridge?: DelegationIntercomBridge;
 	result: { kind: "text" } | { kind: "structured"; schema: Record<string, unknown> };
 }
 export interface DelegationUpdate extends DelegationIdentity {
@@ -366,6 +381,7 @@ export async function delegate(
 			...(model ? { model } : {}),
 			...(request.timeoutMs ? { timeoutMs: request.timeoutMs } : {}),
 			artifacts: request.artifacts ?? false,
+			intercomBridge: request.intercomBridge ?? DEFAULT_INTERCOM_BRIDGE,
 			async: true,
 			mission: false,
 		};

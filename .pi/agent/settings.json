@@ -1,11 +1,11 @@
 {
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "0.87.1",
   "enabledModels": [
     "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-6-astra",
-    "deepseek/deepseek-v4-flash",
     "google/gemini-3.8-flash",
-    "cursor/gpt-5.6-sol@272k"
+    "cursor/gpt-5.6-sol@272k",
+    "deepseek/deepseek-flash"
   ],
   "packages": [
     "npm:pi-mcp-adapter",
@@ -37,8 +37,8 @@
     "npm:pi-prompt-template-model",
     "npm:pi-cursor-sdk",
     "npm:@plannotator/pi-extension",
-    "npm:pi-web-providers",
-    "npm:pi-subagents"
+    "npm:pi-subagents",
+    "npm:webfox"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "medium",
@@ -69,5 +69,6 @@
       }
     }
   },
-  "tuiMode": "fullscreen"
+  "tuiMode": "fullscreen",
+  "fullscreenScrollbar": "always"
 }

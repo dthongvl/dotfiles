@@ -51,6 +51,10 @@ ln -s -f ~/workspace/dotfiles/.tmux.conf ~/.tmux.conf
 ln -s -f ~/workspace/dotfiles/.wezterm.lua ~/.wezterm.lua
 ln -s -f ~/workspace/dotfiles/ghostty ~/.config/ghostty/config
 
+# Webfox
+mkdir -p ~/.config/webfox
+ln -s -f ~/workspace/dotfiles/webfox/config.yaml ~/.config/webfox/config.yaml
+
 mkdir -p ~/.config/fish
 ln -s -f ~/workspace/dotfiles/config.fish ~/.config/fish/config.fish
 

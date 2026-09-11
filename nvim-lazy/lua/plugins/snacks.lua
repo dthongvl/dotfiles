@@ -10,6 +10,12 @@ return {
           -- Optional: you can also ignore patterns here if needed
           -- ignored = { ".git" },
         },
+        files = {
+          hidden = true,
+        },
+        grep = {
+          hidden = true,
+        },
       },
     },
   },

@@ -7,6 +7,8 @@ import {
   truncateToolOutput,
   type DelegationUpdate,
 } from "../lib/delegation.ts";
+import { resolveSubagentModel } from "../lib/subagent-model.ts";
+import type { DelegationThinking } from "../lib/delegation.ts";
 
 const TASK_AGENT = "dthongvl.task";
 const RUN_TIMEOUT_MS = 30 * 60 * 1000;
@@ -108,8 +110,14 @@ export default function taskExtension(pi: ExtensionAPI): void {
 
       const progress: TurnProgress[] = [];
       const toolLedger = new Map<string, ToolProgress>();
+      const resolved = resolveSubagentModel("task", ctx.model, {
+        defaultModel: modelName(ctx.model),
+        defaultThinking: ctx.thinkingLevel as DelegationThinking | undefined,
+        cwd: ctx.cwd,
+      });
       let runId: string | undefined;
-      let model = modelName(ctx.model);
+      let model = resolved.model;
+      let thinking = resolved.thinking;
 
       const publish = () =>
         onUpdate?.({
@@ -131,10 +139,13 @@ export default function taskExtension(pi: ExtensionAPI): void {
         model = update.model ?? model;
         const turn = progress[0] ?? { tool_uses: [] };
         if (progress.length === 0) progress.push(turn);
-        turn.message = (update.recentOutputLines?.slice(-4).join("\n") || update.recentOutput || turn.message)?.slice(
-          -4000,
-        );
-        for (const [key, tool] of toolLedger) if (tool.status === "in-progress") toolLedger.delete(key);
+        turn.message = (
+          update.recentOutputLines?.slice(-4).join("\n") ||
+          update.recentOutput ||
+          turn.message
+        )?.slice(-4000);
+        for (const [key, tool] of toolLedger)
+          if (tool.status === "in-progress") toolLedger.delete(key);
         const recentTools = (update.recentTools ?? []).slice(-40);
         const completedCount = Math.max(
           recentTools.length,
@@ -171,7 +182,7 @@ export default function taskExtension(pi: ExtensionAPI): void {
           context: "fresh",
           cwd: ctx.cwd,
           ...(model ? { model } : {}),
-          ...(ctx.thinkingLevel ? { thinking: ctx.thinkingLevel } : {}),
+          ...(thinking ? { thinking } : {}),
           timeoutMs: RUN_TIMEOUT_MS,
           artifacts: false,
           result: { kind: "text" },
@@ -188,7 +199,8 @@ export default function taskExtension(pi: ExtensionAPI): void {
       runId = response.runId ?? runId;
       model = response.model ?? model;
       for (const tool of progress.flatMap((turn) => turn.tool_uses)) {
-        if (tool.status === "in-progress") tool.status = response.status === "completed" ? "done" : "error";
+        if (tool.status === "in-progress")
+          tool.status = response.status === "completed" ? "done" : "error";
       }
 
       if (response.status === "completed" && response.result?.kind === "text") {
