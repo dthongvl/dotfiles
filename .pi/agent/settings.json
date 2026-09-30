@@ -1,14 +1,16 @@
 {
-  "lastChangelogVersion": "0.87.1",
+  "lastChangelogVersion": "0.99.2",
+  "defaultTools": [
+    "+codemode"
+  ],
   "enabledModels": [
-    "openai-codex/gpt-5.6-sol",
+    "openai-codex/gpt-6.1-sol",
     "openai-codex/gpt-6-astra",
     "google/gemini-3.8-flash",
     "cursor/gpt-5.6-sol@272k",
     "deepseek/deepseek-flash"
   ],
   "packages": [
-    "npm:pi-mcp-adapter",
     "git:github.com/earendil-works/pi-review",
     "npm:pi-ask-user",
     "npm:@ff-labs/pi-fff",
@@ -22,16 +24,9 @@
         "extensions/whimsical.ts",
         "extensions/btw.ts"
       ],
-      "skills": [
-        "skills/github",
-        "skills/librarian"
-      ],
+      "skills": ["skills/github", "skills/librarian", "skills/commit"],
       "prompts": [],
-      "themes": [
-        "themes/nightowl.json",
-        "themes/dayowl.json",
-        "themes/modern-dark.json"
-      ]
+      "themes": ["themes/nightowl.json", "themes/dayowl.json", "themes/modern-dark.json"]
     },
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
@@ -47,13 +42,7 @@
   "treeFilterMode": "all",
   "doubleEscapeAction": "tree",
   "showHardwareCursor": false,
-  "npmCommand": [
-    "mise",
-    "exec",
-    "node",
-    "--",
-    "npm"
-  ],
+  "npmCommand": ["mise", "exec", "node", "--", "npm"],
   "images": {
     "blockImages": false
   },
@@ -70,5 +59,7 @@
     }
   },
   "tuiMode": "fullscreen",
-  "fullscreenScrollbar": "always"
+  "fullscreenScrollbar": "always",
+  "deviceId": "9719c93c-babd-44aa-aaba-ecd22029d52c"
 }
+
