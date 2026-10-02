@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+
+usage() {
+  cat <<'EOF'
+Usage: ./dot <command> [--dry-run] [--target DIRECTORY]
+
+  init, stow  Link the home package (requires GNU Stow).
+  unstow      Remove managed links, leaving real files alone.
+  update      Pull with --ff-only, then restow (no package upgrades).
+  help        Show this help.
+
+The target defaults to $HOME. Existing conflicting files are never adopted.
+Use --dry-run to preview links before deploying.
+Global skills installs write directly into home/.agents/skills/ in this checkout.
+EOF
+}
+
+command="${1:-help}"
+if (($#)); then shift; fi
+case "$command" in
+  help|-h|--help) usage; exit 0 ;;
+  init|stow|unstow|update) ;;
+  *) usage >&2; exit 2 ;;
+esac
+
+target="$HOME"
+dry_run=false
+while (($#)); do
+  case "$1" in
+    --dry-run) dry_run=true; shift ;;
+    --target)
+      if (($# < 2)) || [[ -z "$2" ]]; then
+        echo '--target requires a directory.' >&2
+        exit 2
+      fi
+      target="$2"
+      shift 2
+      ;;
+    *) echo "Unknown option: $1" >&2; exit 2 ;;
+  esac
+done
+
+if ! command -v stow >/dev/null 2>&1; then
+  echo 'GNU Stow is required: sudo apt install stow (Linux) or brew install stow (macOS).' >&2
+  exit 1
+fi
+if [[ ! -d "$target" ]]; then
+  echo "Target directory does not exist: $target" >&2
+  exit 1
+fi
+
+target="$(cd -- "$target" && pwd -P)"
+
+if [[ "$command" == update ]]; then
+  if "$dry_run"; then
+    echo 'Dry run: skipping git pull; previewing the current checkout.' >&2
+  else
+    git -C "$DOTFILES_DIR" pull --ff-only
+  fi
+fi
+
+args=(--verbose --no-folding --dir "$DOTFILES_DIR" --target "$target")
+if "$dry_run"; then args+=(--simulate); fi
+if [[ "$command" == unstow ]]; then
+  args+=(--delete)
+else
+  args+=(--restow)
+fi
+skills_source="$DOTFILES_DIR/home/.agents/skills"
+skills_target="$target/.agents/skills"
+owned_skills_link=false
+if [[ -L "$skills_target" && "$skills_target" -ef "$skills_source" ]]; then
+  owned_skills_link=true
+fi
+
+if [[ "$command" != unstow ]] && ! "$owned_skills_link" && \
+  [[ -e "$skills_target" || -L "$skills_target" ]]; then
+  echo "Skills directory conflicts with $skills_target; back it up before deploying." >&2
+  exit 1
+fi
+
+# Validate the entire Stow operation before changing any live links.
+if ! "$dry_run"; then
+  stow "${args[@]}" --simulate home
+fi
+stow "${args[@]}" home
+
+# Stow ignores this directory: always link it whole, never individual skill files.
+if [[ "$command" == unstow ]]; then
+  if "$owned_skills_link"; then
+    echo "UNLINK: $skills_target"
+    if ! "$dry_run"; then unlink "$skills_target"; fi
+  fi
+elif ! "$owned_skills_link"; then
+  echo "LINK: $skills_target => $skills_source"
+  if ! "$dry_run"; then
+    mkdir -p "$target/.agents"
+    ln -s "$skills_source" "$skills_target"
+  fi
+fi

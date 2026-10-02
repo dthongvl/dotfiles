@@ -1,0 +1,97 @@
+{
+  "version": 3,
+  "skills": {
+    "holistics": {
+      "source": "holistics/internal-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/holistics/internal-skills.git",
+      "skillPath": "holistics/skills/holistics/SKILL.md",
+      "skillFolderHash": "ecf087ab24325f5ecf94fc96b28efec4f801ec0f",
+      "installedAt": "2026-04-23T05:33:00.382Z",
+      "updatedAt": "2026-05-25T03:57:10Z"
+    },
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-browser.git",
+      "skillPath": "skills/agent-browser/SKILL.md",
+      "skillFolderHash": "82def67855a0d2aad7794207951820fa5422fdb0",
+      "installedAt": "2026-07-29T08:30:03.102Z",
+      "updatedAt": "2026-09-16T04:27:14.357Z"
+    },
+    "ast-grep-outline": {
+      "source": "ast-grep/agent-skill",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ast-grep/agent-skill.git",
+      "skillPath": "ast-grep/skills/outline/SKILL.md",
+      "skillFolderHash": "7ee23d31b0578aa6702d8bbafa15749fc499a8c0",
+      "installedAt": "2026-07-10T05:27:25.385Z",
+      "updatedAt": "2026-09-08T07:19:47.561Z"
+    },
+    "circleci-cli": {
+      "source": "openai/plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/openai/plugins.git",
+      "ref": "main",
+      "skillPath": "plugins/circleci/skills/cli/SKILL.md",
+      "skillFolderHash": "820ea0d1cb953c6f2dc0f0ebcb88e158e1773eb6",
+      "installedAt": "2026-09-30T04:44:13.855Z",
+      "updatedAt": "2026-09-30T04:44:13.855Z"
+    },
+    "sentry-cli": {
+      "source": "cli.sentry.dev",
+      "sourceType": "well-known",
+      "sourceUrl": "https://cli.sentry.dev/.well-known/skills/sentry-cli/SKILL.md",
+      "skillFolderHash": "",
+      "sourceBaseUrl": "https://cli.sentry.dev",
+      "wellKnownDigest": "sha256:4dfbed84492c278cc6ee0919e82af19c69632a11b615eb3c3da02cdb436bd2d8",
+      "installedAt": "2026-03-26T04:27:40.509Z",
+      "updatedAt": "2026-09-16T07:29:31.441Z"
+    },
+    "show-me": {
+      "source": "humanlayer/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/humanlayer/skills.git",
+      "skillPath": "plugins/show-me/skills/show-me/SKILL.md",
+      "skillFolderHash": "0bdb821a21e793a4f6f82a7078c052154447e5cc",
+      "installedAt": "2026-09-10T10:37:58.493Z",
+      "updatedAt": "2026-09-10T10:37:58.493Z"
+    },
+    "test-audit": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/openclaw/openclaw.git",
+      "skillPath": ".agents/skills/test-audit/SKILL.md",
+      "skillFolderHash": "8015421942bcd215db0e73a13ec944d50ce01ec5",
+      "installedAt": "2026-10-02T09:54:46.587Z",
+      "updatedAt": "2026-10-02T09:54:46.587Z"
+    },
+    "visual-pr": {
+      "source": "humanlayer/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/humanlayer/skills.git",
+      "skillPath": "plugins/visual-pr/skills/visual-pr/SKILL.md",
+      "skillFolderHash": "2104d685d33ba9594a4dfe13241f0f7f02190401",
+      "installedAt": "2026-09-18T03:27:59.531Z",
+      "updatedAt": "2026-09-18T03:27:59.531Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": [
+    "amp",
+    "cline",
+    "codex",
+    "cursor",
+    "droid",
+    "gemini-cli",
+    "github-copilot",
+    "kilo",
+    "kimi-code-cli",
+    "opencode",
+    "warp",
+    "zed",
+    "claude-code"
+  ]
+}

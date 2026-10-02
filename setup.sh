@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -euo pipefail
+
+DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
 # Fishshell
 sudo add-apt-repository ppa:fish-shell/release-4
 sudo add-apt-repository ppa:git-core/ppa
 sudo apt update
-sudo apt install fish git
+sudo apt install fish git stow
 
 # Set fishshell to default shell
 chsh -s /usr/bin/fish
@@ -18,7 +20,6 @@ fisher install rose-pine/fish
 sudo apt install flatpak
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 # or ghostty
-flatpak install flathub org.wezfurlong.wezterm
 flatpak install flathub app.zen_browser.zen
 flatpak install flathub md.obsidian.Obsidian
 
@@ -35,31 +36,16 @@ curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh 
 curl https://mise.run | sh
 mise install --global go node ruby python rust pnpm fzf
 
-# Config files
-ln -s -f ~/workspace/dotfiles/nvim ~/.config
+# Config files and vendored skills (refuses conflicting files).
+"$DOTFILES_DIR/dot" stow
 
 curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 cargo binstall --strategies crate-meta-data jj-cli
 cargo install --locked difftastic
-ln -s -f ~/workspace/dotfiles/jj/config.toml ~/.config/jj/
 
 # Tmux Plugin Manager
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-ln -s -f ~/workspace/dotfiles/.tmux.conf ~/.tmux.conf
 # Install plugins with Prefix + Shift I
-
-ln -s -f ~/workspace/dotfiles/.wezterm.lua ~/.wezterm.lua
-ln -s -f ~/workspace/dotfiles/ghostty ~/.config/ghostty/config
-
-# Webfox
-mkdir -p ~/.config/webfox
-ln -s -f ~/workspace/dotfiles/webfox/config.yaml ~/.config/webfox/config.yaml
-
-mkdir -p ~/.config/fish
-ln -s -f ~/workspace/dotfiles/config.fish ~/.config/fish/config.fish
-
-# mkdir -p ~/.config/alacritty
-# ln -s -f ~/workspace/dotfiles/alacritty.yml ~/.config/alacritty/alacritty.yml
 
 # Install yarn
 npm install -g yarn

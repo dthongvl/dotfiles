@@ -1,1 +1,12 @@
 .jj
+
+# Private configuration and runtime state must not be shared.
+home/.config/fish/private_config.fish
+home/.config/fish/fish_variables
+home/.config/fish/fish_plugins
+home/.pi/agent/auth.json
+home/.pi/agent/sessions/
+home/.pi/agent/git/
+home/.pi/agent/npm/
+home/.pi/agent/skills/
+home/.pi/agent/cache/

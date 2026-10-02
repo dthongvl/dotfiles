@@ -1,0 +1,13 @@
+# Override Stow's defaults to keep deployed config documentation.
+(\.git|\.gitignore|\.stow-local-ignore|\.DS_Store)
+
+# dot links this entire directory explicitly so newly installed skills land in Git.
+^/\.agents/skills(/.*)?
+
+# Never deploy Pi's package-managed skills and state.
+^/\.pi/agent/(auth\.json|sessions|git|npm|skills|cache)(/.*)?
+^/\.config/fish/(private_config\.fish|fish_variables|fish_plugins)
+
+# Neovim runtime files (matching its source .gitignore).
+^/\.config/nvim/(tt\.[^/]*|\.tests|doc/tags|debug|\.repro|foo\.[^/]*|data)(/.*)?
+^/\.config/nvim/.*\.log
