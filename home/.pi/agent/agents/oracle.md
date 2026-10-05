@@ -11,10 +11,9 @@ model: openai-codex/gpt-5.6-sol
 thinking: xhigh
 systemPromptMode: replace
 inheritProjectContext: false
-inheritSkills: false
+inheritSkills: true
 defaultContext: fresh
 acceptanceRole: read-only
-skills: ast-grep-outline
 timeoutMs: 1800000
 ---
 

@@ -2,16 +2,17 @@
 name: librarian
 package: dthongvl
 description: Read-only remote-repository research agent that caches checkouts and explains architecture, implementation, and history
-tools: read, grep, find, ffgrep, fffind, ls, bash, web_search, web_contents,
-subagentOnlyExtensions: ~/.pi/agent/npm/node_modules/@ff-labs/pi-fff/src/index.ts
+tools: read, grep, find, ffgrep, fffind, ls, bash, web_search, web_contents
+subagentOnlyExtensions:
+  - ~/.pi/agent/npm/node_modules/@ff-labs/pi-fff/src/index.ts
+  - ~/.pi/agent/npm/node_modules/webfox/dist/pi.js
 model: openai-codex/gpt-5.6-sol
 thinking: off
 systemPromptMode: replace
 inheritProjectContext: false
-inheritSkills: false
+inheritSkills: true
 defaultContext: fresh
 acceptanceRole: read-only
-skills: librarian, ast-grep-outline, github
 timeoutMs: 1800000
 ---
 

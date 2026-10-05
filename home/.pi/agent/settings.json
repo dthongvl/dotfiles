@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.0.0",
+  "lastChangelogVersion": "1.0.3",
   "defaultTools": [
     "+codemode"
   ],
@@ -40,7 +40,7 @@
     "npm:pi-prompt-template-model",
     "npm:pi-cursor-sdk",
     "npm:@plannotator/pi-extension",
-    "git:github.com/nicobailon/pi-subagents@10694a673cb077b4d3ec6a6cfe68acb6c28b83a5",
+    "npm:pi-subagents",
     "npm:webfox"
   ],
   "hideThinkingBlock": false,

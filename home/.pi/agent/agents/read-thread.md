@@ -2,12 +2,12 @@
 name: read-thread
 package: dthongvl
 description: Extract goal-relevant information from a saved Pi conversation while preserving technical fidelity
-tools:
+tools: read
 model: openai-codex/gpt-5.6-terra
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: false
-inheritSkills: false
+inheritSkills: true
 defaultContext: fresh
 acceptanceRole: read-only
 timeoutMs: 1200000

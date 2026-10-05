@@ -6,10 +6,11 @@ systemPromptMode: append
 inheritProjectContext: true
 inheritSkills: true
 defaultContext: fresh
-tools: fffind, ffgrep, subagent, read, grep, find, ls, bash, edit, write, web_search, web_contents,
-subagentOnlyExtensions: ~/.pi/agent/npm/node_modules/@ff-labs/pi-fff/src/index.ts
+tools: fffind, ffgrep, subagent, read, grep, find, ls, bash, edit, write, web_search, web_contents
+subagentOnlyExtensions:
+  - ~/.pi/agent/npm/node_modules/@ff-labs/pi-fff/src/index.ts
+  - ~/.pi/agent/npm/node_modules/webfox/dist/pi.js
 maxSubagentDepth: 2
-skills: ast-grep-outline
 completionGuard: false
 ---
 

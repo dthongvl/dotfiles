@@ -8,10 +8,9 @@ model: openai-codex/gpt-5.6-terra
 thinking: low
 systemPromptMode: replace
 inheritProjectContext: false
-inheritSkills: false
+inheritSkills: true
 defaultContext: fresh
 acceptanceRole: read-only
-skills: ast-grep-outline
 timeoutMs: 600000
 ---
 
