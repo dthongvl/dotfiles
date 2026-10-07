@@ -1,5 +1,6 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { Text } from "@earendil-works/pi-tui";
 import {
   delegate,
   delegationUsage,
@@ -92,6 +93,16 @@ export default function taskExtension(pi: ExtensionAPI): void {
     name: "Task",
     label: "Task",
     description: DESCRIPTION,
+    renderCall(args, theme, context) {
+      let output = theme.fg("toolTitle", theme.bold("Task"));
+      if (context.executionStarted && context.isPartial)
+        output += ` ${theme.fg("dim", "(running)")}`;
+      if (args.description?.trim()) output += `\n${theme.fg("muted", args.description.trim())}`;
+      if (context.expanded) {
+        output += `\n${theme.fg("muted", "Prompt:")}\n${theme.fg("toolOutput", args.prompt?.trim() || "...")}`;
+      }
+      return new Text(output, 0, 0);
+    },
     parameters: Type.Object({
       prompt: Type.String({
         description:

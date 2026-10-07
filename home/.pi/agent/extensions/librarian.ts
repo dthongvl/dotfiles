@@ -67,6 +67,8 @@ export default function (pi: ExtensionAPI) {
     description,
     renderCall(args, theme, context) {
       let output = theme.fg("toolTitle", theme.bold("Librarian"));
+      if (context.executionStarted && context.isPartial)
+        output += ` ${theme.fg("dim", "(running)")}`;
       if (context.expanded) {
         const prompt = args.query?.trim() || "...";
         output += `\n${theme.fg("muted", "Prompt:")}\n${theme.fg("toolOutput", prompt)}`;

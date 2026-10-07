@@ -1,24 +1,6 @@
 {
   "version": 3,
   "skills": {
-    "holistics": {
-      "source": "holistics/internal-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/holistics/internal-skills.git",
-      "skillPath": "holistics/skills/holistics/SKILL.md",
-      "skillFolderHash": "ecf087ab24325f5ecf94fc96b28efec4f801ec0f",
-      "installedAt": "2026-04-23T05:33:00.382Z",
-      "updatedAt": "2026-05-25T03:57:10Z"
-    },
-    "agent-browser": {
-      "source": "vercel-labs/agent-browser",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/vercel-labs/agent-browser.git",
-      "skillPath": "skills/agent-browser/SKILL.md",
-      "skillFolderHash": "82def67855a0d2aad7794207951820fa5422fdb0",
-      "installedAt": "2026-07-29T08:30:03.102Z",
-      "updatedAt": "2026-09-16T04:27:14.357Z"
-    },
     "ast-grep-outline": {
       "source": "ast-grep/agent-skill",
       "sourceType": "github",
@@ -44,9 +26,9 @@
       "sourceUrl": "https://cli.sentry.dev/.well-known/skills/sentry-cli/SKILL.md",
       "skillFolderHash": "",
       "sourceBaseUrl": "https://cli.sentry.dev",
-      "wellKnownDigest": "sha256:55b968544081a0692cecfa0ac1dbdd08c2995bd33fc9fb512280b30a682c589c",
+      "wellKnownDigest": "sha256:51cf883c6b5bab2e089db992c3f3b999a6b0e50a4df05e5097de9288d6e86b5e",
       "installedAt": "2026-03-26T04:27:40.509Z",
-      "updatedAt": "2026-10-05T03:09:39.871Z"
+      "updatedAt": "2026-10-07T09:56:18.123Z"
     },
     "show-me": {
       "source": "humanlayer/skills",
@@ -137,6 +119,36 @@
       "skillFolderHash": "db7a20dc1d8ad26a0307dcb45ebc79fc372f5c69",
       "installedAt": "2026-10-05T03:15:24.374Z",
       "updatedAt": "2026-10-05T03:15:24.374Z"
+    },
+    "explaining-code": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/explaining-code/SKILL.md",
+      "skillFolderHash": "fb53482d219fcd5a468c1deb49c486cbaf60144d",
+      "installedAt": "2026-10-07T03:21:23.920Z",
+      "updatedAt": "2026-10-07T03:22:28.780Z"
+    },
+    "using-agent-browser": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/using-agent-browser/SKILL.md",
+      "skillFolderHash": "9ba002dd2666c496a3212942f138111668dd73f3",
+      "installedAt": "2026-10-07T03:21:23.922Z",
+      "updatedAt": "2026-10-07T03:22:28.787Z"
+    },
+    "writing-prompts": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/writing-prompts/SKILL.md",
+      "skillFolderHash": "56a35c90c0d972f983c52c246c324895898504d7",
+      "installedAt": "2026-10-07T03:21:23.922Z",
+      "updatedAt": "2026-10-07T03:22:28.786Z"
     }
   },
   "dismissed": {
@@ -153,6 +165,7 @@
     "kilo",
     "kimi-code-cli",
     "opencode",
+    "pi",
     "warp",
     "zed",
     "claude-code"

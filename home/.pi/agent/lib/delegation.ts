@@ -31,8 +31,10 @@ type RpcSpawn = {
 };
 
 type AsyncRunStatus = {
+	sessionFile?: string;
 	steps?: Array<{
 		status?: string;
+		sessionFile?: string;
 		currentTool?: string;
 		currentToolArgs?: string;
 		toolCount?: number;
@@ -210,8 +212,8 @@ function fullToolArgPreview(args: Record<string, unknown>): string {
 	return normalized.length > 500 ? `${normalized.slice(0, 497)}...` : normalized;
 }
 
-async function readFullToolArgs(asyncDir: string): Promise<ToolCallPreview[]> {
-	const transcript = await readFile(join(asyncDir, "run-0", "session.jsonl"), "utf8");
+async function readFullToolArgs(sessionFile: string): Promise<ToolCallPreview[]> {
+	const transcript = await readFile(sessionFile, "utf8");
 	const calls: ToolCallPreview[] = [];
 	for (const line of transcript.split("\n")) {
 		if (!line) continue;
@@ -265,8 +267,12 @@ function restoreFullArgs(tool: string, preview: string, endMs: number | undefine
 	return preview;
 }
 
+function activeStep(status: AsyncRunStatus) {
+	return status.steps?.find((item) => item.status === "running") ?? status.steps?.[0];
+}
+
 function liveTools(status: AsyncRunStatus, fullCalls: ToolCallPreview[] = []): Pick<DelegationUpdate, "currentTool" | "currentToolArgs" | "toolCount" | "recentTools" | "recentOutputLines"> | undefined {
-	const step = status.steps?.find((item) => item.status === "running") ?? status.steps?.[0];
+	const step = activeStep(status);
 	if (!step) return undefined;
 	const used = new Set<number>();
 	const recentTools = (step.recentTools ?? []).slice(-3).map(({ tool, args, endMs }) => ({
@@ -277,7 +283,7 @@ function liveTools(status: AsyncRunStatus, fullCalls: ToolCallPreview[] = []): P
 	const currentToolArgs = step.currentTool
 		? restoreFullArgs(step.currentTool, step.currentToolArgs ?? "", undefined, fullCalls, used)
 		: step.currentToolArgs;
-	if (step.currentTool && !recentTools.some(({ tool, args }) => tool === step.currentTool && args === (currentToolArgs ?? ""))) {
+	if (step.currentTool) {
 		recentOutputLines.push(`${step.currentTool}: ${currentToolArgs ?? ""}`);
 	}
 	if (recentOutputLines.length === 0 && !step.currentTool) return undefined;
@@ -286,7 +292,7 @@ function liveTools(status: AsyncRunStatus, fullCalls: ToolCallPreview[] = []): P
 		currentToolArgs,
 		toolCount: step.toolCount,
 		recentTools,
-		recentOutputLines,
+		recentOutputLines: recentOutputLines.slice(-3),
 	};
 }
 
@@ -406,14 +412,21 @@ export async function delegate(
 			try {
 				const status = JSON.parse(await readFile(join(asyncDir, "status.json"), "utf8")) as AsyncRunStatus;
 				if (!polling || cancelled) return;
-				const statusDetail = liveTools(status)?.recentOutputLines?.join("\n");
-				if (!statusDetail || statusDetail === lastStatusDetail) return;
-				const fullCalls = await readFullToolArgs(asyncDir).catch(() => undefined);
-				if (!fullCalls) return;
-				const progress = liveTools(status, fullCalls);
-				const detail = progress?.recentOutputLines?.join("\n");
-				if (progress && detail && detail !== lastDetail) {
-					lastStatusDetail = statusDetail;
+				const statusProgress = liveTools(status);
+				if (!statusProgress) return;
+				// Session storage is independent of the retention-managed async directory.
+				const sessionFile = activeStep(status)?.sessionFile ?? status.sessionFile;
+				const statusDetail = JSON.stringify({ sessionFile, ...statusProgress });
+				if (statusDetail === lastStatusDetail) return;
+				const fullCalls = sessionFile
+					? await readFullToolArgs(sessionFile).catch(() => undefined)
+					: undefined;
+				if (!polling || cancelled) return;
+				// Transcript enrichment is optional: status previews must still be shown.
+				const progress = liveTools(status, fullCalls) ?? statusProgress;
+				const detail = JSON.stringify(progress);
+				if (!sessionFile || fullCalls) lastStatusDetail = statusDetail;
+				if (detail !== lastDetail) {
 					lastDetail = detail;
 					options.onUpdate?.({
 						...identity,
