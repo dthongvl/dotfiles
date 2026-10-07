@@ -148,8 +148,8 @@ export default function (pi: ExtensionAPI) {
                 {
                   type: "text",
                   text: (
-                    update.recentOutputLines?.slice(-4).join("\n") ||
                     update.recentOutput ||
+                    update.recentOutputLines?.slice(-4).join("\n") ||
                     "Librarian is researching remote repositories..."
                   ).slice(-4000),
                 },

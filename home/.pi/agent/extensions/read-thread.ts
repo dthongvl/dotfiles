@@ -271,7 +271,7 @@ function buildTask(goal: string, markdown: string): string {
   return task;
 }
 
-export default function (pi: ExtensionAPI) {
+export function registerReadThread(pi: ExtensionAPI, options: { directRead?: boolean } = {}) {
   const recordDelegationFailure = installDelegationFailureAccounting(pi, "read_thread");
   pi.registerTool({
     name: "read_thread",
@@ -330,10 +330,9 @@ export default function (pi: ExtensionAPI) {
       const sessionRef = await resolveSession(params.threadID, ctx.cwd);
       const { session, markdown } = await loadThread(sessionRef, signal);
 
-      // pi-subagents intentionally does not load its RPC server inside ordinary
-      // child agents. Return the rendered thread directly so advisory agents such
-      // as Oracle can inspect it without attempting a nested subagent spawn.
-      if (process.env.PI_SUBAGENT_CHILD === "1") {
+      // The explicit child entry point works in both foreground and detached
+      // children; process environment alone cannot identify in-process children.
+      if (options.directRead || process.env.PI_SUBAGENT_CHILD === "1") {
         const output = await truncateToolOutput(
           [
             `Extraction goal: ${goal}`,
@@ -398,8 +397,8 @@ export default function (pi: ExtensionAPI) {
                 {
                   type: "text",
                   text: (
-                    update.recentOutputLines?.slice(-4).join("\n") ||
                     update.recentOutput ||
+                    update.recentOutputLines?.slice(-4).join("\n") ||
                     "Extracting content from thread..."
                   ).slice(-4000),
                 },
@@ -454,4 +453,8 @@ export default function (pi: ExtensionAPI) {
       };
     },
   });
+}
+
+export default function (pi: ExtensionAPI) {
+  registerReadThread(pi);
 }

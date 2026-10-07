@@ -6,7 +6,7 @@ tools: read, grep, find, ffgrep, fffind, ls, bash, web_search, web_contents, rea
 subagentOnlyExtensions:
   - ~/.pi/agent/npm/node_modules/@ff-labs/pi-fff/src/index.ts
   - ~/.pi/agent/npm/node_modules/webfox/dist/pi.js
-  - ~/.pi/agent/extensions/read-thread.ts
+  - ~/.pi/agent/lib/read-thread-child.ts
 model: openai-codex/gpt-5.6-sol
 thinking: xhigh
 systemPromptMode: replace

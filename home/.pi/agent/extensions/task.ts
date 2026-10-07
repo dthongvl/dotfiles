@@ -49,41 +49,26 @@ Do the work yourself by default. Use Task only when delegation has a concrete be
 - When the agent is done, it will return a single message back to you. The result returned by the agent is not visible to the user. To show the user the result, you should send a text message back to the user with a concise summary of the result
 `;
 
-type ToolProgress = {
-  id: string;
-  tool_name: string;
-  status: "in-progress" | "done" | "error";
-  input?: unknown;
-};
-
-type TurnProgress = {
-  message?: string;
-  tool_uses: ToolProgress[];
-};
-
 type TaskDetails = {
   status: "in-progress" | "done" | "error" | "cancelled";
   error?: { message: string };
   reason?: string;
   runId?: string;
   model?: string;
-  progress: TurnProgress[];
+  progress: DelegationUpdate[];
 };
 
 function modelName(model: { provider: string; id: string } | undefined): string | undefined {
   return model ? `${model.provider}/${model.id}` : undefined;
 }
 
-function cancellationReason(progress: TurnProgress[]): string {
-  const tools = progress.flatMap((turn) => turn.tool_uses);
-  if (progress.length === 0) return "Task was cancelled before any work was done.";
-  let reason = "Task was cancelled.";
-  const completed = tools.filter((tool) => tool.status === "done");
-  const active = tools.filter((tool) => tool.status === "in-progress");
-  if (completed.length > 0)
-    reason += `\n\n## Completed work\n${completed.map((tool) => `- ${tool.tool_name}`).join("\n")}`;
-  if (active.length > 0)
-    reason += `\n\n## In progress when cancelled\n${active.map((tool) => tool.tool_name).join(", ")}`;
+function cancellationReason(progress: DelegationUpdate[]): string {
+  const snapshot = progress.at(-1);
+  let reason = "Task was cancelled. Tool previews do not establish which changes completed.";
+  if (snapshot?.recentTools?.length)
+    reason += `\n\n## Recent tool activity (partial snapshot)\n${snapshot.recentTools.map((tool) => `- ${tool.tool}`).join("\n")}`;
+  if (snapshot?.currentTool)
+    reason += `\n\nLast observed active tool: ${snapshot.currentTool}`;
   return reason;
 }
 
@@ -119,8 +104,7 @@ export default function taskExtension(pi: ExtensionAPI): void {
         throw new Error("The Task tool requires a 'prompt' argument (string)");
       }
 
-      const progress: TurnProgress[] = [];
-      const toolLedger = new Map<string, ToolProgress>();
+      let progress: DelegationUpdate[] = [];
       const resolved = resolveSubagentModel("task", ctx.model, {
         defaultModel: modelName(ctx.model),
         defaultThinking: ctx.thinkingLevel as DelegationThinking | undefined,
@@ -128,14 +112,18 @@ export default function taskExtension(pi: ExtensionAPI): void {
       });
       let runId: string | undefined;
       let model = resolved.model;
-      let thinking = resolved.thinking;
+      const thinking = resolved.thinking;
 
       const publish = () =>
         onUpdate?.({
           content: [
             {
               type: "text",
-              text: progress.at(-1)?.message || `Running ${params.description}…`,
+              text: (
+                progress.at(-1)?.recentOutput ||
+                progress.at(-1)?.recentOutputLines?.slice(-4).join("\n") ||
+                `Running ${params.description}…`
+              ).slice(-4000),
             },
           ],
           details: {
@@ -148,41 +136,8 @@ export default function taskExtension(pi: ExtensionAPI): void {
       const handleUpdate = (update: DelegationUpdate) => {
         runId = update.runId ?? runId;
         model = update.model ?? model;
-        const turn = progress[0] ?? { tool_uses: [] };
-        if (progress.length === 0) progress.push(turn);
-        turn.message = (
-          update.recentOutputLines?.slice(-4).join("\n") ||
-          update.recentOutput ||
-          turn.message
-        )?.slice(-4000);
-        for (const [key, tool] of toolLedger)
-          if (tool.status === "in-progress") toolLedger.delete(key);
-        const recentTools = (update.recentTools ?? []).slice(-40);
-        const completedCount = Math.max(
-          recentTools.length,
-          (update.toolCount ?? recentTools.length) - (update.currentTool ? 1 : 0),
-        );
-        const firstRecentIndex = Math.max(0, completedCount - recentTools.length);
-        for (const [index, tool] of recentTools.entries()) {
-          const id = `${runId ?? toolCallId}:tool:${firstRecentIndex + index}`;
-          toolLedger.set(id, {
-            id,
-            tool_name: tool.tool,
-            status: "done",
-            input: tool.args.slice(0, 1000),
-          });
-        }
-        if (update.currentTool) {
-          const id = `${runId ?? toolCallId}:active:${update.toolCount ?? completedCount}`;
-          toolLedger.set(id, {
-            id,
-            tool_name: update.currentTool,
-            status: "in-progress",
-            input: update.currentToolArgs?.slice(0, 1000),
-          });
-        }
-        while (toolLedger.size > 50) toolLedger.delete(toolLedger.keys().next().value!);
-        turn.tool_uses = [...toolLedger.values()];
+        // Native updates are bounded snapshots, not an execution history.
+        progress = [update];
         publish();
       };
       const response = await delegate(
@@ -209,10 +164,6 @@ export default function taskExtension(pi: ExtensionAPI): void {
 
       runId = response.runId ?? runId;
       model = response.model ?? model;
-      for (const tool of progress.flatMap((turn) => turn.tool_uses)) {
-        if (tool.status === "in-progress")
-          tool.status = response.status === "completed" ? "done" : "error";
-      }
 
       if (response.status === "completed" && response.result?.kind === "text") {
         const output = await truncateToolOutput(response.result.text, "Task output", "pi-task-");
@@ -229,7 +180,7 @@ export default function taskExtension(pi: ExtensionAPI): void {
         };
       }
       if (response.status === "cancelled") {
-        const reason = cancellationReason(progress);
+        const reason = [cancellationReason(progress), response.error].filter(Boolean).join("\n\n");
         return {
           content: [{ type: "text", text: reason }],
           details: {
