@@ -1,18 +1,6 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
-import { Text } from "@earendil-works/pi-tui";
-import {
-  delegate,
-  delegationUsage,
-  installDelegationFailureAccounting,
-  truncateToolOutput,
-  type DelegationUpdate,
-} from "../lib/delegation.ts";
-import { resolveSubagentModel } from "../lib/subagent-model.ts";
-import type { DelegationThinking } from "../lib/delegation.ts";
-
-const TASK_AGENT = "dthongvl.task";
-const RUN_TIMEOUT_MS = 30 * 60 * 1000;
+import { registerDelegatedTool } from "../lib/delegated-tool.ts";
 
 const DESCRIPTION = `
 Perform a task (a sub-task of the user's overall task) using a sub-agent.
@@ -36,7 +24,7 @@ Do the work yourself by default. Use Task only when delegation has a concrete be
 
 **How to use the Task tool:**
 
-- You will not see the individual steps of the sub-agent's execution, and you can't communicate with it until it finishes, at which point you will receive a summary of its work
+- The child runs in the background with progress in Fleet, while this tool waits and returns its final result. A supervisor request releases the wait so you can answer it
 - Delegate a separately owned work unit, not the whole user request merely because you already wrote a plan for it. You remain responsible for integration and the final user-facing result
 - Brief the agent like a smart colleague who just walked into the room: it has not seen this conversation. Explain the goal and why it matters, what you have already learned or ruled out, and where to look first. Terse command-style prompts produce shallow, generic work
 - Write outcome-first prompts. Include the goal, scope, relevant context, files or evidence to inspect first, constraints and non-goals, validation to run, and the expected return shape
@@ -49,163 +37,25 @@ Do the work yourself by default. Use Task only when delegation has a concrete be
 - When the agent is done, it will return a single message back to you. The result returned by the agent is not visible to the user. To show the user the result, you should send a text message back to the user with a concise summary of the result
 `;
 
-type TaskDetails = {
-  status: "in-progress" | "done" | "error" | "cancelled";
-  error?: { message: string };
-  reason?: string;
-  runId?: string;
-  model?: string;
-  progress: DelegationUpdate[];
-};
-
-function modelName(model: { provider: string; id: string } | undefined): string | undefined {
-  return model ? `${model.provider}/${model.id}` : undefined;
-}
-
-function cancellationReason(progress: DelegationUpdate[]): string {
-  const snapshot = progress.at(-1);
-  let reason = "Task was cancelled. Tool previews do not establish which changes completed.";
-  if (snapshot?.recentTools?.length)
-    reason += `\n\n## Recent tool activity (partial snapshot)\n${snapshot.recentTools.map((tool) => `- ${tool.tool}`).join("\n")}`;
-  if (snapshot?.currentTool)
-    reason += `\n\nLast observed active tool: ${snapshot.currentTool}`;
-  return reason;
-}
-
-export default function taskExtension(pi: ExtensionAPI): void {
-  const recordDelegationFailure = installDelegationFailureAccounting(pi, "Task");
-  pi.registerTool({
+export default function (pi: ExtensionAPI) {
+  registerDelegatedTool(pi, {
     name: "Task",
     label: "Task",
     description: DESCRIPTION,
-    renderCall(args, theme, context) {
-      let output = theme.fg("toolTitle", theme.bold("Task"));
-      if (context.executionStarted && context.isPartial)
-        output += ` ${theme.fg("dim", "(running)")}`;
-      if (args.description?.trim()) output += `\n${theme.fg("muted", args.description.trim())}`;
-      if (context.expanded) {
-        output += `\n${theme.fg("muted", "Prompt:")}\n${theme.fg("toolOutput", args.prompt?.trim() || "...")}`;
-      }
-      return new Text(output, 0, 0);
-    },
+    agent: "dthongvl.task",
+    inheritParentModel: true,
+    executionMode: "parallel",
     parameters: Type.Object({
       prompt: Type.String({
         description:
           "The task for the agent to perform. Be specific about what needs to done and include any relevant context.",
       }),
       description: Type.String({
-        description: "A very short description of the task that can be displayed to the user.",
+        description:
+          "A very short description of the task that can be displayed to the user.",
       }),
     }),
-    executionMode: "parallel",
-
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
-      if (!params.prompt || typeof params.prompt !== "string") {
-        throw new Error("The Task tool requires a 'prompt' argument (string)");
-      }
-
-      let progress: DelegationUpdate[] = [];
-      const resolved = resolveSubagentModel("task", ctx.model, {
-        defaultModel: modelName(ctx.model),
-        defaultThinking: ctx.thinkingLevel as DelegationThinking | undefined,
-        cwd: ctx.cwd,
-      });
-      let runId: string | undefined;
-      let model = resolved.model;
-      const thinking = resolved.thinking;
-
-      const publish = () =>
-        onUpdate?.({
-          content: [
-            {
-              type: "text",
-              text: (
-                progress.at(-1)?.recentOutput ||
-                progress.at(-1)?.recentOutputLines?.slice(-4).join("\n") ||
-                `Running ${params.description}…`
-              ).slice(-4000),
-            },
-          ],
-          details: {
-            status: "in-progress",
-            progress,
-            runId,
-            model,
-          } satisfies TaskDetails,
-        });
-      const handleUpdate = (update: DelegationUpdate) => {
-        runId = update.runId ?? runId;
-        model = update.model ?? model;
-        // Native updates are bounded snapshots, not an execution history.
-        progress = [update];
-        publish();
-      };
-      const response = await delegate(
-        pi,
-        {
-          agent: TASK_AGENT,
-          task: params.prompt,
-          context: "fresh",
-          cwd: ctx.cwd,
-          ...(model ? { model } : {}),
-          ...(thinking ? { thinking } : {}),
-          timeoutMs: RUN_TIMEOUT_MS,
-          artifacts: false,
-          result: { kind: "text" },
-        },
-        {
-          ownerRunId: ctx.sessionManager.getSessionId() || toolCallId,
-          nodeId: `task-${toolCallId}`,
-          signal,
-          onStarted: publish,
-          onUpdate: handleUpdate,
-        },
-      );
-
-      runId = response.runId ?? runId;
-      model = response.model ?? model;
-
-      if (response.status === "completed" && response.result?.kind === "text") {
-        const output = await truncateToolOutput(response.result.text, "Task output", "pi-task-");
-        return {
-          content: [{ type: "text", text: output.text }],
-          details: {
-            status: "done",
-            progress,
-            runId,
-            model,
-            fullOutputPath: output.fullOutputPath,
-          } as TaskDetails & { fullOutputPath?: string },
-          usage: delegationUsage(response.usage),
-        };
-      }
-      if (response.status === "cancelled") {
-        const reason = [cancellationReason(progress), response.error].filter(Boolean).join("\n\n");
-        return {
-          content: [{ type: "text", text: reason }],
-          details: {
-            status: "cancelled",
-            reason,
-            progress,
-            runId,
-            model,
-          } satisfies TaskDetails,
-          usage: delegationUsage(response.usage),
-        };
-      }
-
-      const failure = await truncateToolOutput(
-        (response.result?.kind === "text" ? response.result.text : response.error) ||
-        `Subagent ended with status: ${response.status}`,
-        "Task failure",
-        "pi-task-",
-      );
-      recordDelegationFailure(toolCallId, response.usage, {
-        status: "error",
-        runId,
-        fullOutputPath: failure.fullOutputPath,
-      });
-      throw new Error(`Subagent error: ${failure.text}`);
-    },
+    callSummary: (params) => params.description,
+    buildPrompt: (params) => params.prompt.trim(),
   });
 }

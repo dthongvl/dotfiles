@@ -1,18 +1,6 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import {
-  delegate,
-  delegationUsage,
-  installDelegationFailureAccounting,
-  truncateToolOutput,
-} from "../lib/delegation.ts";
-import { resolveSubagentModel } from "../lib/subagent-model.ts";
-import { Text } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
-
-const AGENT = "dthongvl.oracle";
-const MODEL = "openai-codex/gpt-5.6-sol";
-const THINKING = "xhigh";
-const RUN_TIMEOUT_MS = 30 * 60 * 1000;
+import { registerDelegatedTool } from "../lib/delegated-tool.ts";
 
 const description = `
 Consult the oracle - a read-only expert advisor powered by a stronger reasoning model for user-requested reviews and unresolved, high-impact judgment calls.
@@ -50,43 +38,14 @@ It then details when to use it and how to write the task:
 - Tell the oracle what to ignore when scope creep would make the answer less useful
 `;
 
-function buildTask(task: string, parentThreadID?: string): string {
-  const sections: string[] = [];
-  sections.push(`Task: ${task.trim()}`);
-  if (parentThreadID)
-    sections.push(
-      `Parent thread: ${parentThreadID}\nYou can use the read_thread tool with this ID to read the full conversation that invoked you if you need more context.`,
-    );
-  return sections.join("\n\n");
-}
-
 export default function (pi: ExtensionAPI) {
-  const recordDelegationFailure = installDelegationFailureAccounting(pi, "oracle");
-  pi.registerTool({
+  registerDelegatedTool(pi, {
     name: "oracle",
     label: "Oracle",
     description,
-    renderCall(args, theme, context) {
-      let output = theme.fg("toolTitle", theme.bold("Oracle"));
-      if (context.executionStarted && context.isPartial)
-        output += ` ${theme.fg("dim", "(running)")}`;
-      if (context.expanded) {
-        const prompt = args.task?.trim() || "...";
-        output += `\n${theme.fg("muted", "Prompt:")}\n${theme.fg("toolOutput", prompt)}`;
-      }
-      return new Text(output, 0, 0);
-    },
-
-    renderResult(result, { expanded, isPartial }, theme, context) {
-      const output = result.content
-        .filter((item): item is Extract<typeof item, { type: "text" }> => item.type === "text")
-        .map((item) => item.text)
-        .join("\n");
-      if (isPartial || context.isError || expanded) {
-        return new Text(theme.fg(context.isError ? "error" : "toolOutput", output), 0, 0);
-      }
-      return new Text(theme.fg("success", "Oracle has spoken"), 0, 0);
-    },
+    agent: "dthongvl.oracle",
+    defaultModel: "openai-codex/gpt-5.6-sol",
+    defaultThinking: "xhigh",
     parameters: Type.Object(
       {
         task: Type.String({
@@ -97,90 +56,20 @@ export default function (pi: ExtensionAPI) {
       },
       { additionalProperties: false },
     ),
-
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    buildPrompt(params, ctx) {
+      if (!params.task.trim())
+        throw new Error("Oracle task must not be empty.");
       const parentThreadID = ctx.sessionManager.getSessionFile()
         ? ctx.sessionManager.getSessionId()
         : undefined;
-      const { model, thinking } = resolveSubagentModel("oracle", ctx.model, {
-        defaultModel: MODEL,
-        defaultThinking: THINKING,
-        cwd: ctx.cwd,
-      });
-      const response = await delegate(
-        pi,
-        {
-          agent: AGENT,
-          task: buildTask(params.task, parentThreadID),
-          context: "fresh",
-          cwd: ctx.cwd,
-          model,
-          thinking,
-          timeoutMs: RUN_TIMEOUT_MS,
-          artifacts: false,
-          result: { kind: "text" },
-        },
-        {
-          ownerRunId: ctx.sessionManager.getSessionId() || toolCallId,
-          signal,
-          onStarted: () =>
-            onUpdate?.({
-              content: [{ type: "text", text: "Oracle is consulting the codebase..." }],
-              details: {
-                status: "in-progress",
-                model,
-                thinking,
-              },
-            }),
-          onUpdate: (update) =>
-            onUpdate?.({
-              content: [
-                {
-                  type: "text",
-                  text: (
-                    update.recentOutput ||
-                    update.recentOutputLines?.slice(-4).join("\n") ||
-                    "Oracle is consulting the codebase..."
-                  ).slice(-4000),
-                },
-              ],
-              details: {
-                status: "in-progress",
-                runId: update.runId,
-                model: update.model ?? model,
-                thinking,
-              },
-            }),
-        },
-      );
-      if (response.status !== "completed" || response.result?.kind !== "text") {
-        const failure = await truncateToolOutput(
-          (response.result?.kind === "text" ? response.result.text : response.error) ??
-          "No text result",
-          "Oracle failure",
-          "pi-oracle-",
-        );
-
-        recordDelegationFailure(toolCallId, response.usage, {
-          status: "error",
-          runId: response.runId,
-          fullOutputPath: failure.fullOutputPath,
-        });
-
-        throw new Error(`Oracle failed (${response.status}): ${failure.text}`);
-      }
-      const output = await truncateToolOutput(response.result.text, "Oracle output", "pi-oracle-");
-      return {
-        content: [{ type: "text", text: output.text }],
-        details: {
-          status: "done",
-          runId: response.runId,
-          model: response.model ?? model,
-          thinking,
-          fullOutputPath: output.fullOutputPath,
-        },
-        usage: delegationUsage(response.usage),
-      };
+      return [
+        `Task: ${params.task.trim()}`,
+        parentThreadID
+          ? `Parent thread: ${parentThreadID}\nYou can use the read_thread tool with this ID to read the full conversation that invoked you if you need more context.`
+          : "",
+      ]
+        .filter(Boolean)
+        .join("\n\n");
     },
   });
 }

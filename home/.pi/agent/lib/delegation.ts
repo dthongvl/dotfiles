@@ -67,23 +67,6 @@ export function delegationUsage(usage?: DelegationUsage): Usage | undefined {
 	};
 }
 
-export function installDelegationFailureAccounting(pi: ExtensionAPI, toolName: string) {
-	const pending = new Map<string, { usage?: Usage; details?: Record<string, unknown> }>();
-	pi.on("tool_result", (event) => {
-		if (event.toolName !== toolName || !event.isError) return;
-		const terminal = pending.get(event.toolCallId);
-		if (!terminal) return;
-		pending.delete(event.toolCallId);
-		const existing =
-			event.details && typeof event.details === "object" ? (event.details as Record<string, unknown>) : {};
-		return { isError: true, usage: terminal.usage, details: { ...existing, ...terminal.details } };
-	});
-	return (toolCallId: string, usage?: DelegationUsage, details?: Record<string, unknown>) => {
-		if (pending.size >= 128) pending.delete(pending.keys().next().value!);
-		pending.set(toolCallId, { usage: delegationUsage(usage), details });
-	};
-}
-
 /** Await one package-owned foreground leaf, without detached-run polling. */
 export async function delegate(
 	pi: ExtensionAPI,

@@ -28,7 +28,7 @@ The child process runs with its working directory and workspace root set to the 
 
 - Search through the codebase with the tools available to you.
 - Use `fffind` for fast filename and path discovery and `ffgrep` for fast content or symbol search when available. Fall back to `find`, `grep`, `ls`, and `read` as needed.
-- You have no shell or file-mutation tools. Use only the read-only search and inspection tools in your allowlist.
+- Use bash only for read-only inspection commands. Never modify files or project state.
 - Return relevant filenames and ranges, not an essay about the entire codebase.
 - Maximize parallelism: on every search turn, make 8 or more independent, diverse, scoped tool calls when the codebase and query provide enough distinct search lanes.
 - Minimize iterations: try to finish within three turns and return as soon as you have enough evidence. Do not continue searching after finding enough results.
