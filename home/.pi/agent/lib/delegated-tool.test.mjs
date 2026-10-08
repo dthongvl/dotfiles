@@ -401,7 +401,6 @@ test("oversized output retains a readable full-output artifact", async () => {
 
 test("migrated tools build their own prompts through the shared runner", async () => {
   for (const [name, params, expected] of [
-    ["finder", { query: "find auth" }, "find auth"],
     [
       "librarian",
       { query: "explain routing", context: "external repository" },

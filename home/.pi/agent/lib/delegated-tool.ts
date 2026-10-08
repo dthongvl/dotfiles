@@ -14,6 +14,7 @@ import {
 } from "./delegation.ts";
 import { resolveSubagentModel } from "./subagent-model.ts";
 import { waitForAsyncDelegation, SubagentRpcError } from "./subagent-rpc.ts";
+import { waitForHerdrDelegation } from "./herdr-delegation.ts";
 
 export type DelegatedToolDetails = {
   status: "in-progress" | "attention" | "done" | "error" | "cancelled";
@@ -32,6 +33,7 @@ export type DelegatedToolDetails = {
 export type PreparedDelegation =
   | {
       prompt: string;
+      runName?: string;
       details?: Record<string, unknown>;
     }
   | {
@@ -44,6 +46,7 @@ type DelegatedToolOptions<T extends TSchema> = Pick<
   "name" | "label" | "description" | "parameters" | "executionMode"
 > & {
   agent: string;
+  backend?: "native" | "herdr";
   modelKey?: string;
   defaultModel?: string;
   defaultThinking?: DelegationThinking;
@@ -78,7 +81,9 @@ export function registerDelegatedTool<T extends TSchema>(
     name: options.name,
     label: options.label,
     description:
-      options.async === false
+      options.backend === "herdr"
+        ? `${options.description}\n\nExecution: Runs Finder in a background Herdr pane and waits for its final result. Requires a Herdr-managed parent pane. Cancellation closes the child pane but retains its transcript.`
+        : options.async === false
         ? options.description
         : `${options.description}\n\nExecution: Runs a background subagent visible in Fleet, but this tool waits for completion and returns its final result. If the child needs supervisor input, the tool releases its wait so you can answer the request; that is not completion. Inside a child, read_thread returns the saved conversation directly.`,
     parameters: options.parameters,
@@ -187,6 +192,39 @@ export function registerDelegatedTool<T extends TSchema>(
           },
         );
         details = { ...details, ...resolved };
+        if (options.backend === "herdr") {
+          publish(`Launching ${options.label} in a Herdr pane...`);
+          const result = await waitForHerdrDelegation(pi, {
+            agent: options.agent,
+            task: prompt,
+            context: "fresh",
+            cwd: ctx.cwd,
+            ...resolved,
+            timeoutMs: options.timeoutMs,
+            artifacts: false,
+          }, {
+            signal,
+            parentSessionId: ctx.sessionManager.getSessionId(),
+            parentSessionFile: ctx.sessionManager.getSessionFile(),
+            name: prepared.runName,
+            onLaunched: (runId, nativeDetails) => {
+              details = { ...details, ...nativeDetails, runId };
+              publish(`Waiting for ${options.label} in Herdr pane ${nativeDetails.paneId}...`);
+            },
+          });
+          const output = await truncateToolOutput(result.text, `${options.label} output`, prefix);
+          return {
+            content: [{ type: "text", text: output.text }],
+            details: {
+              ...details, ...result.details, runId: result.runId,
+              terminalStatus: result.status,
+              status: result.status === "completed" ? "done" : result.status === "cancelled" ? "cancelled" : "error",
+              fullOutputPath: output.fullOutputPath,
+            },
+            isError: result.status !== "completed" && result.status !== "cancelled",
+            usage: result.usage,
+          };
+        }
         if (options.async !== false) {
           publish(`Launching ${options.label} in background...`);
           const result = await waitForAsyncDelegation(

@@ -1,6 +1,7 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import { registerDelegatedTool } from "../lib/delegated-tool.ts";
+import herdrSubagentExtension from "../vendor/pi-subagent/index.ts";
 
 const description = `
 Intelligently search your codebase: Use it for complex, multi-step search tasks where you need to find code based on functionality or concepts rather than exact matches. Anytime you want to chain multiple code searches you should use this tool.
@@ -33,11 +34,13 @@ It then lists when to use and not use it:
 `;
 
 export default function (pi: ExtensionAPI) {
+  herdrSubagentExtension(pi);
   registerDelegatedTool(pi, {
     name: "finder",
     label: "Finder",
     description,
     agent: "dthongvl.finder",
+    backend: "herdr",
     defaultModel: "openai-codex/gpt-5.6-terra",
     defaultThinking: "low",
     timeoutMs: 10 * 60_000,
@@ -48,9 +51,17 @@ export default function (pi: ExtensionAPI) {
             "The search query describing what the agent should find. Be specific; include concrete artifacts, patterns, scope, and success criteria",
           minLength: 1,
         }),
+        title: Type.Optional(Type.String({
+          description: "Short job title for the pane label, e.g. JWT authentication. Omit the Finder prefix.",
+          minLength: 1,
+          maxLength: 55,
+        })),
       },
       { additionalProperties: false },
     ),
-    buildPrompt: (params) => params.query.trim(),
+    buildPrompt: (params) => ({
+      prompt: params.query.trim(),
+      runName: params.title?.trim() ? `Finder · ${params.title.trim()}` : "Finder",
+    }),
   });
 }
