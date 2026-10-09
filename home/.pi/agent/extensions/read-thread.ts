@@ -271,6 +271,13 @@ export function registerReadThread(
   registerDelegatedTool(pi, {
     name: "read_thread",
     label: "Read Thread",
+    statusLabels: {
+      active: "Reading thread",
+      complete: "Thread read",
+      failed: "Thread reading failed",
+      cancelled: "Thread reading cancelled",
+      attention: "Thread reader needs input",
+    },
     description,
     agent: AGENT,
     defaultModel: MODEL,

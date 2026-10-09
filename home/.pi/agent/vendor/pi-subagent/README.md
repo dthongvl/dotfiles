@@ -21,24 +21,32 @@ This is a local fork, not an installed npm dependency.
 - Suppress idle cache warming in children, not in the parent.
 - Do not auto-execute a project-local `pi-test.sh`.
 
-## Finder pilot
+## Herdr specialists
 
-Only `extensions/finder.ts` opts into the Herdr backend through
+Finder, Librarian, and Oracle use the Herdr backend through
 `lib/delegated-tool.ts` and `lib/herdr-delegation.ts`.
-The adapter reads the existing Finder profile, retains model overrides from
-`subagent-models.json`, and explicitly loads FFF and Herdr's Pi integration.
+Profiles live in `herdr-agents/`, outside the native pi-subagents `agents/`
+discovery directory. The adapter reads each profile, retains model overrides from
+`subagent-models.json`, and explicitly loads its child extensions and Herdr's
+Pi integration. Skills remain enabled. Finder has a 10-minute timeout;
+Librarian and Oracle have 30-minute timeouts.
 Cursor models additionally load the installed `pi-cursor-sdk` provider.
-Finder retains its existing tools, including bash: read-only behavior is a
-prompt convention, not an OS sandbox.
+Oracle loads `lib/read-thread-child.ts` to read saved threads directly without
+launching a nested extraction agent.
+The specialists retain their existing tools, including bash: read-only behavior
+is a prompt convention, not an OS sandbox.
 
-Other specialists and Task's native nested Finder agent remain on
-`npm:pi-subagents`. No global package/settings replacement is required.
+Task and standalone read_thread remain on `npm:pi-subagents`. Task searches
+directly instead of delegating to the removed native Finder profile.
+No global package/settings replacement is required.
 Nested children spawned by this backend remain unsupported.
 Fleet, bg_wait, and native supervisor tools do not manage these runs.
 
-Run `/reload` after installing/changing these files. Invoke Finder normally;
+Run `/reload` after installing/changing these files. Invoke a specialist normally;
 it opens a no-focus sibling pane and the tool waits for the final response.
-Completed panes remain open for inspection; close them manually or use stop.
+Completed panes close automatically; metadata and transcripts remain available
+to the calling tool and `wait`. CLI `spawn --keep-pane` keeps a pane open for inspection
+and follow-ups. Unfinished runs still suspend and resume with the parent.
 Finder accepts an optional short `title`, producing a pane label such as
 `Finder · JWT authentication`; omitted titles fall back to `Finder`.
 Run directories are retained until manually removed.

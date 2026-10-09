@@ -4,7 +4,7 @@ import type {
   ExtensionToolContext,
   ToolDefinition,
 } from "@earendil-works/pi-coding-agent";
-import { Text } from "@earendil-works/pi-tui";
+import { statusToolRenderers, type ToolStatusLabels } from "./status-tool-renderer.ts";
 import {
   delegate,
   delegationUsage,
@@ -14,7 +14,7 @@ import {
 } from "./delegation.ts";
 import { resolveSubagentModel } from "./subagent-model.ts";
 import { waitForAsyncDelegation, SubagentRpcError } from "./subagent-rpc.ts";
-import { waitForHerdrDelegation } from "./herdr-delegation.ts";
+import { registerHerdrBackend, waitForHerdrDelegation } from "./herdr-delegation.ts";
 
 export type DelegatedToolDetails = {
   status: "in-progress" | "attention" | "done" | "error" | "cancelled";
@@ -54,7 +54,7 @@ type DelegatedToolOptions<T extends TSchema> = Pick<
   timeoutMs?: number;
   /** Run in the native background executor while awaiting completion; false uses foreground execution. */
   async?: boolean;
-  callSummary?: (params: Static<T>) => string;
+  statusLabels: ToolStatusLabels;
   buildPrompt: (
     params: Static<T>,
     ctx: ExtensionToolContext,
@@ -77,62 +77,19 @@ export function registerDelegatedTool<T extends TSchema>(
   options: DelegatedToolOptions<T>,
 ): void {
   const prefix = `pi-${options.name.toLowerCase().replace(/_/g, "-")}-`;
+  if (options.backend === "herdr") registerHerdrBackend(pi);
   pi.registerTool<T, DelegatedToolDetails>({
     name: options.name,
     label: options.label,
     description:
       options.backend === "herdr"
-        ? `${options.description}\n\nExecution: Runs Finder in a background Herdr pane and waits for its final result. Requires a Herdr-managed parent pane. Cancellation closes the child pane but retains its transcript.`
+        ? `${options.description}\n\nExecution: Runs ${options.label} in a background Herdr pane and waits for its final result. Requires a Herdr-managed parent pane. Cancellation closes the child pane but retains its transcript. Fleet and native supervisor tools do not manage these runs.`
         : options.async === false
         ? options.description
         : `${options.description}\n\nExecution: Runs a background subagent visible in Fleet, but this tool waits for completion and returns its final result. If the child needs supervisor input, the tool releases its wait so you can answer the request; that is not completion. Inside a child, read_thread returns the saved conversation directly.`,
     parameters: options.parameters,
     executionMode: options.executionMode,
-    renderCall(args, theme, context) {
-      let text = theme.fg("toolTitle", theme.bold(options.label));
-      if (context.executionStarted && context.isPartial)
-        text += ` ${theme.fg("dim", "(running)")}`;
-      const summary = options.callSummary?.(args)?.trim();
-      if (summary) text += `\n${theme.fg("muted", summary)}`;
-      if (context.expanded) {
-        const input = Object.entries(args as Record<string, unknown>)
-          .map(
-            ([key, value]) =>
-              `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`,
-          )
-          .join("\n");
-        text += `\n${theme.fg("muted", "Input:")}\n${theme.fg("toolOutput", input)}`;
-      }
-      return new Text(text, 0, 0);
-    },
-    renderResult(result, { expanded, isPartial }, theme, context) {
-      const output = result.content
-        .filter((item) => item.type === "text")
-        .map((item) => item.text)
-        .join("\n");
-      const failed = context.isError || result.isError;
-      if (isPartial || failed || expanded)
-        return new Text(
-          theme.fg(failed ? "error" : "toolOutput", output),
-          0,
-          0,
-        );
-      const status = result.details?.status;
-      const summary =
-        status === "attention"
-          ? `${options.label} needs supervisor input — child still active`
-          : `${options.label} ${status === "cancelled" ? "was cancelled" : "has completed"}`;
-      return new Text(
-        theme.fg(
-          status === "cancelled" || status === "attention"
-            ? "muted"
-            : "success",
-          summary,
-        ),
-        0,
-        0,
-      );
-    },
+    ...statusToolRenderers<T, DelegatedToolDetails>(options.statusLabels),
     async execute(toolCallId, params, signal, onUpdate, ctx) {
       let details: DelegatedToolDetails = { status: "in-progress" };
       let usage: ReturnType<typeof delegationUsage>;

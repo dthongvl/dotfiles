@@ -34,7 +34,7 @@ function fail(message: string): never {
 function usage(): never {
 	fail(`Usage:
   subagent spawn [--name <name>] [--provider <provider>] [--model <model>] [--thinking <level>]
-    [--cwd <dir>] [--tools <names>] [--no-extensions] [--no-skills]
+    [--cwd <dir>] [--tools <names>] [--keep-pane] [--no-extensions] [--no-skills]
     [--no-prompt-templates] [--no-context-files] [--system-prompt <text>]
     [--extension <path>]... (--prompt <text> | --file <path>)...
   subagent status <handle>
@@ -86,6 +86,7 @@ export function spawnSubagent(args: string[], parent: { sessionId?: string; sess
 	let cwd = process.cwd();
 	let tools: string | undefined;
 	let noExtensions = false;
+	let keepPane = false;
 	let noSkills = false;
 	let noPromptTemplates = false;
 	let noContextFiles = false;
@@ -120,6 +121,9 @@ export function spawnSubagent(args: string[], parent: { sessionId?: string; sess
 			case "--tools":
 				tools = valueAfter(args, i, arg);
 				i++;
+				break;
+			case "--keep-pane":
+				keepPane = true;
 				break;
 			case "--no-extensions":
 				noExtensions = true;
@@ -196,6 +200,7 @@ export function spawnSubagent(args: string[], parent: { sessionId?: string; sess
 		model,
 		thinking,
 		launchArgs,
+		keepPane,
 		state: "starting",
 		hasStarted: false,
 		createdAt: now,
@@ -284,7 +289,7 @@ async function waitSubagent(args: string[]): Promise<void> {
 		const state = effectiveRunState(metadata);
 		if (state === "error") fail(metadata.error || `${handle} failed`);
 		if (state === "exited") fail(`${handle} exited before finishing`);
-		if (metadata.hasStarted && state === "idle" && !pending) {
+		if (metadata.hasStarted && (state === "completed" || state === "idle") && !pending) {
 			const message = readLatestAssistant(metadata.sessionFile);
 			if (!message) fail(`${handle} finished without an assistant response`);
 			process.stdout.write(`${handle} finished\n\n${assistantText(message)}\n`);

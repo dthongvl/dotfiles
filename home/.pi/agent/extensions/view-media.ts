@@ -5,6 +5,7 @@ import { Type, type ImageContent, type TextContent, type UserMessage } from "@ea
 import { defineTool, formatSize, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { truncateToolOutput } from "../lib/delegation.ts";
 import { resolveSubagentModel, findRegistryModel } from "../lib/subagent-model.ts";
+import { statusToolRenderers } from "../lib/status-tool-renderer.ts";
 
 const MODEL_PROVIDER = "google";
 const MODEL_ID = "gemini-3.8-flash";
@@ -255,6 +256,12 @@ When no objective parameter is provided for a PNG/JPEG/GIF/WebP image, this tool
 When objective is provided, or when viewing a PDF, audio file, or video, use it when you want a textual description or answer about the media; in this mode the tool returns text only and does not return an image block.
 `,
   parameters,
+  ...statusToolRenderers<typeof parameters, { status: string }>({
+    active: "Viewing media",
+    complete: "Media viewed",
+    failed: "Media viewing failed",
+    cancelled: "Media viewing cancelled",
+  }),
 
   async execute(_toolCallId, params, signal, onUpdate, ctx) {
     const path = isHttpUrl(params.path) ? params.path : resolveInputPath(params.path, ctx.cwd);

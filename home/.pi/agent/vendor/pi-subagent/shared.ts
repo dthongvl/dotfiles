@@ -11,7 +11,7 @@ import {
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-export type RunState = "starting" | "busy" | "idle" | "exited" | "error";
+export type RunState = "starting" | "busy" | "idle" | "completed" | "exited" | "error";
 
 export interface RunMetadata {
 	version: 1;
@@ -30,6 +30,8 @@ export interface RunMetadata {
 	thinking: string;
 	/** Extra pi CLI flags (tools, isolation) reused when the run is relaunched. */
 	launchArgs?: string[];
+	/** Keep the child pane available for inspection and follow-ups after settling. */
+	keepPane?: boolean;
 	/** Set by the parent when it stops the child on quit or session switch; the child is relaunched on resume. */
 	suspended?: boolean;
 	state: RunState;
@@ -173,7 +175,8 @@ export function launchRun(metadata: RunMetadata, initialArgs: string[] = []): vo
 		].map(shellQuote).join(" ");
 		const script = join(metadata.runDir, "launch.sh");
 		rmSync(join(metadata.runDir, "exit-code"), { force: true });
-		writeFileSync(script, `#!/bin/sh\n${command} 2> ${shellQuote(join(metadata.runDir, "stderr.log"))}\ncode=$?\nprintf '%s\\n' "$code" > ${shellQuote(join(metadata.runDir, "exit-code"))}\nexit "$code"\n`, { mode: 0o700 });
+		const cleanup = metadata.keepPane ? "" : `herdr pane close ${shellQuote(paneId)}\n`;
+		writeFileSync(script, `#!/bin/sh\n${command} 2> ${shellQuote(join(metadata.runDir, "stderr.log"))}\ncode=$?\nprintf '%s\\n' "$code" > ${shellQuote(join(metadata.runDir, "exit-code"))}\n${cleanup}exit "$code"\n`, { mode: 0o700 });
 		herdr(["pane", "run", paneId, `sh ${shellQuote(script)}`]);
 	} catch (error) {
 		// Never retry a command with an uncertain delivery outcome.

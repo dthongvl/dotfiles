@@ -10,3 +10,6 @@ home/.pi/agent/git/
 home/.pi/agent/npm/
 home/.pi/agent/skills/
 home/.pi/agent/cache/
+
+# Keep Emil skills installed locally without tracking their contents.
+/home/.agents/skills/emil-*/

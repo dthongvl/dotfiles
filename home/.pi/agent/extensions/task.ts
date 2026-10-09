@@ -41,6 +41,13 @@ export default function (pi: ExtensionAPI) {
   registerDelegatedTool(pi, {
     name: "Task",
     label: "Task",
+    statusLabels: {
+      active: "Subagent working",
+      complete: "Subagent finished",
+      failed: "Subagent failed",
+      cancelled: "Subagent cancelled",
+      attention: "Subagent needs input",
+    },
     description: DESCRIPTION,
     agent: "dthongvl.task",
     inheritParentModel: true,
@@ -55,7 +62,6 @@ export default function (pi: ExtensionAPI) {
           "A very short description of the task that can be displayed to the user.",
       }),
     }),
-    callSummary: (params) => params.description,
     buildPrompt: (params) => params.prompt.trim(),
   });
 }

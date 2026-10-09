@@ -46,8 +46,17 @@ export default function (pi: ExtensionAPI) {
   registerDelegatedTool(pi, {
     name: "librarian",
     label: "Librarian",
+    statusLabels: {
+      active: "Librarian researching",
+      complete: "Librarian researched",
+      failed: "Librarian research failed",
+      cancelled: "Librarian research cancelled",
+      attention: "Librarian needs input",
+    },
     description,
     agent: "dthongvl.librarian",
+    backend: "herdr",
+    timeoutMs: 30 * 60_000,
     defaultModel: "openai-codex/gpt-5.6-sol",
     defaultThinking: "off",
     parameters: Type.Object(
@@ -57,6 +66,11 @@ export default function (pi: ExtensionAPI) {
             "Your question about the codebase. Be specific about what you want understood or explored",
           minLength: 1,
         }),
+        title: Type.Optional(Type.String({
+          description: "Short job title for the pane label, e.g. React rendering. Omit the Librarian prefix.",
+          minLength: 1,
+          maxLength: 55,
+        })),
         context: Type.Optional(
           Type.String({
             description: "Background on what you're trying to achieve",
@@ -68,9 +82,13 @@ export default function (pi: ExtensionAPI) {
     buildPrompt(params) {
       if (!params.query.trim())
         throw new Error("Librarian query must not be empty.");
-      return params.context?.trim()
+      const prompt = params.context?.trim()
         ? `Context: ${params.context.trim()}\n\nQuery: ${params.query.trim()}`
         : params.query.trim();
+      return {
+        prompt,
+        runName: params.title?.trim() ? `Librarian · ${params.title.trim()}` : "Librarian",
+      };
     },
   });
 }

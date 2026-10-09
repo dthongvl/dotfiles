@@ -42,8 +42,17 @@ export default function (pi: ExtensionAPI) {
   registerDelegatedTool(pi, {
     name: "oracle",
     label: "Oracle",
+    statusLabels: {
+      active: "Consulting the oracle",
+      complete: "Oracle has spoken",
+      failed: "The oracle did not speak",
+      cancelled: "Oracle consultation cancelled",
+      attention: "Oracle needs input",
+    },
     description,
     agent: "dthongvl.oracle",
+    backend: "herdr",
+    timeoutMs: 30 * 60_000,
     defaultModel: "openai-codex/gpt-5.6-sol",
     defaultThinking: "xhigh",
     parameters: Type.Object(
@@ -53,6 +62,11 @@ export default function (pi: ExtensionAPI) {
             "The focused review/planning/analysis/debugging task — includes scope, intent, @-mentioned files, outcome needed, and what to ignore",
           minLength: 1,
         }),
+        title: Type.Optional(Type.String({
+          description: "Short job title for the pane label, e.g. Authentication review. Omit the Oracle prefix.",
+          minLength: 1,
+          maxLength: 55,
+        })),
       },
       { additionalProperties: false },
     ),
@@ -62,7 +76,7 @@ export default function (pi: ExtensionAPI) {
       const parentThreadID = ctx.sessionManager.getSessionFile()
         ? ctx.sessionManager.getSessionId()
         : undefined;
-      return [
+      const prompt = [
         `Task: ${params.task.trim()}`,
         parentThreadID
           ? `Parent thread: ${parentThreadID}\nYou can use the read_thread tool with this ID to read the full conversation that invoked you if you need more context.`
@@ -70,6 +84,10 @@ export default function (pi: ExtensionAPI) {
       ]
         .filter(Boolean)
         .join("\n\n");
+      return {
+        prompt,
+        runName: params.title?.trim() ? `Oracle · ${params.title.trim()}` : "Oracle",
+      };
     },
   });
 }

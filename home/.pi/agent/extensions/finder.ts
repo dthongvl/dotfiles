@@ -1,7 +1,6 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import { registerDelegatedTool } from "../lib/delegated-tool.ts";
-import herdrSubagentExtension from "../vendor/pi-subagent/index.ts";
 
 const description = `
 Intelligently search your codebase: Use it for complex, multi-step search tasks where you need to find code based on functionality or concepts rather than exact matches. Anytime you want to chain multiple code searches you should use this tool.
@@ -34,10 +33,16 @@ It then lists when to use and not use it:
 `;
 
 export default function (pi: ExtensionAPI) {
-  herdrSubagentExtension(pi);
   registerDelegatedTool(pi, {
     name: "finder",
     label: "Finder",
+    statusLabels: {
+      active: "Finder searching",
+      complete: "Finder searched",
+      failed: "Finder search failed",
+      cancelled: "Finder search cancelled",
+      attention: "Finder needs input",
+    },
     description,
     agent: "dthongvl.finder",
     backend: "herdr",

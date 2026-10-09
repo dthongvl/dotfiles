@@ -75,24 +75,6 @@
       "installedAt": "2026-10-05T03:15:24.372Z",
       "updatedAt": "2026-10-05T03:15:24.372Z"
     },
-    "review-animations": {
-      "source": "emilkowalski/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/emilkowalski/skills.git",
-      "skillPath": "skills/review-animations/SKILL.md",
-      "skillFolderHash": "0e0d3cb3e07ca307fe946ccaf57f6c82eb75124a",
-      "installedAt": "2026-10-05T03:15:24.372Z",
-      "updatedAt": "2026-10-05T03:15:24.372Z"
-    },
-    "prototype": {
-      "source": "emilkowalski/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/emilkowalski/skills.git",
-      "skillPath": "skills/prototype/SKILL.md",
-      "skillFolderHash": "34cd3a303aef0a975fcce3ac906d6b293e600399",
-      "installedAt": "2026-10-05T03:15:24.373Z",
-      "updatedAt": "2026-10-05T03:15:24.373Z"
-    },
     "pick-ui-library": {
       "source": "emilkowalski/skills",
       "sourceType": "github",
@@ -149,6 +131,15 @@
       "skillFolderHash": "56a35c90c0d972f983c52c246c324895898504d7",
       "installedAt": "2026-10-07T03:21:23.922Z",
       "updatedAt": "2026-10-07T03:22:28.786Z"
+    },
+    "write-discoverable-code": {
+      "source": "modem-dev/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/modem-dev/skills.git",
+      "skillPath": "write-discoverable-code/SKILL.md",
+      "skillFolderHash": "209109d21718bff6da3ebd65dfee8de582ced0ab",
+      "installedAt": "2026-10-09T03:39:15.673Z",
+      "updatedAt": "2026-10-09T03:39:15.673Z"
     }
   },
   "dismissed": {

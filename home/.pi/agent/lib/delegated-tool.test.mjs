@@ -6,6 +6,7 @@ import { join, resolve, dirname } from "node:path";
 import { createRequire } from "node:module";
 import { test, after } from "node:test";
 import { fileURLToPath } from "node:url";
+import { stripVTControlCharacters } from "node:util";
 
 // Personal extensions resolve Pi modules through the harness, not a root package.json.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -29,6 +30,15 @@ const { registerDelegatedTool } = await jiti.import(
   join(root, "lib/delegated-tool.ts"),
 );
 const { Type } = await jiti.import(piRequire.resolve("typebox"));
+const { ToolExecutionComponent } = await jiti.import(
+  join(piRoot, "dist/modes/interactive/components/tool-execution.js"),
+);
+const { initTheme } = await jiti.import(
+  join(piRoot, "dist/modes/interactive/theme/theme.js"),
+);
+initTheme("dark");
+const { KeybindingsManager } = await jiti.import(join(piRoot, "dist/core/keybindings.js"));
+const { setKeybindings } = await jiti.import(piRequire.resolve("@earendil-works/pi-tui"));
 
 const configDir = await mkdtemp(join(tmpdir(), "delegated-tool-config-"));
 const previousConfigPath = process.env.PI_SUBAGENT_MODELS_PATH;
@@ -82,6 +92,13 @@ function harness(onRequest, options = {}) {
   registerDelegatedTool(pi, {
     name: "finder",
     label: "Finder",
+    statusLabels: {
+      active: "Finder searching",
+      complete: "Finder searched",
+      failed: "Finder search failed",
+      cancelled: "Finder search cancelled",
+      attention: "Finder needs input",
+    },
     description: "Search",
     agent: "dthongvl.finder",
     parameters: Type.Object({ query: Type.String() }),
@@ -290,14 +307,12 @@ test("Read Thread reads directly inside children and launches async otherwise", 
       join(root, "extensions/read-thread.ts"),
     );
     let tool;
-    registerReadThread(
-      {
-        registerTool(value) {
-          tool = value;
-        },
+    const childExtension = (await jiti.import(join(root, "lib/read-thread-child.ts"))).default;
+    childExtension({
+      registerTool(value) {
+        tool = value;
       },
-      { directRead: true },
-    );
+    });
     const result = await tool.execute(
       "read-call",
       { threadID: path, goal: "What was decided?" },
@@ -399,18 +414,8 @@ test("oversized output retains a readable full-output artifact", async () => {
   assertClean(h);
 });
 
-test("migrated tools build their own prompts through the shared runner", async () => {
+test("Task builds its prompt through the native shared runner", async () => {
   for (const [name, params, expected] of [
-    [
-      "librarian",
-      { query: "explain routing", context: "external repository" },
-      "Context: external repository\n\nQuery: explain routing",
-    ],
-    [
-      "oracle",
-      { task: "review changes" },
-      "Task: review changes\n\nParent thread: parent\nYou can use the read_thread tool with this ID to read the full conversation that invoked you if you need more context.",
-    ],
     [
       "task",
       { prompt: "implement routing", description: "Routing" },
@@ -484,44 +489,41 @@ test("already-aborted calls do not prepare prompts or launch children", async ()
   assertClean(h);
 });
 
-test("shared UI distinguishes progress, completion, cancellation, and errors", () => {
+test("tool rows update the heading, show the configured expansion hint, and retain expanded detail", () => {
+  setKeybindings(new KeybindingsManager({ "app.tools.expand": "ctrl+0" }));
   const h = harness(() => {});
-  const theme = { fg: (_color, text) => text, bold: (text) => text };
-  const render = (result, expanded = false, isPartial = false) =>
-    h.tool
-      .renderResult(result, { expanded, isPartial }, theme, { isError: false })
-      .render(120)
-      .join("\n");
-  const result = {
-    content: [{ type: "text", text: "Found auth.ts" }],
-    details: { status: "done" },
-  };
-  assert.match(render(result), /Finder has completed/);
-  assert.match(render(result, true), /Found auth.ts/);
-  assert.match(render(result, false, true), /Found auth.ts/);
-  assert.match(
-    render({ ...result, details: { status: "cancelled" } }),
-    /Finder was cancelled/,
+  const row = () => new ToolExecutionComponent(
+    "finder", "call-1", { query: "find auth" }, {}, h.tool,
+    { requestRender() {} }, root,
   );
-  assert.match(
-    render({
-      ...result,
-      isError: true,
-      content: [{ type: "text", text: "backend failed" }],
-    }),
-    /backend failed/,
-  );
-  assert.match(
-    h.tool
-      .renderCall({ query: "find auth" }, theme, {
-        expanded: true,
-        executionStarted: true,
-        isPartial: true,
-      })
-      .render(120)
-      .join("\n"),
-    /query: find auth/,
-  );
+  const visible = (component) => stripVTControlCharacters(component.render(120).join("\n"))
+    .split("\n").map((line) => line.trim()).filter(Boolean);
+  const component = row();
+  component.markExecutionStarted();
+  assert.deepEqual(visible(component), ["Finder searching (ctrl+0 to expand)"]);
+  for (const [status, isPartial, isError, label] of [
+    ["in-progress", true, false, "Finder searching"],
+    ["done", false, false, "Finder searched"],
+    ["attention", false, false, "Finder needs input"],
+    ["cancelled", false, false, "Finder search cancelled"],
+    ["error", false, false, "Finder search failed"],
+    [undefined, false, true, "Finder search failed"],
+  ]) {
+    const result = {
+      content: [{ type: "text", text: "Result or diagnostic" }],
+      details: { status },
+      isError,
+    };
+    component.setExpanded(false);
+    component.updateResult(result, isPartial);
+    assert.deepEqual(visible(component), [`${label} (ctrl+0 to expand)`]);
+    component.setExpanded(true);
+    assert.deepEqual(visible(component), [label, "Input:", "query: find auth", "Result or diagnostic"]);
+    // Restored rows receive a final result without a preceding progress update.
+    const restored = row();
+    restored.updateResult(result, isPartial);
+    assert.deepEqual(visible(restored), [`${label} (ctrl+0 to expand)`]);
+  }
 });
 
 test(

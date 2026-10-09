@@ -27,7 +27,7 @@ export default function subagentExtension(pi: ExtensionAPI) {
 		pi.registerCommand("herdr-subagent", {
 			description: "Focus a Herdr subagent pane spawned by this session",
 			handler: async (_args, ctx) => {
-				const runs = listRuns(ctx.sessionManager.getSessionId()).filter((run) => effectiveRunState(run) !== "exited");
+				const runs = listRuns(ctx.sessionManager.getSessionId()).filter((run) => paneExists(run.paneId));
 				const labels = runs.map((run) => `${runDisplayName(run)} — ${effectiveRunState(run)}`);
 				if (!runs.length) { ctx.ui.notify("No active Herdr subagents", "info"); return; }
 				const selected = await ctx.ui.select("Herdr subagents", labels);
@@ -55,7 +55,7 @@ export default function subagentExtension(pi: ExtensionAPI) {
 		return;
 	}
 
-	// Completed pilot panes stay inspectable without idle cache-warming requests.
+	// Retained panes must not generate idle cache-warming requests.
 	pi.on("cache_warming_decision", () => ({ action: "stop" }));
 	let currentContext: ExtensionContext | undefined;
 	let timer: ReturnType<typeof setInterval> | undefined;
@@ -145,7 +145,14 @@ export default function subagentExtension(pi: ExtensionAPI) {
 
 	pi.on("agent_settled", (_event, ctx) => {
 		currentContext = ctx;
-		if (ctx.isIdle()) updateMetadata(runDir, { state: "idle" });
+		if (!ctx.isIdle()) return;
+		const metadata = updateMetadata(runDir, { state: "idle" });
+		if (!metadata?.hasStarted || metadata.keepPane) return;
+		const queueDir = inboxDir(runDir);
+		if (existsSync(queueDir) && readdirSync(queueDir).some((name) => name.endsWith(".json"))) return;
+		// Shut down cleanly before the launcher closes the pane; waiters retain the result.
+		updateMetadata(runDir, { state: "completed", suspended: false });
+		ctx.shutdown();
 	});
 
 	pi.on("session_shutdown", (event) => {
@@ -154,6 +161,7 @@ export default function subagentExtension(pi: ExtensionAPI) {
 			clearInterval(timer);
 			timer = undefined;
 		}
-		if (event.reason === "quit") updateMetadata(runDir, { state: "exited" });
+		if (event.reason === "quit" && readMetadata(runDir)?.state !== "completed")
+			updateMetadata(runDir, { state: "exited" });
 	});
 }

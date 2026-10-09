@@ -1,14 +1,14 @@
 {
   "openai-codex/gpt-6.1-sol": {
     "oracle": "openai-codex/gpt-6-astra:xhigh",
-    "finder": "openai-codex/gpt-5.6-terra:low",
-    "librarian": "openai-codex/gpt-5.6-sol:off",
+    "finder": "google/gemini-3.8-flash:low",
+    "librarian": "openai-codex/gpt-6.1-sol:off",
     "task": "openai-codex/gpt-6.1-sol:low"
   },
   "openai-codex/gpt-6-astra": {
     "oracle": "openai-codex/gpt-6-astra:xhigh",
-    "finder": "openai-codex/gpt-5.6-terra:low",
-    "librarian": "openai-codex/gpt-5.6-sol:off",
+    "finder": "google/gemini-3.8-flash:low",
+    "librarian": "openai-codex/gpt-6.1-sol:off",
     "task": "openai-codex/gpt-6.1-sol:low"
   },
   "default": {
