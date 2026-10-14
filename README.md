@@ -34,7 +34,7 @@ paths=(
   .config/fish/config.fish .config/ghostty/config .config/herdr/config.toml
   .config/jj/config.toml .config/nvim .config/webfox/config.yaml
   .pi/agent/APPEND_SYSTEM.md .pi/agent/settings.json .pi/agent/subagent-models.json
-  .pi/agent/agents .pi/agent/extensions .pi/agent/lib
+  .pi/agent/agents .pi/agent/extensions .pi/agent/lib .pi/agent/prompts
   .agents/skills .agents/.skill-lock.json
 )
 for path in "${paths[@]}"; do

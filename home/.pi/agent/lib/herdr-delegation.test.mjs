@@ -101,6 +101,7 @@ async function fixture(mode, run, name = "finder") {
     });
     const ctx = {
       cwd: root, model: { provider: "test", id: "parent" }, thinkingLevel: "high",
+      isProjectTrusted: () => true,
       sessionManager: { getSessionId: () => "test-parent-session", getSessionFile: () => "parent.jsonl" },
     };
     const params = name === "oracle" ? { task: "Review token validation" }

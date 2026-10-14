@@ -54,3 +54,6 @@ delivery = "terminal"
 
 [experimental]
 kitty_graphics = true
+
+[ui.sound]
+enabled = false

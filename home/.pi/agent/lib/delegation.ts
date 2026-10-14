@@ -4,10 +4,6 @@ import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
-	DEFAULT_MAX_BYTES,
-	DEFAULT_MAX_LINES,
-	formatSize,
-	truncateHead,
 	withFileMutationQueue,
 	type ExtensionAPI,
 } from "@earendil-works/pi-coding-agent";
@@ -32,6 +28,7 @@ const RESPONSE_EVENT = "prompt-template:subagent:response";
 const CANCEL_EVENT = "prompt-template:subagent:cancel";
 const START_TIMEOUT_MS = 15_000;
 const TERMINAL_GRACE_MS = 30_000;
+const TOOL_OUTPUT_PREVIEW_CHARS = 2000;
 
 export type DelegationThinking = SubagentDelegationThinking;
 export type DelegationIdentity = SubagentDelegationStarted;
@@ -180,16 +177,13 @@ export async function truncateToolOutput(
 	label: string,
 	prefix: string,
 ): Promise<{ text: string; fullOutputPath?: string }> {
-	const truncation = truncateHead(output, {
-		maxLines: DEFAULT_MAX_LINES,
-		maxBytes: DEFAULT_MAX_BYTES,
-	});
-	if (!truncation.truncated) return { text: output };
+	if (output.length <= TOOL_OUTPUT_PREVIEW_CHARS) return { text: output };
+	const preview = output.slice(0, TOOL_OUTPUT_PREVIEW_CHARS).replace(/[\uD800-\uDBFF]$/, "");
 	const dir = await mkdtemp(join(tmpdir(), prefix));
 	const fullOutputPath = join(dir, "output.md");
 	await withFileMutationQueue(fullOutputPath, () => writeFile(fullOutputPath, output, "utf8"));
 	return {
-		text: `${truncation.content}\n\n[${label} truncated to ${truncation.outputLines} lines or ${formatSize(truncation.outputBytes)}. Full output: ${fullOutputPath}]`,
+		text: `${preview}\n\n[${label} truncated to ${preview.length} characters. Full output: ${fullOutputPath}]`,
 		fullOutputPath,
 	};
 }

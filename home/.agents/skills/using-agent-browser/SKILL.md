@@ -20,9 +20,12 @@ refs, sessions, restore, and recording. This skill adds only what the orb enviro
 - For a self-signed HTTPS dev server, pass `--ignore-https-errors` and
   `--args "--allow-running-insecure-content"` on the first `open`. Prefer an HTTP port when the
   server offers one.
-- Pass the identical `--args` value on every command for that session, or wrap the invocation in a
-  script. A changed or missing `--args` value relaunches Chrome without the flags, silently.
-  `--args` splits on every comma, so a comma-valued Chrome flag cannot go through it; use an
+- Launch flags such as `--args`, `--executable-path`, and `--ignore-https-errors` take effect when
+  the session's browser starts. Pass them only on the first `open`, or identically on every
+  command. Passing different flags, or passing `--args` again after commands without it, silently
+  relaunches Chrome, which drops page state and the 2x viewport. To add a flag to a running
+  session, `close` it and reopen with the flag.
+- `--args` splits on every comma, so a comma-valued Chrome flag cannot go through it; use an
   `--executable-path` wrapper instead (see Hover-gated UI).
 - Save every screenshot and recording the user should see under `.amp/in/artifacts/` by absolute
   path. The thread renders media only from the workspace, so files under `/tmp` show as broken
@@ -40,6 +43,11 @@ refs, sessions, restore, and recording. This skill adds only what the orb enviro
   cookies and storage only: after a relaunch, `open <full URL>` (not bare `reload`) and reapply
   `set viewport`, `set device`, and `set media`.
 - `[agent-browser] restore: missing; save: saved` is startup metadata, not a failure.
+  `restore: load_failed; save: skipped_restore_failed` means the browser started without the saved
+  login and will not save a new one; `session info --json` shows `restoreStatusDetail`. Close the
+  session, run `state clear <key>`, reopen, and log in again.
+- Tab IDs start at `t1`; run `tab list` for current IDs. `tab t0` and `tab 0` are rejected.
+- Add `--auto-connect` only when the user asks to control an already-open browser.
 - A shell helper that creates sessions installs an `EXIT` trap as soon as it knows the session
   names; a Node or TypeScript helper closes them in `finally`. Call cleanup explicitly on the
   success path too; a hard command timeout can skip the trap, so run cleanup in the next command
@@ -73,7 +81,10 @@ trap - EXIT
   `set viewport <w> <h> 2` after the first `open` of a new or restarted session and after any
   `set viewport` that omits the scale, which resets that tab to 1x. Check with
   `eval devicePixelRatio` before capturing. Image pixel coordinates are then 2x the CSS values;
-  selector clips are unaffected. Recordings stay at 1x.
+  selector clips are unaffected.
+- Pass the output path as the last positional argument of `screenshot`; there is no `-s` or
+  `--output` flag. Use unique filenames and confirm the fresh file exists with `test -f`. For the
+  whole page, the flag is `--full`, not `--full-page`.
 - Set screenshot scale with `set viewport`, not Chromium's `--force-device-scale-factor` launch
   flag. Combining the launch flag with viewport DPR produces incorrectly sized full-page captures.
 - `set viewport`, `set device`, and init scripts apply to the current tab only. A popup opened by
@@ -90,8 +101,10 @@ trap - EXIT
   scroll and capture the viewport without a selector, or capture `--full` and crop.
 - Capture every representative affected state, not only the default one: open, selected, empty,
   loading, and error states when the change touches them.
-- Inspect every capture with the media viewing tool before reporting it. For exact colors or
-  measurements, sample pixels with Python and Pillow instead of judging by eye.
+- Inspect every capture with the media viewing tool before reporting it. It rejects files over
+  1 MiB; compress with `magick in.png -resize 1280x900 -quality 85 out.jpg` and check
+  `stat -c %s`. For exact colors or measurements, sample pixels with Python and Pillow instead of
+  judging by eye.
 - Use `set viewport <w> <h> 2` at several widths for breakpoint checks. A 390-pixel Chromium
   capture proves the narrow layout only; it is not a phone capture (see Touch and mobile).
 
@@ -117,6 +130,50 @@ agent-browser --session app --executable-path /tmp/chrome-desktop-pointer.sh ope
 
 Verify `eval "matchMedia('(hover: hover)').matches"` is `true` before trusting hover results. A
 relaunch without the wrapper reverts.
+
+## Interaction recordings
+
+Record a clip when a change affects how UI responds to the pointer or keyboard: hover states,
+menus, popovers, inline forms, focus, or transitions. A clip shows what a person sees while moving
+through the UI; screenshots of the end states do not.
+
+Record with `scripts/action-video.mjs` in this skill's base directory. It needs only Node and
+ffmpeg, and it uses a project's own `node_modules/.bin/agent-browser` when the working directory
+has one. Launch the session through the hover wrapper above first; `start` refuses a session that
+reports `(hover: none)`. Start from a settled state and route every browser command between
+`start` and `stop` through the recorder:
+
+```bash
+REC="node <skill base directory>/scripts/action-video.mjs"
+export ACTION_VIDEO_SESSION=app
+$REC start "$PWD/.amp/in/flow-raw.mp4"
+$REC mouse move 760 236
+$REC mouse move 760 308
+$REC click "[data-testid='add-comment']"
+$REC wait "textarea"
+$REC type "textarea" "Looks good."
+$REC stop "$PWD/.amp/in/artifacts/flow.mp4"
+```
+
+- The recorder drives real input. `mouse move`, `hover`, `click`, `drag`, and the pointer part of
+  `fill` and `type` travel along curved paths, so every element the pointer crosses gets real hover
+  events. `fill` and `type` send real keystrokes, one character at a time. agent-browser's cursor overlay draws the pointer
+  and click feedback; pass `start RAW --no-cursor` when the page draws its own pointer.
+- Each `mouse move` and `hover` takes about 0.6 seconds and then holds for one second, so delayed
+  hover effects such as tooltips appear. Do not add waits for pacing; wait only for required UI
+  state.
+- Tour the area the way a person would: pass over neighboring rows and similar controls before the
+  target, click, wait for the result, then keep moving inside the new UI so its hover states show.
+  Get coordinates from `get box <selector>`.
+- Keep `AGENT_BROWSER_NAMESPACE` and `ACTION_VIDEO_SESSION` unchanged from `start` to `stop`.
+- `stop` writes the MP4 at the tab's pixel ratio with idle stretches between commands removed, and
+  for clips up to 30 seconds a looping animated WebP next to it (`.loop.webp`). The transcript plays
+  a video once, so embed the WebP in image format and link the MP4. Keep the raw file unless the
+  user asks for the uncut video. Never type secrets into a recording.
+- Check the clip frame by frame before reporting. Video analysis samples about one frame per second
+  and misses short hover states, so view a contact sheet:
+  `ffmpeg -i flow.mp4 -vf fps=5,scale=640:-1 /tmp/f%03d.png` and
+  `magick montage /tmp/f*.png -tile 4x -geometry +4+4 sheet.png`.
 
 ## Touch and mobile
 
@@ -149,6 +206,9 @@ await page.screenshot({ path: '/absolute/workspace/.amp/in/artifacts/mobile.png'
 - Linux WebKit approximates macOS Safari; system colors and native selection painting differ.
   Confirm macOS-specific bugs on real Safari.
 - Say which engine produced a mobile capture and that `(pointer: coarse)` was verified.
+- For Playwright Chromium, pass `executablePath` from the agent-browser Chrome
+  (`ls -1d "$HOME"/.agent-browser/browsers/chrome-*/chrome | tail -1`) instead of running
+  `npx playwright install chromium`, which is a large download.
 
 ## Fake microphone
 
@@ -171,11 +231,31 @@ returns `Fake Default Audio Input`.
 ## Troubleshooting
 
 - There is no `mouse click` subcommand. Use `click <selector-or-ref>`; for coordinates, use
-  `mouse move <x> <y>`, `mouse down left`, `mouse up left`.
+  `mouse move <x> <y>`, `mouse down left`, `mouse up left`. For a context menu, use
+  `mouse down right` and `mouse up right`. `mouse move` takes integer coordinates.
+- After `Unknown command` or `Missing arguments`, run `agent-browser --version` and
+  `agent-browser <subcommand> --help` before changing flags.
+- If `open` fails with `Could not configure browser: Failed to connect: No such file or directory`,
+  retry the same `open` once, then check `get url`.
 - Do not retry a hanging command in a loop. Run `agent-browser doctor --offline --quick`, inspect
   the session, then close and reopen it.
 - If `open` reports `CDP command timed out: Page.navigate`, run `get url` once. If it shows the
-  expected destination, continue.
+  expected destination, continue. After a `Runtime.evaluate` timeout, retry only a read-only or
+  safely repeatable command; the evaluation may have run.
+- An unmet `wait --text` or `wait --url` reports `Wait timed out`; that is not a browser failure.
+  Check `get url` and a `snapshot` before restarting anything. Transport failures say so
+  explicitly, for example `CDP WebSocket connect failed`.
+- If a click is rejected because another element covers the target, take a fresh snapshot, dismiss
+  or scroll past the obstruction, and target the visible control with `find label "X" click` or
+  `find role button click --name "X"`. Use a DOM `.click()` in `eval` only as a last resort; it can
+  hide a real overlay bug.
+- Playwright pseudo-selectors such as `:has-text()` do not work. Use `find text "…"`,
+  `find role <role> click --name "…"`, or `eval` with `querySelectorAll`.
+- `:hover` follows only trusted input from `mouse move`; events dispatched in `eval` do not trigger
+  it. For hover performance work, send the moves in one `batch` so per-command latency does not
+  hide the problem.
+- If `type` shows nothing in a canvas-rendered terminal such as xterm.js, click it to focus and send
+  batched `press` calls per key, then `Enter`.
 - `batch` step strings strip quotes. For quoted JavaScript or selectors, pass a JSON array of
   argument arrays on stdin:
   `agent-browser batch <<'JSON'` … `[["open","https://example.com"],["eval","document.title"]]`.

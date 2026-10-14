@@ -38,7 +38,7 @@ export default function (pi: ExtensionAPI) {
     label: "Finder",
     statusLabels: {
       active: "Finder searching",
-      complete: "Finder searched",
+      complete: "Finder found something",
       failed: "Finder search failed",
       cancelled: "Finder search cancelled",
       attention: "Finder needs input",
@@ -56,11 +56,14 @@ export default function (pi: ExtensionAPI) {
             "The search query describing what the agent should find. Be specific; include concrete artifacts, patterns, scope, and success criteria",
           minLength: 1,
         }),
-        title: Type.Optional(Type.String({
-          description: "Short job title for the pane label, e.g. JWT authentication. Omit the Finder prefix.",
-          minLength: 1,
-          maxLength: 55,
-        })),
+        title: Type.Optional(
+          Type.String({
+            description:
+              "Short job title for the pane label, e.g. JWT authentication. Omit the Finder prefix.",
+            minLength: 1,
+            maxLength: 55,
+          }),
+        ),
       },
       { additionalProperties: false },
     ),
