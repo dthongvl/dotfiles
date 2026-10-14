@@ -10,6 +10,37 @@ in plain technical prose. Name the functions, components, data, APIs, and owners
 matter. Define a technical term when the user may not know it. Keep necessary detail, but cut
 preamble and filler.
 
+## Choosing the level
+
+A system has levels, and each level has its own vocabulary. Orchestration code talks about
+requests, jobs, sessions, and who hands work to whom. Plumbing code talks about fields, payloads,
+and parsers. Systems code talks about buffers, pointers, locks, and lifetimes. Pick one level and
+use its nouns and verbs in the lead sentence and the drawing.
+
+- For a question about how something works, use the level the question asks about. "How does
+  sign-in work?" is answered in sessions, redirects, and tokens, not in the cookie parser.
+- For a change, use the level of the code it changes. A fix in orchestration code is explained as
+  what its parts now do together. A fix to memory handling is explained in buffers, owners, and
+  lifetimes.
+- Go one level lower only for the mechanism the reader needs to trust the explanation, in one
+  sentence after it. Go further down only when the reader asks.
+
+After the first sentence, the reader should be able to say what behaves differently, in the terms
+of the code that changed.
+
+Example of an orchestration fix:
+
+- Too low: "`enqueue()` now writes `deadlineMs` instead of `deadline`; the worker's schema strips
+  unknown keys."
+- At its level: "Child jobs now inherit their parent's deadline, so cancelling an export stops all
+  of its page renders. The deadline was sent under a field name the worker ignored."
+
+Example of a memory fix:
+
+- Too high: "Fixed a crash when closing a tab."
+- At its level: "The tab's frame buffer is now freed by the renderer after its last frame callback
+  instead of by the tab on close; the callback was reading freed memory."
+
 ## Explaining how something works
 
 Use the smallest view that makes the explanation easier to follow, or prose alone when prose is
@@ -45,8 +76,9 @@ request, a fix, a proposal, or the work just done in this thread. Show a change 
 block by default. The reader then sees what is different at a glance; prose alone makes them
 rebuild both versions in their head.
 
-Draw what the system does, not which lines were edited: the path a request takes, the states an
-object moves through, the order of calls, who owns the data, or what the user sees on screen.
+Draw what the system does at the level you chose, not which lines were edited: the path a request
+takes, the states an object moves through, the order of calls, who owns the data, or what the user
+sees on screen.
 
 Choose the form by what the reader must compare:
 

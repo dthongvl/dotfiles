@@ -140,6 +140,7 @@ export function registerDelegatedTool<T extends TSchema>(
           ctx.model,
           {
             cwd: ctx.cwd,
+            projectTrusted: ctx.isProjectTrusted(),
             defaultModel: options.inheritParentModel
               ? parentModel
               : options.defaultModel,

@@ -270,6 +270,7 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
       defaultModel: `${MODEL_PROVIDER}/${MODEL_ID}`,
       defaultThinking: "medium",
       cwd: ctx.cwd,
+      projectTrusted: ctx.isProjectTrusted(),
     });
     const targetModelStr = resolved.model ?? `${MODEL_PROVIDER}/${MODEL_ID}`;
 

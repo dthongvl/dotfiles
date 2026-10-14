@@ -11,8 +11,9 @@ const REPLY_PREFIX = "subagents:rpc:v1:reply:";
 const REPLY_TIMEOUT_MS = 60_000;
 
 type RpcData = { text: string; details?: Record<string, unknown> };
+type RpcStopData = { runId: string; state: "stopping"; message: string };
 type RpcReply =
-  | { version: 1; requestId: string; success: true; data: RpcData }
+  | { version: 1; requestId: string; success: true; data: RpcData | RpcStopData }
   | {
       version: 1;
       requestId: string;
@@ -46,11 +47,13 @@ export class SubagentRpcError extends Error {
   }
 }
 
+function rpc(pi: ExtensionAPI, method: "spawn", params: Record<string, unknown>): Promise<RpcData & { requestId: string }>;
+function rpc(pi: ExtensionAPI, method: "stop", params: Record<string, unknown>): Promise<RpcStopData & { requestId: string }>;
 function rpc(
   pi: ExtensionAPI,
   method: "spawn" | "stop",
   params: Record<string, unknown>,
-): Promise<RpcData & { requestId: string }> {
+): Promise<(RpcData | RpcStopData) & { requestId: string }> {
   const requestId = randomUUID();
   return new Promise((resolve, reject) => {
     let settled = false;
@@ -84,9 +87,14 @@ function rpc(
             );
             return;
           }
-          if (typeof reply.data?.text !== "string") {
+          const data = reply.data;
+          const valid = method === "spawn"
+            ? data && "text" in data && typeof data.text === "string"
+            : data && "runId" in data && data.runId === params.id &&
+              data.state === "stopping" && typeof data.message === "string";
+          if (!valid) {
             fail(
-              "Invalid subagent RPC reply; the launch outcome is unknown. Inspect Fleet before retrying.",
+              `Invalid subagent RPC ${method} reply; the outcome is unknown. Inspect Fleet before retrying.`,
               "invalid_reply",
               "unknown",
             );
@@ -164,7 +172,7 @@ async function spawnAsyncDelegation(
     try {
       const stopped = await rpc(pi, "stop", { id: runId });
       return {
-        text: stopped.text,
+        text: `${stopped.message} Stop accepted; child termination is not yet confirmed.`,
         details: data.details ?? {},
         runId,
         cancelled: true,
@@ -354,7 +362,7 @@ export async function waitForAsyncDelegation(
       return {
         text:
           outcome.kind === "cancelled"
-            ? "Subagent was cancelled. Tool previews do not establish which changes completed."
+            ? `Cancellation requested for subagent ${runId}; a stop was accepted, but child termination is not yet confirmed. Tool previews do not establish which changes completed.`
             : `Timed out waiting for subagent ${runId}; a stop was accepted.`,
         details: receipt.details,
         runId,

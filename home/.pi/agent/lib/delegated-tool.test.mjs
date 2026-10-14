@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
-import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, writeFile, readFile, rm } from "node:fs/promises";
 import { tmpdir, homedir } from "node:os";
 import { join, resolve, dirname } from "node:path";
 import { createRequire } from "node:module";
@@ -66,7 +66,7 @@ const RESPONSE = "prompt-template:subagent:response";
 const CANCEL = "prompt-template:subagent:cancel";
 const billed = { input: 10, output: 5, cacheRead: 3, cacheWrite: 2, cost: 0.4 };
 
-function harness(onRequest, options = {}) {
+function harness(onRequest, options = {}, context = {}) {
   const events = new EventEmitter();
   const lifecycle = new EventEmitter();
   const updates = [];
@@ -110,7 +110,9 @@ function harness(onRequest, options = {}) {
     cwd: root,
     model: { provider: "openai-codex", id: "gpt-6.1-sol" },
     thinkingLevel: "high",
+    isProjectTrusted: () => true,
     sessionManager: { getSessionId: () => "parent" },
+    ...context,
   };
   return {
     tool,
@@ -360,7 +362,7 @@ test("Read Thread reads directly inside children and launches async otherwise", 
       { threadID: path, goal: "What was decided?" },
       undefined,
       undefined,
-      { cwd: root },
+      { cwd: root, isProjectTrusted: () => true },
     );
     assert.equal(launched.details.status, "done");
     assert.equal(launched.content[0].text, "Keep the existing API.");
@@ -395,7 +397,7 @@ test("default config and parent fallback resolve centrally", async () => {
 });
 
 test("oversized output retains a readable full-output artifact", async () => {
-  const fullText = "a useful finding\n".repeat(2100);
+  const fullText = "a useful finding\n".repeat(150);
   const h = harness((request, events) =>
     reply(events, request, {
       status: "completed",
@@ -407,6 +409,7 @@ test("oversized output retains a readable full-output artifact", async () => {
   assert.ok(path);
   try {
     assert.match(result.content[0].text, /truncated/);
+    assert.ok(result.content[0].text.length < 2400);
     assert.equal(await readFile(path, "utf8"), fullText);
   } finally {
     await rm(dirname(path), { recursive: true, force: true });
@@ -464,6 +467,7 @@ test("Task builds its prompt through the native shared runner", async () => {
       cwd: root,
       model: { provider: "openai-codex", id: "gpt-6.1-sol" },
       thinkingLevel: "high",
+      isProjectTrusted: () => true,
       sessionManager: {
         getSessionFile: () => "parent.jsonl",
         getSessionId: () => "parent",
@@ -611,7 +615,7 @@ test("abort during async launch retains the reply and stops only that run", asyn
         assert.equal(request.params.id, "cancel-this-run");
         rpcReply(events, request, {
           success: true,
-          data: { text: "Run stop accepted" },
+          data: { runId: "cancel-this-run", state: "stopping", message: "Stop requested" },
         });
       }
     },
@@ -741,7 +745,7 @@ test(
           stopped = request.params.id;
           rpcReply(events, request, {
             success: true,
-            data: { text: "Stopped" },
+            data: { runId: "waiting-run", state: "stopping", message: "Stop requested" },
           });
         }
       },
@@ -771,7 +775,7 @@ test("a missing completion event eventually stops the known child and cleans up"
         stopped = request.params.id;
         rpcReply(events, request, {
           success: true,
-          data: { text: "Stop accepted" },
+          data: { runId: "stalled-run", state: "stopping", message: "Stop requested" },
         });
       }
     },
@@ -816,6 +820,38 @@ test("an available final-output artifact replaces a truncated completion preview
     assert.equal(result.content[0].text, "The full final answer.");
     assertClean(h);
   } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("declined project trust ignores project model mappings, including after a trusted lookup", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "project-model-trust-"));
+  const envPath = process.env.PI_SUBAGENT_MODELS_PATH;
+  const envFile = process.env.PI_SUBAGENT_MODELS_FILE;
+  delete process.env.PI_SUBAGENT_MODELS_PATH;
+  delete process.env.PI_SUBAGENT_MODELS_FILE;
+  try {
+    await mkdir(join(dir, ".pi"));
+    const projectModel = "untrusted-provider/project-model";
+    await writeFile(join(dir, ".pi/subagent-models.json"), JSON.stringify({
+      default: { finder: projectModel },
+    }));
+    const baseline = harness((request, events) => reply(events, request, {
+      status: "completed", result: { kind: "text", text: request.model ?? "unset" },
+    }), {}, { cwd: configDir, isProjectTrusted: () => false });
+    const baselineModel = (await baseline.execute()).content[0].text;
+    assert.notEqual(baselineModel, projectModel);
+    for (const trusted of [true, false]) {
+      const h = harness((request, events) => {
+        assert.equal(request.model ?? "unset", trusted ? projectModel : baselineModel);
+        reply(events, request, { status: "completed", result: { kind: "text", text: "done" } });
+      }, {}, { cwd: dir, isProjectTrusted: () => trusted });
+      assert.equal((await h.execute()).details.status, "done");
+      assertClean(h);
+    }
+  } finally {
+    if (envPath !== undefined) process.env.PI_SUBAGENT_MODELS_PATH = envPath;
+    if (envFile !== undefined) process.env.PI_SUBAGENT_MODELS_FILE = envFile;
     await rm(dir, { recursive: true, force: true });
   }
 });
