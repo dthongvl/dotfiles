@@ -1,8 +1,8 @@
 import type { TSchema } from "typebox";
-import { keyText, type ToolDefinition } from "@earendil-works/pi-coding-agent";
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 
-export type ToolStatusLabels = {
+type ToolStatusLabels = {
   active: string;
   complete: string;
   failed: string;
@@ -31,7 +31,7 @@ export function statusToolRenderers<T extends TSchema, D extends { status?: stri
       const header = new Text("", 0, 0);
       let text = theme.fg("toolTitle", theme.bold(labels.active));
       if (!context.expanded)
-        text += theme.fg("dim", ` (${keyText("app.tools.expand")} to expand)`);
+        text += theme.fg("dim", ` (${context.keyText("app.tools.expand")} to expand)`);
       if (context.expanded) {
         const input = formatInput(args);
         text += `\n${theme.fg("muted", "Input:")}\n${theme.fg("toolOutput", input)}`;
@@ -54,7 +54,7 @@ export function statusToolRenderers<T extends TSchema, D extends { status?: stri
               : labels.complete;
       let text = theme.fg("toolTitle", theme.bold(label));
       if (!expanded)
-        text += theme.fg("dim", ` (${keyText("app.tools.expand")} to expand)`);
+        text += theme.fg("dim", ` (${context.keyText("app.tools.expand")} to expand)`);
       if (expanded) {
         const input = formatInput(context.args);
         text += `\n${theme.fg("muted", "Input:")}\n${theme.fg("toolOutput", input)}`;

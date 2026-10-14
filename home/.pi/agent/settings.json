@@ -1,13 +1,14 @@
 {
-  "lastChangelogVersion": "1.1.0",
+  "$schema": "https://pi.dev/schemas/settings.schema.json",
+  "lastChangelogVersion": "1.5.0",
   "defaultTools": [
     "+codemode"
   ],
   "enabledModels": [
+    "openai/gpt-6.1-sol",
     "openai-codex/gpt-6.1-sol",
     "openai-codex/gpt-6-astra",
     "google/gemini-3.8-flash",
-    "cursor/gpt-5.6-sol@272k",
     "deepseek/deepseek-flash"
   ],
   "packages": [
@@ -19,14 +20,12 @@
       "extensions": [
         "extensions/control.ts",
         "extensions/unified-edit.ts",
-        "extensions/notify.ts",
         "extensions/session-breakdown.ts",
         "extensions/whimsical.ts",
         "extensions/btw.ts"
       ],
       "skills": [
         "skills/github",
-        "skills/librarian",
         "skills/commit"
       ],
       "prompts": [],
@@ -38,7 +37,6 @@
     },
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
-    "npm:pi-cursor-sdk",
     "npm:@plannotator/pi-extension",
     "npm:pi-subagents",
     "npm:webfox"
@@ -65,14 +63,14 @@
   },
   "showCacheMissNotices": true,
   "subagents": {
-    "disableBuiltins": true,
-    "agentOverrides": {
-      "delegate": {
-        "disabled": false
-      }
-    }
+    "disableBuiltins": true
   },
   "tuiMode": "fullscreen",
   "fullscreenScrollbar": "always",
-  "deviceId": "9719c93c-babd-44aa-aaba-ecd22029d52c"
+  "deviceId": "9719c93c-babd-44aa-aaba-ecd22029d52c",
+  "extensionChangelogVersions": {
+    "{\"source\":\"https://github.com/mitsuhiko/agent-stuff\",\"scope\":\"user\"}": "1.6.0",
+    "{\"source\":\"npm:pi-prompt-template-model\",\"scope\":\"user\"}": "0.12.3",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0"
+  }
 }

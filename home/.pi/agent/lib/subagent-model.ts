@@ -2,31 +2,35 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { DelegationThinking } from "./delegation.ts";
+import type { ThinkingLevel } from "@earendil-works/pi-ai";
+import type { ExtensionContext } from "@earendil-works/pi-coding-agent";
 
-export type SubagentModelTarget =
+type SubagentThinkingLevel = "off" | ThinkingLevel;
+
+type SubagentModelTarget =
   | string
   | {
       model: string;
-      thinking?: DelegationThinking;
+      thinking?: SubagentThinkingLevel;
     };
 
-export type SubagentModelMap = Record<string, SubagentModelTarget>;
+type SubagentModelMap = Record<string, SubagentModelTarget>;
 
-export type SubagentModelConfig = Record<string, SubagentModelMap>;
+type SubagentModelConfig = Record<string, SubagentModelMap>;
 
-export interface ResolveSubagentModelOptions {
+interface ResolveSubagentModelOptions {
   defaultModel?: string;
-  defaultThinking?: DelegationThinking;
+  defaultThinking?: SubagentThinkingLevel;
   cwd?: string;
+  projectTrusted?: boolean;
 }
 
-export interface ResolvedSubagentModel {
+interface ResolvedSubagentModel {
   model?: string;
-  thinking?: DelegationThinking;
+  thinking?: SubagentThinkingLevel;
 }
 
-const VALID_THINKING_LEVELS = new Set<DelegationThinking>([
+const VALID_THINKING_LEVELS = new Set<SubagentThinkingLevel>([
   "off",
   "minimal",
   "low",
@@ -42,8 +46,6 @@ const SUBAGENT_ALIASES: Record<string, string[]> = {
   oracle: ["oracle", "advisor", "review"],
   librarian: ["librarian"],
   task: ["task"],
-  "read-thread": ["read-thread", "read_thread", "readthread"],
-  read_thread: ["read-thread", "read_thread", "readthread"],
   view_media: ["view_media", "view-media", "viewmedia", "media"],
   "view-media": ["view_media", "view-media", "viewmedia", "media"],
   viewmedia: ["view_media", "view-media", "viewmedia", "media"],
@@ -70,7 +72,7 @@ export function clearSubagentModelCache(): void {
   cachedConfig = null;
 }
 
-export function findSubagentModelConfigFile(cwd?: string): string | null {
+function findSubagentModelConfigFile(cwd?: string, projectTrusted = true): string | null {
   const envPath = process.env.PI_SUBAGENT_MODELS_PATH || process.env.PI_SUBAGENT_MODELS_FILE;
   if (envPath && existsSync(envPath)) {
     return envPath;
@@ -79,7 +81,7 @@ export function findSubagentModelConfigFile(cwd?: string): string | null {
   const moduleDir = getModuleDir();
   const candidates: string[] = [];
 
-  if (cwd) {
+  if (cwd && projectTrusted) {
     candidates.push(join(cwd, ".pi", "subagent-models.json"));
     candidates.push(join(cwd, ".pi", "subagents.json"));
   }
@@ -114,13 +116,13 @@ function normalizeKey(str: string): string {
 
 function parseModelAndThinking(
   target: SubagentModelTarget,
-  fallbackThinking?: DelegationThinking,
-): { model: string; thinking?: DelegationThinking } {
+  fallbackThinking?: SubagentThinkingLevel,
+): { model: string; thinking?: SubagentThinkingLevel } {
   if (typeof target === "object" && target !== null && "model" in target) {
     const rawThinking = target.thinking;
     const thinking =
-      typeof rawThinking === "string" && VALID_THINKING_LEVELS.has(rawThinking as DelegationThinking)
-        ? (rawThinking as DelegationThinking)
+      typeof rawThinking === "string" && VALID_THINKING_LEVELS.has(rawThinking as SubagentThinkingLevel)
+        ? (rawThinking as SubagentThinkingLevel)
         : fallbackThinking;
     return { model: target.model, thinking };
   }
@@ -129,10 +131,10 @@ function parseModelAndThinking(
     const lastColon = target.lastIndexOf(":");
     if (lastColon !== -1) {
       const suffix = target.slice(lastColon + 1);
-      if (VALID_THINKING_LEVELS.has(suffix as DelegationThinking)) {
+      if (VALID_THINKING_LEVELS.has(suffix as SubagentThinkingLevel)) {
         return {
           model: target.slice(0, lastColon),
-          thinking: suffix as DelegationThinking,
+          thinking: suffix as SubagentThinkingLevel,
         };
       }
     }
@@ -142,8 +144,8 @@ function parseModelAndThinking(
   return { model: String(target), thinking: fallbackThinking };
 }
 
-export function loadSubagentModelConfig(cwd?: string): SubagentModelConfig | null {
-  const filePath = findSubagentModelConfigFile(cwd);
+function loadSubagentModelConfig(cwd?: string, projectTrusted = true): SubagentModelConfig | null {
+  const filePath = findSubagentModelConfigFile(cwd, projectTrusted);
   if (!filePath) return null;
 
   try {
@@ -180,7 +182,7 @@ export function loadSubagentModelConfig(cwd?: string): SubagentModelConfig | nul
     return typedConfig;
   } catch (error) {
     console.warn(`[subagent-model] Failed to load config from ${filePath}:`, error);
-    return cachedConfig?.data ?? null;
+    return cachedConfig?.filePath === filePath ? cachedConfig.data : null;
   }
 }
 
@@ -189,7 +191,7 @@ export function resolveSubagentModel(
   mainModel?: { provider?: string; id?: string; name?: string } | string,
   options: ResolveSubagentModelOptions = {},
 ): ResolvedSubagentModel {
-  const config = loadSubagentModelConfig(options.cwd);
+  const config = loadSubagentModelConfig(options.cwd, options.projectTrusted);
   if (!config) {
     return {
       model: options.defaultModel,
@@ -292,13 +294,10 @@ export function resolveSubagentModel(
 }
 
 export function findRegistryModel(
-  modelRegistry: {
-    find(provider: string, modelId: string): any;
-    getAll(): any[];
-  },
+  modelRegistry: Pick<ExtensionContext["modelRegistry"], "find" | "getAll">,
   modelStr: string,
   defaultProvider: string = "google",
-): any | undefined {
+) {
   if (modelStr.includes("/")) {
     const [provider, ...rest] = modelStr.split("/");
     const id = rest.join("/");

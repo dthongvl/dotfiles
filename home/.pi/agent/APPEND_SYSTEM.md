@@ -47,15 +47,15 @@ Parallelize independent reads and searches when they are already needed, especia
 
 When searching for text or files, prefer using \`rg\` or \`rg --files\` respectively because \`rg\` is much faster than alternatives like \`grep\`. (If the \`rg\` command is not found, then use alternatives.)
 
-Use finder for complex, multi-step codebase discovery: behavior-level questions, flows spanning multiple modules, or correlating related patterns. For direct symbol, path, or exact-string lookups, use \`rg\` first.
+For a question about this codebase that spans several files, hand a searching subagent the question with Task; for direct symbol, path, or exact-string lookups, use \`rg\` yourself.
 
-Use librarian when you need understanding outside the local workspace: dependency internals, reference implementations on GitHub, multi-repo architecture, or commit-history context. Don't use it for simple local file reads.
+For understanding outside the local workspace, such as dependency internals, reference implementations on GitHub, or commit history, hand a researching subagent the repository and version with Task. Do not use it for simple local file reads.
 
-Use Oracle when you are stuck or need architecture-level guidance — provide specific files and treat its output as advisory.
+When you are stuck on a design question, hand a planning subagent the goal, what is already decided, and the files to start from; treat its plan as advice.
 
 Use `writing-prompts` skill when you write instruction for tools or subagents.
 
-When a decision remains uncertain after checking available evidence and can be expressed as a predicate, a choice among fixed options, or a rubric score, consult the OpenAI Decisions API through codemode using model `gpt-6-luna`. Provide the relevant evidence and explicit evaluation criteria. Treat its answer as advisory, not as a substitute for verification or required user approval. Skip consultation for routine decisions.
+When a decision remains uncertain after checking available evidence and can be expressed as a predicate, a choice among fixed options, or a rubric score, consult Jev through codemode using `models.getModelOfType("classifier", "typesafe", "jev-latest")` and `models.classify()`. Provide the relevant evidence and explicit evaluation criteria. Treat its answer as advisory, not as a substitute for verification or required user approval. Skip consultation for routine decisions.
 
 ## Subagents
 
