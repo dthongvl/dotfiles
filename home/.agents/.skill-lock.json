@@ -44,9 +44,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/openclaw/openclaw.git",
       "skillPath": ".agents/skills/test-audit/SKILL.md",
-      "skillFolderHash": "8015421942bcd215db0e73a13ec944d50ce01ec5",
+      "skillFolderHash": "82367863dec20b463d0c361d0c754c728bed5827",
       "installedAt": "2026-10-02T09:54:46.587Z",
-      "updatedAt": "2026-10-02T09:54:46.587Z"
+      "updatedAt": "2026-10-20T08:54:53.017Z"
     },
     "visual-pr": {
       "source": "humanlayer/skills",
@@ -108,9 +108,9 @@
       "sourceUrl": "https://github.com/ampcode/official-plugins.git",
       "ref": "main",
       "skillPath": "skills/explaining-code/SKILL.md",
-      "skillFolderHash": "fb53482d219fcd5a468c1deb49c486cbaf60144d",
+      "skillFolderHash": "c2485ce24c79538b117178fb777532fdfdf33e5f",
       "installedAt": "2026-10-07T03:21:23.920Z",
-      "updatedAt": "2026-10-07T03:22:28.780Z"
+      "updatedAt": "2026-10-30T06:47:33.287Z"
     },
     "using-agent-browser": {
       "source": "ampcode/official-plugins",
@@ -118,9 +118,9 @@
       "sourceUrl": "https://github.com/ampcode/official-plugins.git",
       "ref": "main",
       "skillPath": "skills/using-agent-browser/SKILL.md",
-      "skillFolderHash": "9ba002dd2666c496a3212942f138111668dd73f3",
+      "skillFolderHash": "fcd549e106ff24125f2d9904685637f7d389126a",
       "installedAt": "2026-10-07T03:21:23.922Z",
-      "updatedAt": "2026-10-07T03:22:28.787Z"
+      "updatedAt": "2026-10-14T02:47:01.050Z"
     },
     "writing-prompts": {
       "source": "ampcode/official-plugins",
@@ -128,9 +128,9 @@
       "sourceUrl": "https://github.com/ampcode/official-plugins.git",
       "ref": "main",
       "skillPath": "skills/writing-prompts/SKILL.md",
-      "skillFolderHash": "56a35c90c0d972f983c52c246c324895898504d7",
+      "skillFolderHash": "8fe5123dbaa22c56211b2050ff6ef796635c4b87",
       "installedAt": "2026-10-07T03:21:23.922Z",
-      "updatedAt": "2026-10-07T03:22:28.786Z"
+      "updatedAt": "2026-10-19T03:11:41.930Z"
     },
     "write-discoverable-code": {
       "source": "modem-dev/skills",
@@ -140,6 +140,75 @@
       "skillFolderHash": "209109d21718bff6da3ebd65dfee8de582ced0ab",
       "installedAt": "2026-10-09T03:39:15.673Z",
       "updatedAt": "2026-10-09T03:39:15.673Z"
+    },
+    "proving-changes": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/proving-changes/SKILL.md",
+      "skillFolderHash": "3056fec0d4f5abf428037892f41f32e4b70bf7d8",
+      "installedAt": "2026-10-21T04:25:04.992Z",
+      "updatedAt": "2026-10-28T03:14:19.613Z"
+    },
+    "security-audit": {
+      "source": "cloudflare/security-audit-skill",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/cloudflare/security-audit-skill.git",
+      "skillPath": "skills/security-audit/SKILL.md",
+      "skillFolderHash": "ccbc33ed119b28c3ef7b44a7e2081ab191ad63af",
+      "installedAt": "2026-10-28T03:21:25.663Z",
+      "updatedAt": "2026-10-28T03:21:25.663Z"
+    },
+    "searching-code": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/searching-code/SKILL.md",
+      "skillFolderHash": "590d6580036faf3ab6ef5460632135e3694f44d7",
+      "installedAt": "2026-10-28T04:52:49.657Z",
+      "updatedAt": "2026-10-28T04:52:49.657Z"
+    },
+    "reviewing-code": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/reviewing-code/SKILL.md",
+      "skillFolderHash": "9be0e2eec06dd60a80d31c11113c1e133f6e741c",
+      "installedAt": "2026-10-28T04:52:49.658Z",
+      "updatedAt": "2026-10-28T04:52:49.658Z"
+    },
+    "planning-work": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/planning-work/SKILL.md",
+      "skillFolderHash": "5f96dbb6def06abba19085c2d17fbaa33685209f",
+      "installedAt": "2026-10-28T04:52:49.658Z",
+      "updatedAt": "2026-10-28T04:52:49.658Z"
+    },
+    "researching-external-repositories": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/researching-external-repositories/SKILL.md",
+      "skillFolderHash": "287273a1623aa3f42efa7ba1f2d797771391f4d4",
+      "installedAt": "2026-10-28T04:52:49.659Z",
+      "updatedAt": "2026-10-28T04:52:49.659Z"
+    },
+    "creating-views": {
+      "source": "ampcode/official-plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ampcode/official-plugins.git",
+      "ref": "main",
+      "skillPath": "skills/creating-views/SKILL.md",
+      "skillFolderHash": "4a3589aac60cd893e47b1e9e081e8b8d5170d786",
+      "installedAt": "2026-10-30T06:48:20.855Z",
+      "updatedAt": "2026-10-30T06:48:20.855Z"
     }
   },
   "dismissed": {
@@ -151,6 +220,7 @@
     "codex",
     "cursor",
     "droid",
+    "fx",
     "gemini-cli",
     "github-copilot",
     "kilo",

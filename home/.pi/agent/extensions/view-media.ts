@@ -1,5 +1,6 @@
 import { homedir } from "node:os";
 import { extname, isAbsolute, resolve } from "node:path";
+import { constants } from "node:fs";
 import { open } from "node:fs/promises";
 import { Type, type ImageContent, type TextContent, type UserMessage } from "@earendil-works/pi-ai";
 import { defineTool, formatSize, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -84,6 +85,9 @@ function resolveInputPath(input: string, cwd: string): string {
 }
 
 function detectMime(path: string, data: Buffer, contentType?: string | null): string | undefined {
+  if ((data[0] === 0xff && data[1] === 0xfe) || (data[0] === 0xfe && data[1] === 0xff)) {
+    return undefined;
+  }
   const responseMime = contentType?.split(";", 1)[0]?.trim().toLowerCase();
   if (
     responseMime?.startsWith("image/") ||
@@ -105,7 +109,23 @@ function detectMime(path: string, data: Buffer, contentType?: string | null): st
     data.subarray(8, 12).toString("ascii") === "WEBP"
   )
     return "image/webp";
-  if (data.subarray(4, 8).toString("ascii") === "ftyp") return "video/mp4";
+  if (data.length >= 16 && data.subarray(4, 8).toString("ascii") === "ftyp") {
+    const boxSize = data.readUInt32BE(0);
+    const brands = [data.subarray(8, 12).toString("ascii")];
+    for (let offset = 16; offset + 4 <= Math.min(boxSize, data.length); offset += 4) {
+      brands.push(data.subarray(offset, offset + 4).toString("ascii"));
+    }
+    if (brands.some((brand) => ["heic", "heix", "hevc", "hevx"].includes(brand)))
+      return "image/heic";
+    if (brands.some((brand) => ["avif", "avis"].includes(brand))) return "image/avif";
+    if (brands.some((brand) => ["mif1", "msf1"].includes(brand))) return "image/heif";
+    if (brands.includes("qt  ")) return "video/quicktime";
+    if (brands.some((brand) => ["M4A ", "M4B "].includes(brand))) return "audio/mp4";
+    if (
+      brands.some((brand) => ["isom", "iso2", "mp41", "mp42", "avc1", "M4V ", "dash"].includes(brand))
+    )
+      return "video/mp4";
+  }
   if (
     data.subarray(0, 4).toString("ascii") === "RIFF" &&
     data.subarray(8, 12).toString("ascii") === "WAVE"
@@ -113,14 +133,28 @@ function detectMime(path: string, data: Buffer, contentType?: string | null): st
     return "audio/wav";
   if (
     data.subarray(0, 3).toString("ascii") === "ID3" ||
-    (data[0] === 0xff && (data[1] & 0xe0) === 0xe0)
+    (data.length >= 4 &&
+      data[0] === 0xff &&
+      (data[1] & 0xe0) === 0xe0 &&
+      (data[1] & 0x18) !== 0x08 &&
+      (data[1] & 0x06) !== 0 &&
+      (data[2] & 0xf0) !== 0xf0 &&
+      (data[2] & 0x0c) !== 0x0c)
   )
     return "audio/mpeg";
   return undefined;
 }
 
 function textFilePart(path: string, data: Buffer, label: string, truncated: boolean): TextContent {
-  let text = data.toString("utf8");
+  let text: string;
+  try {
+    text = new TextDecoder("utf-8", { fatal: true }).decode(data, { stream: truncated });
+  } catch {
+    throw new Error(`Unsupported binary or non-UTF-8 media: ${path}`);
+  }
+  if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(text)) {
+    throw new Error(`Unsupported binary or non-UTF-8 media: ${path}`);
+  }
   if (truncated) text += "\n\n[Text input truncated]";
   const language = extname(path).slice(1).toLowerCase() || "text";
   return {
@@ -136,7 +170,8 @@ async function fileParts(
   signal?: AbortSignal,
 ): Promise<{ parts: (TextContent | ImageContent)[]; size: number; mimeType?: string }> {
   signal?.throwIfAborted();
-  const handle = await open(path, "r");
+  // Nonblocking open prevents a FIFO (including one swapped in before open) from hanging.
+  const handle = await open(path, constants.O_RDONLY | constants.O_NONBLOCK);
   try {
     const fileStat = await handle.stat();
     if (!fileStat.isFile()) throw new Error(`Path is not a file: ${path}`);
@@ -145,7 +180,7 @@ async function fileParts(
         `File is too large (${formatSize(fileStat.size)}; limit ${formatSize(maxBytes)})`,
       );
 
-    const header = Buffer.alloc(Math.min(32, fileStat.size));
+    const header = Buffer.alloc(Math.min(256, fileStat.size));
     const headerRead = (await handle.read(header, 0, header.length, 0)).bytesRead;
     signal?.throwIfAborted();
     const mimeType = detectMime(path, header.subarray(0, headerRead));
@@ -212,7 +247,7 @@ async function urlParts(
   const data = Buffer.concat(chunks);
   const mimeType = detectMime(
     new URL(response.url).pathname,
-    data.subarray(0, 32),
+    data.subarray(0, 256),
     response.headers.get("content-type"),
   );
   if (!mimeType) {
@@ -270,6 +305,7 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
       defaultModel: `${MODEL_PROVIDER}/${MODEL_ID}`,
       defaultThinking: "medium",
       cwd: ctx.cwd,
+      projectTrusted: ctx.isProjectTrusted(),
     });
     const targetModelStr = resolved.model ?? `${MODEL_PROVIDER}/${MODEL_ID}`;
 
@@ -331,7 +367,7 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
       content,
       timestamp: Date.now(),
     };
-    const response = await ctx.modelRegistry.complete(
+    const response = await ctx.modelRegistry.streamSimple(
       model,
       {
         systemPrompt: `${SYSTEM_PROMPT}\n\n# Environment\n\n${environment}`,
@@ -340,13 +376,11 @@ When objective is provided, or when viewing a PDF, audio file, or video, use it 
       {
         maxTokens: 65_535,
         temperature: 1,
-        ...(resolved.thinking && resolved.thinking !== "off"
-          ? { reasoningEffort: resolved.thinking as "low" | "medium" | "high" | "xhigh" }
-          : {}),
+        reasoning: resolved.thinking === "off" ? undefined : resolved.thinking,
         signal,
         cacheRetention: "none",
       },
-    );
+    ).result();
 
     if (response.stopReason === "aborted") throw new Error("Media analysis was cancelled");
     if (response.stopReason === "error")

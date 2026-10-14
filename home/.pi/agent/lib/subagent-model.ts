@@ -19,6 +19,7 @@ export interface ResolveSubagentModelOptions {
   defaultModel?: string;
   defaultThinking?: DelegationThinking;
   cwd?: string;
+  projectTrusted?: boolean;
 }
 
 export interface ResolvedSubagentModel {
@@ -42,8 +43,6 @@ const SUBAGENT_ALIASES: Record<string, string[]> = {
   oracle: ["oracle", "advisor", "review"],
   librarian: ["librarian"],
   task: ["task"],
-  "read-thread": ["read-thread", "read_thread", "readthread"],
-  read_thread: ["read-thread", "read_thread", "readthread"],
   view_media: ["view_media", "view-media", "viewmedia", "media"],
   "view-media": ["view_media", "view-media", "viewmedia", "media"],
   viewmedia: ["view_media", "view-media", "viewmedia", "media"],
@@ -70,7 +69,7 @@ export function clearSubagentModelCache(): void {
   cachedConfig = null;
 }
 
-export function findSubagentModelConfigFile(cwd?: string): string | null {
+export function findSubagentModelConfigFile(cwd?: string, projectTrusted = true): string | null {
   const envPath = process.env.PI_SUBAGENT_MODELS_PATH || process.env.PI_SUBAGENT_MODELS_FILE;
   if (envPath && existsSync(envPath)) {
     return envPath;
@@ -79,7 +78,7 @@ export function findSubagentModelConfigFile(cwd?: string): string | null {
   const moduleDir = getModuleDir();
   const candidates: string[] = [];
 
-  if (cwd) {
+  if (cwd && projectTrusted) {
     candidates.push(join(cwd, ".pi", "subagent-models.json"));
     candidates.push(join(cwd, ".pi", "subagents.json"));
   }
@@ -142,8 +141,8 @@ function parseModelAndThinking(
   return { model: String(target), thinking: fallbackThinking };
 }
 
-export function loadSubagentModelConfig(cwd?: string): SubagentModelConfig | null {
-  const filePath = findSubagentModelConfigFile(cwd);
+export function loadSubagentModelConfig(cwd?: string, projectTrusted = true): SubagentModelConfig | null {
+  const filePath = findSubagentModelConfigFile(cwd, projectTrusted);
   if (!filePath) return null;
 
   try {
@@ -180,7 +179,7 @@ export function loadSubagentModelConfig(cwd?: string): SubagentModelConfig | nul
     return typedConfig;
   } catch (error) {
     console.warn(`[subagent-model] Failed to load config from ${filePath}:`, error);
-    return cachedConfig?.data ?? null;
+    return cachedConfig?.filePath === filePath ? cachedConfig.data : null;
   }
 }
 
@@ -189,7 +188,7 @@ export function resolveSubagentModel(
   mainModel?: { provider?: string; id?: string; name?: string } | string,
   options: ResolveSubagentModelOptions = {},
 ): ResolvedSubagentModel {
-  const config = loadSubagentModelConfig(options.cwd);
+  const config = loadSubagentModelConfig(options.cwd, options.projectTrusted);
   if (!config) {
     return {
       model: options.defaultModel,

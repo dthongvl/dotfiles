@@ -1,5 +1,6 @@
 {
-  "lastChangelogVersion": "1.1.0",
+  "$schema": "https://pi.dev/schemas/settings.schema.json",
+  "lastChangelogVersion": "1.4.0",
   "defaultTools": [
     "+codemode"
   ],
@@ -26,7 +27,6 @@
       ],
       "skills": [
         "skills/github",
-        "skills/librarian",
         "skills/commit"
       ],
       "prompts": [],
@@ -65,12 +65,7 @@
   },
   "showCacheMissNotices": true,
   "subagents": {
-    "disableBuiltins": true,
-    "agentOverrides": {
-      "delegate": {
-        "disabled": false
-      }
-    }
+    "disableBuiltins": true
   },
   "tuiMode": "fullscreen",
   "fullscreenScrollbar": "always",

@@ -1,22 +1,6 @@
 {
-  "openai-codex/gpt-6.1-sol": {
-    "oracle": "openai-codex/gpt-6-astra:xhigh",
-    "finder": "google/gemini-3.8-flash:low",
-    "librarian": "openai-codex/gpt-6.1-sol:off",
-    "task": "openai-codex/gpt-6.1-sol:low"
-  },
-  "openai-codex/gpt-6-astra": {
-    "oracle": "openai-codex/gpt-6-astra:xhigh",
-    "finder": "google/gemini-3.8-flash:low",
-    "librarian": "openai-codex/gpt-6.1-sol:off",
-    "task": "openai-codex/gpt-6.1-sol:low"
-  },
   "default": {
-    "oracle": "cursor/gpt-5.6-sol@272k:xhigh",
-    "finder": "cursor/gpt-5.6-terra@272k:low",
-    "librarian": "cursor/gpt-5.6-sol@272k:off",
-    "task": "cursor/grok-4.6:xhigh",
-    "read_thread": "google/gemini-3.8-flash:medium",
+    "task": "openai-codex/gpt-6.1-sol:low",
     "view_media": "google/gemini-3.8-flash:medium"
   }
 }
