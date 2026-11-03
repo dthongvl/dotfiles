@@ -2,7 +2,7 @@
 
 [user]
 name = "Thong Nguyen"
-email = "matong.mz@gmail.com"
+email = "thong.nguyen@holistics.io"
 
 [ui]
 # diff.format = "git"
@@ -57,7 +57,7 @@ l = ["log", "-r", "ancestors(reachable(@, mutable()), 3) | present(trunk())"]
 la = ["log", "-r", "..@"]
 ll = ["log", "-T", "builtin_log_detailed"]
 e = ["edit"]
-nb = ["bookmark", "create", "-r @-"]                                          # "new bookmark"
+nb = ["bookmark", "create", "-r @-"] # "new bookmark"
 gf = ["git", "fetch"]
 gp = ["git", "push"]
 nt = ["new", "trunk()"]

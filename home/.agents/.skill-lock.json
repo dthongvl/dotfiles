@@ -209,6 +209,45 @@
       "skillFolderHash": "4a3589aac60cd893e47b1e9e081e8b8d5170d786",
       "installedAt": "2026-10-30T06:48:20.855Z",
       "updatedAt": "2026-10-30T06:48:20.855Z"
+    },
+    "diagnosing-bugs": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
+      "skillFolderHash": "5fdd6cc53385395441910b026c72d71768e993d4",
+      "pluginName": "mattpocock-skills",
+      "installedAt": "2026-11-03T04:04:21.751Z",
+      "updatedAt": "2026-11-03T04:04:21.751Z"
+    },
+    "bro": {
+      "source": "backnotprop/bro",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/backnotprop/bro.git",
+      "skillPath": "skills/bro/SKILL.md",
+      "skillFolderHash": "19def6229f89686253063fb9d795a6d45a246046",
+      "pluginName": "bro",
+      "installedAt": "2026-11-03T04:04:58.708Z",
+      "updatedAt": "2026-11-03T04:04:58.708Z"
+    },
+    "handoff": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "skills/productivity/handoff/SKILL.md",
+      "skillFolderHash": "ce24892bd2d4b9e7fd5ac9b95c03175e18bef388",
+      "pluginName": "mattpocock-skills",
+      "installedAt": "2026-11-03T04:05:27.018Z",
+      "updatedAt": "2026-11-03T04:05:27.018Z"
+    },
+    "decision-models": {
+      "source": "dmmulroy/.dotfiles",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/dmmulroy/.dotfiles.git",
+      "skillPath": "home/.agents/skills/decision-models/SKILL.md",
+      "skillFolderHash": "2fb8900df6567a979ec000d320daedb0b7cd3d3f",
+      "installedAt": "2026-11-03T04:24:11.435Z",
+      "updatedAt": "2026-11-03T04:24:11.435Z"
     }
   },
   "dismissed": {

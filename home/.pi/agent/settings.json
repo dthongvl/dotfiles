@@ -1,15 +1,14 @@
 {
   "$schema": "https://pi.dev/schemas/settings.schema.json",
   "lastChangelogVersion": "1.5.0",
-  "defaultTools": [
-    "+codemode"
-  ],
+  "defaultTools": ["+codemode"],
   "enabledModels": [
-    "openai/gpt-6.1-sol",
-    "openai-codex/gpt-6.1-sol",
-    "openai-codex/gpt-6-astra",
-    "google/gemini-3.8-flash",
-    "deepseek/deepseek-flash"
+    "openai/gpt-6.1-sol:medium",
+    "pi-claude-cli/claude-opus-5-5:high",
+    "openai-codex/gpt-6.1-sol:medium",
+    "openai-codex/gpt-6-astra:medium",
+    "google/gemini-3.8-flash:medium",
+    "deepseek/deepseek-flash:max"
   ],
   "packages": [
     "git:github.com/earendil-works/pi-review",
@@ -18,28 +17,19 @@
     {
       "source": "https://github.com/mitsuhiko/agent-stuff",
       "extensions": [
-        "extensions/control.ts",
         "extensions/unified-edit.ts",
         "extensions/session-breakdown.ts",
-        "extensions/whimsical.ts",
-        "extensions/btw.ts"
+        "extensions/whimsical.ts"
       ],
-      "skills": [
-        "skills/github",
-        "skills/commit"
-      ],
+      "skills": ["skills/github", "skills/commit"],
       "prompts": [],
-      "themes": [
-        "themes/nightowl.json",
-        "themes/dayowl.json",
-        "themes/modern-dark.json"
-      ]
+      "themes": ["themes/nightowl.json", "themes/dayowl.json", "themes/modern-dark.json"]
     },
     "npm:pi-intercom",
-    "npm:pi-prompt-template-model",
     "npm:@plannotator/pi-extension",
     "npm:pi-subagents",
-    "npm:webfox"
+    "npm:webfox",
+    "git:github.com/dmmulroy/pi-claude-cli"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "medium",
@@ -48,13 +38,7 @@
   "treeFilterMode": "all",
   "doubleEscapeAction": "tree",
   "showHardwareCursor": false,
-  "npmCommand": [
-    "mise",
-    "exec",
-    "node",
-    "--",
-    "npm"
-  ],
+  "npmCommand": ["mise", "exec", "node", "--", "npm"],
   "images": {
     "blockImages": false
   },
@@ -70,7 +54,6 @@
   "deviceId": "9719c93c-babd-44aa-aaba-ecd22029d52c",
   "extensionChangelogVersions": {
     "{\"source\":\"https://github.com/mitsuhiko/agent-stuff\",\"scope\":\"user\"}": "1.6.0",
-    "{\"source\":\"npm:pi-prompt-template-model\",\"scope\":\"user\"}": "0.12.3",
     "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0"
   }
 }

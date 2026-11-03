@@ -32,7 +32,7 @@ backup="$(mktemp -d "$HOME/dotfiles-backup.XXXXXX")"
 paths=(
   .tmux.conf .wezterm.lua
   .config/fish/config.fish .config/ghostty/config .config/herdr/config.toml
-  .config/jj/config.toml .config/nvim .config/webfox/config.yaml
+  .config/jj/config.toml .config/nvim .config/starship.toml .config/webfox/config.yaml
   .pi/agent/APPEND_SYSTEM.md .pi/agent/settings.json .pi/agent/subagent-models.json
   .pi/agent/agents .pi/agent/extensions .pi/agent/lib .pi/agent/prompts
   .agents/skills .agents/.skill-lock.json

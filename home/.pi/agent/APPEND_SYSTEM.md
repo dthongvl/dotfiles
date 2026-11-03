@@ -55,8 +55,6 @@ When you are stuck on a design question, hand a planning subagent the goal, what
 
 Use `writing-prompts` skill when you write instruction for tools or subagents.
 
-When a decision remains uncertain after checking available evidence and can be expressed as a predicate, a choice among fixed options, or a rubric score, consult Jev through codemode using `models.getModelOfType("classifier", "typesafe", "jev-latest")` and `models.classify()`. Provide the relevant evidence and explicit evaluation criteria. Treat its answer as advisory, not as a substitute for verification or required user approval. Skip consultation for routine decisions.
-
 ## Subagents
 
 Bias toward subagents for depth and breadth. Spawning one is cheap; burning your own context on bulk exploration is not. Reach for them whenever a task has independent strands you can pursue in parallel — investigating separate subsystems, verifying a change from a clean perspective, chasing a hypothesis that needs lots of reading — or when the work would flood your context with output you don't need afterward.

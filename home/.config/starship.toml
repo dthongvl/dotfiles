@@ -1,0 +1,20 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+$username\
+$hostname\
+$directory\
+$vcs\
+$cmd_duration\
+$status\
+\n$character"""
+
+[character]
+success_symbol = '[➜](bold green)'
+
+[vcs]
+order = ["jj", "git"]
+jj_modules = '$jj_bookmark$jj_change'
+
+[status]
+disabled = false

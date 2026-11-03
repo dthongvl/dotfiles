@@ -43,3 +43,4 @@ end
 
 # opencode
 fish_add_path /home/dthongvl/.opencode/bin
+starship init fish | source
