@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reuse"
+  short_description: "Use the project's parts first"

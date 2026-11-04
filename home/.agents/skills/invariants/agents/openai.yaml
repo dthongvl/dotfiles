@@ -1,0 +1,5 @@
+interface:
+  display_name: "Invariants"
+  short_description: "Rules the app relies on but never enforces"
+policy:
+  allow_implicit_invocation: false

@@ -1,10 +1,10 @@
 {
   "$schema": "https://pi.dev/schemas/settings.schema.json",
-  "lastChangelogVersion": "1.5.0",
+  "lastChangelogVersion": "1.5.2",
   "defaultTools": ["+codemode"],
   "enabledModels": [
-    "openai/gpt-6.1-sol:medium",
     "pi-claude-cli/claude-opus-5-5:high",
+    "openai/gpt-6.1-sol:medium",
     "openai-codex/gpt-6.1-sol:medium",
     "openai-codex/gpt-6-astra:medium",
     "google/gemini-3.8-flash:medium",
@@ -54,6 +54,7 @@
   "deviceId": "9719c93c-babd-44aa-aaba-ecd22029d52c",
   "extensionChangelogVersions": {
     "{\"source\":\"https://github.com/mitsuhiko/agent-stuff\",\"scope\":\"user\"}": "1.6.0",
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0"
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.88.0"
   }
 }
+
