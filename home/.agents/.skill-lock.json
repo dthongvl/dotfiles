@@ -274,6 +274,33 @@
       "skillFolderHash": "13f2666c7b404ce5a0a4b93a3613b99e415a48bc",
       "installedAt": "2026-11-10T16:58:48.000Z",
       "updatedAt": "2026-11-10T16:58:48.000Z"
+    },
+    "attach-github-assets": {
+      "source": "intercom/2x-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/intercom/2x-skills.git",
+      "skillPath": "plugins/pr-tools/skills/attach-github-assets/SKILL.md",
+      "skillFolderHash": "6b0731ad5d08c0ff8dbd8e8e312c091dadf78e12",
+      "installedAt": "2026-11-12T08:32:42.055Z",
+      "updatedAt": "2026-11-12T08:32:42.055Z"
+    },
+    "code-review-and-quality": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/addyosmani/agent-skills.git",
+      "skillPath": "skills/code-review-and-quality/SKILL.md",
+      "skillFolderHash": "3d1a2191446790b81f8e97875806dbbddd5135c8",
+      "installedAt": "2026-11-12T08:41:18.349Z",
+      "updatedAt": "2026-11-12T08:41:18.349Z"
+    },
+    "thermo-nuclear-code-review": {
+      "source": "intercom/2x-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/intercom/2x-skills.git",
+      "skillPath": "plugins/code-review-tools/skills/thermo-nuclear-code-review/SKILL.md",
+      "skillFolderHash": "29388bae4adfff5499c084f354bef358654858d9",
+      "installedAt": "2026-11-12T08:42:40.581Z",
+      "updatedAt": "2026-11-12T08:42:40.581Z"
     }
   },
   "dismissed": {

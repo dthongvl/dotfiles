@@ -1,7 +1,9 @@
 {
   "$schema": "https://pi.dev/schemas/settings.schema.json",
   "lastChangelogVersion": "1.5.2",
-  "defaultTools": ["+codemode"],
+  "defaultTools": [
+    "+codemode"
+  ],
   "enabledModels": [
     "pi-claude-cli/claude-opus-5-5:high",
     "openai/gpt-6.1-sol:medium",
@@ -21,15 +23,23 @@
         "extensions/session-breakdown.ts",
         "extensions/whimsical.ts"
       ],
-      "skills": ["skills/github", "skills/commit"],
+      "skills": [
+        "skills/github",
+        "skills/commit"
+      ],
       "prompts": [],
-      "themes": ["themes/nightowl.json", "themes/dayowl.json", "themes/modern-dark.json"]
+      "themes": [
+        "themes/nightowl.json",
+        "themes/dayowl.json",
+        "themes/modern-dark.json"
+      ]
     },
     "npm:pi-intercom",
     "npm:@plannotator/pi-extension",
     "npm:pi-subagents",
     "npm:webfox",
-    "git:github.com/dmmulroy/pi-claude-cli"
+    "git:github.com/dmmulroy/pi-claude-cli",
+    "../../workspace/.dotfiles/home/.pi/agent/extensions/pi-skill-toggle"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "medium",
@@ -38,7 +48,13 @@
   "treeFilterMode": "all",
   "doubleEscapeAction": "tree",
   "showHardwareCursor": false,
-  "npmCommand": ["mise", "exec", "node", "--", "npm"],
+  "npmCommand": [
+    "mise",
+    "exec",
+    "node",
+    "--",
+    "npm"
+  ],
   "images": {
     "blockImages": false
   },
@@ -57,4 +73,3 @@
     "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.88.0"
   }
 }
-
